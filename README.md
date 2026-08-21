@@ -1,11 +1,8 @@
 # 👋 Hi, I'm 김현진
 
-![Name](https://img.shields.io/badge/Name-김현진-8A2BE2?style=for-the-badge)
-![Age](https://img.shields.io/badge/Age-25-FFD700?style=for-the-badge)
-![Gender](https://img.shields.io/badge/Gender-여자-FF69B4?style=for-the-badge)
-![Job](https://img.shields.io/badge/Job-인프라_엔지니어-4A90D9?style=for-the-badge)
-![MBTI](https://img.shields.io/badge/MBTI-ENFP-FF6B35?style=for-the-badge)
-![Favorite Colors](https://img.shields.io/badge/Favorite%20Colors-Purple%20%26%20Yellow-9B59B6?style=for-the-badge)
+### 🙋‍♀️ 기본 정보
+안녕하세요, 저는 25살 여자 김현진입니다. 인프라 엔지니어로 일하고 있고, MBTI는 ENFP예요.
+좋아하는 색은 보라색과 노란색이에요.
 
 > 열심히 일하고 열심히 놀기 🙌
 
@@ -31,4 +28,4 @@
 
 ---
 
-<sub>이 README는 뱃지(Shields.io) 스타일로 제작되었습니다.</sub>
+<sub>이모지 + 텍스트 스타일로 제작되었습니다.</sub>
