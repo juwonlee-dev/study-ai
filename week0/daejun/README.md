@@ -6,7 +6,7 @@
 
 <br>
 
-<img src="https://img.shields.io/badge/PROFILE-FFF4B8?style=for-the-badge&labelColor=F9D976&color=F9D976" />
+<img  src="https://img.shields.io/badge/PROFILE-FFF4B8?style=for-the-badge&labelColor=F9D976&color=F9D976" />
 
 </div>
 
