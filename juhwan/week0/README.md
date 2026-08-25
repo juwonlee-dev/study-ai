@@ -4,7 +4,7 @@
 - 생년월일: 1999-06-30
 - 나이: 28
 - 성별: 남
-- MBTI: INTJ
+- MBTI: INFJ
 
 ## Claude Code(AI) 사용 이유
 
