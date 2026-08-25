@@ -166,3 +166,31 @@ README.md에 "Claude Code(AI) 사용 이유" 섹션을 추가하고, 이 대화(
 - ./juhwan/README.md → ./juhwan/week0/README.md
 - ./juhwan/claude-prompt.md → ./juhwan/week0/claude-prompt.md
 ```
+
+## Turn 15 — User
+
+```
+저는 MBTI가 INFJ에요
+```
+
+## Turn 16 — Assistant
+
+*(`README.md`의 MBTI를 INTJ에서 INFJ로 수정)*
+
+```
+MBTI를 INFJ로 수정했습니다.
+```
+
+## Turn 17 — User
+
+```
+프롬프트 로그도 이 내용 반영해서 업데이트해줘
+```
+
+## Turn 18 — Assistant
+
+*(본 파일에 Turn 15~18 append)*
+
+```
+claude-prompt.md에 방금 진행한 MBTI 수정 관련 대화(Turn 15~18)를 이어서 기록했습니다.
+```
