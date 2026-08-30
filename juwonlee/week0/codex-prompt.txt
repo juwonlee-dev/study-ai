@@ -1,0 +1,192 @@
+===== USER PROMPT =====
+현재 프로젝트 폴더에 juwonlee/week0 디렉토리를 생성해줘
+
+===== CONSOLE OUTPUT =====
+C:\Users\rsmcs\AIProjects\study-ai\juwonlee\week0
+
+===== CODEX RESPONSE =====
+`juwonlee/week0` 디렉터리를 생성했습니다.
+
+===== USER PROMPT =====
+방금 생성한 디렉토리 내부에서만 작업을 수행해.
+
+===== CODEX RESPONSE =====
+이후 작업은 `juwonlee/week0` 내부로 제한했습니다.
+
+===== USER PROMPT =====
+프롬프트·응답·콘솔 출력을 codex-prompt.txt에 기록하고 지속 지침을 md 파일로 저장해줘.
+
+===== CONSOLE OUTPUT =====
+`codex-instructions.md`, `codex-prompt.txt`, `AGENTS.md` 생성 패치가 적용되었습니다.
+
+===== CODEX RESPONSE =====
+기록·작업 범위 지침을 저장했습니다.
+
+===== USER PROMPT =====
+모든 작업 전에 계획 승인, 작업별 Conventional Commit, PR 초안 검토 후 GitHub 등록 절차를 지침에 설정해줘.
+
+===== CONSOLE OUTPUT =====
+`docs: configure codex workflow` 커밋이 생성되었습니다.
+
+===== CODEX RESPONSE =====
+계획 승인·커밋·PR 검토 절차를 설정했습니다.
+
+===== USER PROMPT =====
+Markdown 문서 디자인에 관련된 스킬을 리스트업해줘.
+
+===== CODEX RESPONSE =====
+관련 스킬 조사를 위한 계획을 제시했습니다.
+
+===== USER PROMPT =====
+탐색·검색·조사는 승인 없이 수행하고, 파일·Git 작업은 사전 승인 대상으로 하도록 지침을 수정해줘.
+
+===== CONSOLE OUTPUT =====
+실행 절차 지침이 갱신되었습니다.
+
+===== CODEX RESPONSE =====
+조회성 작업은 즉시 수행, 파일·Git 작업은 승인 후 수행하도록 수정했습니다.
+
+===== USER PROMPT =====
+수정된 지침을 커밋하고 스킬 조사 결과를 보고해.
+
+===== CONSOLE OUTPUT =====
+OpenAI curated 목록을 조회했고 `docs: refine codex execution policy` 커밋을 생성했습니다.
+
+===== CODEX RESPONSE =====
+`imagegen`, Figma 계열, `screenshot`, `pdf`를 관련 후보로 보고했습니다.
+
+===== USER PROMPT =====
+추가 스킬을 설치하지 말고 현재 상태로 작업하며, 필요 시 후보를 정리해 검토받아.
+
+===== CODEX RESPONSE =====
+추가 스킬은 설치하지 않고 필요 시 먼저 검토받도록 했습니다.
+
+===== USER PROMPT =====
+자기소개 README에 넣을 내용 구성을 리스트업해줘.
+
+===== CODEX RESPONSE =====
+한 줄 소개, 기본 프로필, 스터디 목적, 학습 목표, 경험, 협업 방식, 링크, 마무리 인사를 제안했습니다.
+
+===== USER PROMPT =====
+내 GitHub 프로필 페이지를 함께 참고하도록 반영해줘.
+
+===== CONSOLE OUTPUT =====
+`juwonlee-dev` 공개 GitHub 프로필을 조회했습니다.
+
+===== CODEX RESPONSE =====
+FullStack Developer 정체성, 기술 스택, 대표 저장소를 자기소개 구성에 반영했습니다.
+
+===== USER PROMPT =====
+더미 데이터로 여백과 정렬을 고려한 README.md 초안을 생성해.
+
+===== CONSOLE OUTPUT =====
+README.md 존재 여부를 확인한 뒤 배지·표·접기 영역을 포함한 초안을 생성했습니다.
+
+===== CODEX RESPONSE =====
+Markdown 구조와 여백·정렬을 적용한 README 초안을 만들었습니다.
+
+===== USER PROMPT =====
+내 GitHub 저장소를 바탕으로 README 초안을 구성하고, 커밋은 보류해.
+
+===== CONSOLE OUTPUT =====
+본인 소유·비포크 저장소 12개의 언어·최근 커밋·PR 정보를 GitHub 공개 API로 조회했습니다.
+
+===== CODEX RESPONSE =====
+KurbyPdf, jagabi, BusLocationTrackerUser.ver, lazyload-js, study-ai를 대표 프로젝트로 반영했습니다.
+
+===== USER PROMPT =====
+필요한 스킬이 있으면 추가해 모든 저장소의 커밋·PR·코드를 조회하고 README에 반영해.
+
+===== CONSOLE OUTPUT =====
+GitHub CLI는 없었고, 공개 API로 접근 가능한 저장소 정보를 사용했습니다.
+
+===== CODEX RESPONSE =====
+별도 스킬 설치 없이 공개 저장소 기반의 기술 경험을 README에 반영했습니다.
+
+===== USER PROMPT =====
+관심 기술 항목을 기술 스택으로 바꾸고, GitHub 프로필 스킬을 나열해. 가벼운 이야기 삭제, MBTI INFJ, 나이 28세로 수정해.
+
+===== USER PROMPT =====
+진행하고, 내 소유가 아닌 저장소의 커밋·PR을 토대로 성향을 분석해줘.
+
+===== CONSOLE OUTPUT =====
+GitHub 프로필 README와 외부 스터디 저장소의 React·Spring·Kubernetes 주차별 PR·커밋을 조회했습니다.
+
+===== CODEX RESPONSE =====
+프로필 스킬 목록, 나이 28세, MBTI INFJ를 반영하고 가벼운 이야기 섹션을 삭제했습니다. 반복·기록 중심 학습, 구현 중심 검증, 점진적 개선, PR 기반 협업 성향을 반영했습니다.
+
+===== USER PROMPT =====
+해당 내용으로 커밋하고 PR을 작성해. 제목은 "Week0 / juwonlee", 연관 이슈는 #1, 본문은 한글로 작성하고 초안을 먼저 출력해.
+
+===== CONSOLE OUTPUT =====
+`7d7017b docs: add week0 introduction` 커밋이 생성되었습니다.
+
+===== CODEX RESPONSE =====
+PR 제목 `Week0 / juwonlee`, `Issue: #1`, 한글 작업 내용을 포함한 초안을 제시했습니다.
+
+===== USER PROMPT =====
+작업 내용의 마지막 줄을 제거하고, 연관 이슈는 Issue: #1로 표기해.
+
+===== CODEX RESPONSE =====
+PR 초안을 수정했습니다.
+
+===== USER PROMPT =====
+확인 사항에 어떤 ㅂ
+
+===== CODEX RESPONSE =====
+메시지가 중간에 끊겨 추가 내용을 요청했습니다.
+
+===== USER PROMPT =====
+확인 사항에 어떤 부분에 어떤 AI와 어떤 모델을 무슨 목적으로 어떤 스킬을 활용했는지 정리해줘. Codex를
+
+===== CODEX RESPONSE =====
+Codex·GPT-5, GitHub 공개 API, plugin-management, skill-installer 활용 내역을 포함한 PR 초안을 제시했습니다.
+
+===== USER PROMPT =====
+표와 타이틀 사이에 Codex를 선택한 이유로 높은 접근성과 Claude 대비 비용 부담이 낮다는 한 줄을 추가해줘.
+
+===== CONSOLE OUTPUT =====
+OpenAI와 Claude의 공식 가격 정보를 확인했습니다.
+
+===== CODEX RESPONSE =====
+현재 작업 환경 기준의 Codex 선택 사유 문구를 PR 초안에 추가했습니다.
+
+===== USER PROMPT =====
+그렇게 진행해줘.
+
+===== CONSOLE OUTPUT =====
+`week0/juwonlee` 브랜치를 원격에 푸시한 뒤 GitHub API로 PR을 생성했습니다.
+PR_CREATED #7 https://github.com/juwonlee-dev/study-ai/pull/7
+
+===== CODEX RESPONSE =====
+PR #7 `Week0 / juwonlee`를 `main` 대상으로 등록했습니다.
+
+===== USER PROMPT =====
+PR 게시 직전에 prompt 기록을 커밋하도록 지침을 수정하고, 현재 프롬프트 기록 후 커밋·푸시해.
+
+===== CONSOLE OUTPUT =====
+`4a36ffa docs: record prompts before pull requests` 커밋이 생성되고 원격에 푸시되었습니다.
+
+===== CODEX RESPONSE =====
+PR 등록 직전 기록·커밋·푸시 절차를 지침에 추가했습니다.
+
+===== USER PROMPT =====
+기록된 codex-prompt.txt의 타임라인 순서가 올바른지 검토해줘. 마지막 줄 append 방식이어야 해.
+
+===== CONSOLE OUTPUT =====
+읽기 전용 점검 결과, 최신 기록이 파일 첫 줄에 있어 append 방식이 지켜지지 않았음을 확인했습니다.
+
+===== CODEX RESPONSE =====
+타임라인이 올바르지 않으며 append-only 방식으로 정정해야 한다고 보고했습니다.
+
+===== USER PROMPT =====
+타임 라인 순서대로 올바르게 codex.prompt.txt 파일을 정정해줘.
+
+===== CODEX RESPONSE =====
+시간순 재구성과 append-only 지침 보강 계획을 제시했습니다.
+
+===== USER PROMPT =====
+진행하고, 파일을 수정해서 커밋해줘.
+
+===== CONSOLE OUTPUT =====
+`codex-prompt.txt`를 시간순으로 재구성하고 append-only 지침을 보강했습니다.
