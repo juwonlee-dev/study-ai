@@ -62,6 +62,32 @@ Issue #14 요약: README 기반 자기소개 이미지 juhwan/week1/profile.png 
 HTML/CSS로 카드를 디자인하고 Chrome으로 PNG를 렌더링해, 텍스트가 README와
 정확히 일치하도록 했습니다.
 
-커밋은 의미 단위로 나눠 완료했습니다. push / PR 생성은 gh 인증이 만료되어
-`! gh auth login` 실행이 필요합니다.
+커밋은 의미 단위로 나눠 완료했고 week1/juhwan 브랜치에 push했습니다.
+PR 생성은 gh 인증이 만료되어 `! gh auth login` 실행이 필요합니다.
+```
+
+## Turn 3 — User
+
+```
+! gh auth login
+로그인 했습니다.
+```
+
+## Turn 4 — Assistant
+
+> 작업 과정 (도구 실행 요약)
+> 1. `gh auth status`로 로그인 확인 (juhwanHeo)
+> 2. `gh pr create`로 PR 생성 (제목 `Week1 / juhwan`, 본문에 #14 태그, 사용한 AI/이유, 이미지, 검증 결과 포함), 리뷰어 @juwonlee-dev 지정
+> 3. `gh pr edit --add-reviewer juhwanHeo` 시도 → PR 작성자 본인이라 GitHub가 리뷰어로 등록하지 않음
+> 4. 프롬프트 로그에 이번 대화 추가 후 커밋 / push
+
+```
+PR을 만들었습니다: https://github.com/juwonlee-dev/study-ai/pull/15
+
+- 제목: Week1 / juhwan
+- 본문: #14 태그, 사용한 AI와 이유, 이미지, 검증 결과
+- 리뷰어: @juwonlee-dev 지정됨
+  - @juhwanHeo는 PR 작성자 본인이라 GitHub가 리뷰어로 등록해주지 않습니다.
+- 이슈 조건인 "추가 리뷰어 1명 이상"은 아직 지정하지 않았습니다. 누구를 추가할지 알려주시면 지정하겠습니다.
+- 프롬프트 로그에 이번 대화를 추가해 push했습니다 (PR에 자동 반영).
 ```
