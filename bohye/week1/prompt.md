@@ -19,8 +19,8 @@
 
 #### 사용자
 
-> bohye 라는 폴더에서 작업을 할거야. 그 폴더안의 규칙대로 작업시작하자  
-> 이슈번호는 14번이야.  
+> bohye 라는 폴더에서 작업을 할거야. 그 폴더안의 규칙대로 작업시작하자<br>
+> 이슈번호는 14번이야.<br>
 > https://github.com/juwonlee-dev/study-ai/issues/14
 
 #### Codex
