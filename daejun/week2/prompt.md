@@ -9,7 +9,10 @@
 | 모델 | Claude Opus 5.5 (`claude-opus-5-5`) |
 | 작업 브랜치 | `week2/daejun` |
 | 과제 이슈 | [#22 2주차](https://github.com/juwonlee-dev/study-ai/issues/22) |
-| 결과물 | `daejun/week2/profile.html`, `daejun/week2/prompt.md` |
+| 결과물 | `daejun/week2/profile.html`, `daejun/week2/images/*.png`, `daejun/week2/prompt.md` |
+| PR | [#36](https://github.com/juwonlee-dev/study-ai/pull/36) |
+
+> 1차 구현(3장)은 그림을 inline SVG로 직접 그렸고, 사용자 요청에 따라 5장에서 **Week1 이미지에서 잘라낸 PNG 그림을 넣는 방식**으로 다시 작업했습니다.
 
 ---
 
@@ -195,6 +198,151 @@ row order: 성별 직업 취미 관심사 MBTI
 
 ---
 
+## 4. 커밋 · 리뷰어 지정 · PR 생성 (1차)
+
+### 🤖 답변 (3장에서 이어짐)
+
+> 파일 두 개를 모두 작성했습니다. 커밋하고, PR에 추가할 리뷰어 후보를 확인하겠습니다.
+
+- PowerShell에서 `git commit -F -`로 메시지를 표준 입력으로 넘기려 했으나 전달되지 않아 실패
+
+> PowerShell에서는 커밋 메시지가 표준 입력으로 넘어가지 않아 커밋이 만들어지지 않았습니다. 메시지를 파일로 저장해서 다시 커밋하겠습니다.
+
+- Bash heredoc으로 커밋 성공: `a04e3d3 week2 자기소개 이미지 HTML 페이지 구현`
+- `gh api repos/juwonlee-dev/study-ai/collaborators` 로 리뷰어 후보 조회
+
+> 로컬 커밋까지 끝났습니다. push하고 PR을 만들기 전에 추가 리뷰어를 정해야 합니다. 필수 리뷰어 2명 외에 최소 1명이 더 필요합니다.
+
+**AI 질문:** 필수 리뷰어(@juwonlee-dev, @juhwanHeo) 외에 추가로 지정할 리뷰어는 누구인가요?
+
+### 🙋 선택
+
+> LSHgy
+
+### 🤖 답변
+
+> 추가 리뷰어는 LSHgy로 정했습니다. push하고 PR을 만들겠습니다.
+
+- 첫 push 실패: `fatal: could not read Username for 'https://github.com': terminal prompts disabled`
+
+> GitHub CLI 로그인 정보가 git에 연결되어 있지 않아 push가 실패했습니다. 그래서 PR도 만들어지지 않았습니다. `gh auth setup-git`으로 연결한 뒤 다시 시도하겠습니다.
+
+- `gh auth setup-git` 후 push 성공 → `gh pr create` 로 PR [#36](https://github.com/juwonlee-dev/study-ai/pull/36) 생성, 리뷰어 `juwonlee-dev`, `juhwanHeo`, `LSHgy`
+
+**최종 응답**
+
+> 2주차 과제 PR을 올렸습니다: https://github.com/juwonlee-dev/study-ai/pull/36
+>
+> - **브랜치와 파일:** `week2/daejun` 브랜치에 커밋해 push했고, PR에는 두 파일만 들어 있습니다.
+>   - `daejun/week2/profile.html`: Week1 이미지를 HTML/CSS로 다시 만든 페이지입니다. 이미지 파일은 쓰지 않았고, 아이콘·캐릭터·고양이·구름은 모두 SVG 코드로 직접 그렸습니다.
+>   - `daejun/week2/prompt.md`: 이번 대화의 프롬프트와 응답을 정리한 기록입니다.
+> - **리뷰어:** @juwonlee-dev, @juhwanHeo, @LSHgy
+> - **PR 본문:** 사용한 AI(Claude Code / Claude Opus 5.5)와 검증 결과를 적었습니다.
+>
+> **어떻게 확인했나요**
+> - 브라우저(Edge)로 데스크톱과 휴대폰 너비(375px) 화면을 캡처해 원본과 비교했고, 두 번 고쳤습니다.
+> - 이미지에 있는 텍스트 16개 항목이 HTML에 빠짐없이 들어 있습니다. About Me 표도 원본처럼 5행이고 순서가 같습니다.
+>
+> **알아두실 점**
+> - **생년월일:** 과제 검증 기준에는 생년월일이 있지만 Week1 이미지에는 없습니다. 원본과 내용이 달라지지 않게 넣지 않았고, PR 본문에도 이 점을 적었습니다.
+> - **관심사 설명:** 검증 기준의 "관심사 각 설명"도 이미지에는 라벨(Movie / Artificial Intelligence / Development)만 있어서, 그 라벨만 넣었습니다.
+> - **prompt.md 누락 부분:** prompt.md를 작성한 뒤에 진행한 커밋, 리뷰어 선택, push, PR 생성 과정은 기록에 아직 없습니다. 과제의 "생략 없이" 조건에 맞추려면 이 부분을 추가해 PR에 다시 올리겠습니다.
+> - **push 설정 변경:** push가 처음에 인증 오류로 실패해서 `gh auth setup-git`을 실행했습니다. 이 설정으로 이제 git이 `joon5380` 계정의 GitHub 로그인 정보로 push합니다.
+> - **ASSIGNMENT.md:** 저장소 루트에 있는 `ASSIGNMENT.md`는 커밋하지 않았습니다.
+
+---
+
+## 5. 그림을 이미지로 교체하는 재작업
+
+### 🙋 질문
+
+> 이미지를 SVG로 직접 그리지 말고 이미지 생성해서 넣는걸로 다시 해줘. 그리고 커밋과 PR 올리기 전에 나한테 먼저 컨펌받고 작업해.
+
+### 🤖 답변
+
+#### 5-1. 작업 규칙 저장 및 이미지 생성 방법 확인
+
+- "커밋·push·PR 전에 반드시 사용자 확인" 규칙을 Claude Code 메모리에 저장
+- 이미지 생성 수단 확인: 이미지 생성 API 키·CLI 없음, Python도 미설치
+
+> 이 PC에는 이미지 생성 API 키나 이미지 생성 CLI(codex, gemini 등)가 없습니다. 저(Claude Code)도 그림을 새로 생성하는 기능은 없습니다. 그래서 그림을 어떻게 만들지 정해 주셔야 합니다.
+
+**AI 질문:** 페이지에 넣을 그림(캐릭터, 고양이, 아이콘 등)을 어떻게 만들까요?
+- 다른 AI로 직접 생성 (추천)
+- Week1 이미지에서 잘라내기
+- API 키로 제가 생성
+
+### 🙋 선택
+
+> Week1 이미지에서 잘라내기
+
+#### 5-2. 그림 요소 잘라내기
+
+> Week1 이미지에서 그림 부분만 잘라 쓰고, 글자는 모두 HTML로 유지하겠습니다.
+
+- Python이 없어 PowerShell 기본 내장 .NET `System.Drawing`으로 이미지 처리
+- 원본(1024×1536)에서 영역을 잘라 좌표 확인 → 그림 요소 21개 좌표 확정
+- **배경 투명화**: 잘라낸 영역의 테두리에서 시작해 배경색과 비슷한 픽셀만 따라가며(flood fill) 투명하게 처리. 그림 안쪽 흰색(고양이, 꽃 가운데 등)은 외곽선으로 막혀 있어 유지됨
+- **글자 제거**: 캐릭터 이미지에 포함된 손글씨 `Better Together ♥`는 배경색으로 지운 뒤, HTML 텍스트로 다시 작성
+
+처리 중 발생한 문제와 해결
+
+| 문제 | 원인 | 해결 |
+| --- | --- | --- |
+| C# 컴파일 오류 | PowerShell 5.1이 BOM 없는 UTF-8 스크립트를 ANSI로 읽어 한글 주석이 깨짐 | 스크립트를 UTF-8(BOM)으로 저장 |
+| 함수 대신 다른 명령 실행 | `R`이 PowerShell 기본 별칭(Invoke-History)과 겹침 | 함수 이름을 `Rect`로 변경 |
+| 고양이 몸통이 투명해짐 | 흰 고양이 색이 크림색 배경과 비슷함 | 캐릭터 이미지의 투명 처리 기준을 더 엄격하게 조정 |
+| 구름 이미지가 반대로 투명해짐 | 테두리 대부분이 구름이라 구름색을 배경으로 판단 | 배경색을 뽑을 위치를 직접 지정 |
+| 반짝이 선 이미지에 꽃·밑줄 조각 포함 | 자른 영역이 옆 요소와 겹침 | 겹친 부분을 지우는 영역 추가 |
+
+> 고양이는 잘 살아났습니다. 사람 머리 주변에 남은 연한 테두리는 원본 배경색이라, 페이지 배경을 같은 크림색으로 맞추면 보이지 않습니다. 다만 구름은 반대로 됐습니다. 잘라낸 영역의 테두리 대부분이 구름이라 구름 색을 배경으로 잘못 판단했습니다. 구름은 배경색을 뽑을 위치를 직접 지정하겠습니다.
+
+생성된 이미지 (`daejun/week2/images/`)
+
+| 파일 | 용도 |
+| --- | --- |
+| `hero.png` | 캐릭터 + 노트북 + 전구 + 고양이 |
+| `flower-left.png`, `flower-right.png` | 헤더 노란 꽃 |
+| `sparks-top.png`, `sparks-left.png`, `sparks-right.png` | 헤더 반짝이 선 |
+| `icon-building.png` | 역할 배지 빌딩 아이콘 |
+| `sunflower.png`, `sunflower-small.png` | 섹션 제목·소개 문구 해바라기 |
+| `icon-male.png`, `icon-laptop.png`, `icon-clapper.png`, `icon-robot.png`, `icon-sprout.png` | About Me 표 아이콘 |
+| `interest-movie.png`, `interest-ai.png`, `interest-dev.png` | My Interests 아이콘 |
+| `twinkle.png`, `smile.png` | 푸터 별·스마일 |
+| `cloud-left.png`, `cloud-right.png` | 하단 구름 |
+
+#### 5-3. HTML 재작성
+
+> 색상을 추출했습니다. 이제 SVG를 모두 빼고, 잘라낸 PNG를 `<img>`로 넣은 HTML로 다시 작성하겠습니다. 글자는 전부 HTML 텍스트로 유지합니다.
+
+- 원본 이미지에서 배경·카드·표·배지 색상을 픽셀 단위로 추출해 CSS 변수에 반영 (예: 배경 `#fdf3c8`, 역할 배지 `#fed968`, 관심사 라벨 `#fde89e`)
+- inline SVG 전부 제거 → `<img src="images/...">` 로 교체
+- 텍스트(이름, 표, 관심사, 소개 문구, 인사말, Better Together)는 모두 HTML 텍스트 유지
+
+> 원본과 거의 같은 모습입니다. 두 군데만 고치겠습니다.
+> - 역할 배지의 빌딩 아이콘이 컬러 이모지(🏢)로 나옵니다. 원본의 갈색 빌딩 아이콘을 잘라서 넣겠습니다.
+> - 모바일에서 "Better Together"가 전구와 겹칩니다.
+
+#### 5-4. 최종 검증
+
+> 데스크톱과 모바일 모두 정상입니다. 텍스트 내용, 이미지 경로, SVG가 남아 있는지를 다시 검사하겠습니다.
+
+```
+OK   이름 / 역할 / 소속
+OK   성별=남자 / 직업=개발자 / 취미=영화 / 관심사=AI / MBTI=INFJ
+OK   Movie / Artificial Intelligence / Development
+OK   소개 문구 / Hello / Better Together / Thanks / Nice day
+table rows: 5
+svg 사용: 0
+img 참조 21개 → 파일 모두 존재, 참조되지 않는 이미지 없음 (총 496KB)
+```
+
+> 검사를 모두 통과했습니다. 이제 `prompt.md`에 빠져 있던 커밋·PR 과정과 이번 재작업 내용을 추가하겠습니다.
+
+- 이후 커밋·push·PR 업데이트는 **사용자 확인 후** 진행
+
+---
+
 ## ✅ 검증 기준 대조표
 
 | ASSIGNMENT.md 검증 기준 | 원본 이미지 | profile.html | 결과 |
@@ -213,5 +361,6 @@ row order: 성별 직업 취미 관심사 MBTI
 
 ## 📁 최종 결과물
 
-- `daejun/week2/profile.html` – Week1 자기소개 이미지를 HTML/CSS + inline SVG로 구현한 페이지 (이미지 첨부 없음, 반응형)
+- `daejun/week2/profile.html` – Week1 자기소개 이미지를 HTML/CSS로 구현한 페이지 (글자는 모두 HTML 텍스트, 그림은 PNG, 반응형)
+- `daejun/week2/images/*.png` – Week1 이미지에서 잘라 배경을 투명하게 만든 그림 21개
 - `daejun/week2/prompt.md` – 본 대화 기록
