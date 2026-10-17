@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>최대준 프로필</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fdf3c8;
+      --bg-bottom: #fdf1bd;
+      --card: #fbf9ed;
+      --line: #f6e3a6;
+      --row-label: #fdf5cd;
+      --row-value: #fcf8ec;
+      --pill: #fed968;
+      --pill-soft: #fde89e;
+      --underline: #fee07f;
+      --accent: #f8c93a;
+      --title-line: #d38e23;
+      --ink: #2d1205;
+      --ink-soft: #4a3418;
+      --brown: #6b4212;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #f3e6b4;
+      font-family: "Gowun Dodum", "Malgun Gothic", sans-serif;
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px 12px;
+    }
+
+    img { display: block; max-width: 100%; }
+
+    .page {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 70%, var(--bg-bottom) 100%);
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 24px 22px 0;
+      box-shadow: 0 10px 30px rgba(160, 120, 20, 0.18);
+    }
+
+    /* ---------- 상단 ---------- */
+    .hero {
+      position: relative;
+      min-height: 238px;
+    }
+
+    .hero-text { position: relative; z-index: 2; width: 58%; padding-top: 22px; }
+
+    .hello {
+      font-family: "Jua", sans-serif;
+      font-size: 42px;
+      line-height: 1.1;
+      margin-left: 70px;
+    }
+
+    .name {
+      position: relative;
+      display: inline-block;
+      font-family: "Jua", sans-serif;
+      font-size: 74px;
+      font-weight: normal;
+      line-height: 1.05;
+      margin: 4px 0 0 76px;
+    }
+
+    .name::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 12px;
+      bottom: 4px;
+      height: 12px;
+      background: var(--underline);
+      border-radius: 8px;
+      z-index: -1;
+      transform: rotate(-1.5deg);
+    }
+
+    .deco { position: absolute; z-index: 1; }
+
+    .role-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+      padding: 10px 24px;
+      background: var(--pill);
+      border-radius: 999px;
+      font-family: "Jua", sans-serif;
+      font-size: 22px;
+      white-space: nowrap;
+    }
+
+    .role-pill .code { letter-spacing: -1px; }
+    .role-pill .divider { width: 2px; height: 22px; background: var(--ink); opacity: 0.7; margin: 0 6px; }
+    .role-pill .building { width: 28px; height: auto; }
+
+    .hero-art {
+      position: absolute;
+      right: -22px;
+      top: -14px;
+      width: 268px;
+      z-index: 1;
+    }
+
+    .together {
+      position: absolute;
+      right: 0;
+      top: 96px;
+      z-index: 2;
+      font-family: "Gaegu", cursive;
+      font-size: 21px;
+      line-height: 1.05;
+      color: var(--brown);
+      transform: rotate(-14deg);
+    }
+
+    /* ---------- 카드 ---------- */
+    .card {
+      position: relative;
+      z-index: 3;
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 28px;
+      padding: 20px 24px 22px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Jua", sans-serif;
+      font-size: 32px;
+      font-weight: normal;
+      margin-bottom: 16px;
+    }
+
+    .section-title img { width: 44px; height: auto; flex-shrink: 0; }
+
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 2px;
+      background: var(--title-line);
+      opacity: 0.45;
+      margin-left: 14px;
+    }
+
+    .about-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 20px;
+    }
+
+    .about-table th,
+    .about-table td {
+      padding: 10px 18px;
+      height: 48px;
+      border-bottom: 2px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .about-table tr:last-child th,
+    .about-table tr:last-child td { border-bottom: none; }
+
+    .about-table th {
+      width: 36%;
+      background: var(--row-label);
+      font-weight: normal;
+      color: var(--ink-soft);
+    }
+
+    .about-table th .label { display: flex; align-items: center; gap: 18px; white-space: nowrap; }
+    .about-table th img { width: 38px; height: 34px; object-fit: contain; flex-shrink: 0; }
+    .about-table td { background: var(--row-value); }
+
+    .interests-title { margin-top: 30px; }
+
+    .interests {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      padding: 14px 10px 16px;
+    }
+
+    .interest {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0 8px;
+    }
+
+    .interest + .interest { border-left: 2px solid var(--line); }
+    .interest img { height: 62px; width: auto; }
+
+    .interest .tag {
+      width: 100%;
+      text-align: center;
+      background: var(--pill-soft);
+      border-radius: 999px;
+      padding: 9px 6px;
+      font-family: "Jua", sans-serif;
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    .quote {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 10px 14px;
+      background: linear-gradient(90deg, transparent, var(--pill-soft) 6%, var(--pill-soft) 94%, transparent);
+      border-radius: 10px;
+      font-family: "Gaegu", cursive;
+      font-size: 18px;
+      text-align: center;
+      white-space: nowrap;
+      word-break: keep-all;
+    }
+
+    .quote img { width: 24px; height: auto; flex-shrink: 0; }
+
+    /* ---------- 하단 ---------- */
+    .footer {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 0 46px;
+    }
+
+    .thanks {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: "Jua", sans-serif;
+      font-size: 26px;
+      color: var(--brown);
+    }
+
+    .thanks img { width: 18px; height: auto; }
+
+    .nice-day {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 24px;
+      background: var(--accent);
+      border-radius: 999px;
+      color: #fffdf3;
+      font-size: 19px;
+      font-weight: bold;
+    }
+
+    .nice-day img { width: 24px; height: auto; }
+
+    .cloud { position: absolute; bottom: 0; z-index: 1; width: 34%; }
+    .cloud-left { left: 0; }
+    .cloud-right { right: 0; }
+
+    /* ---------- 모바일 ---------- */
+    @media (max-width: 560px) {
+      .page { padding: 18px 14px 0; }
+      .hero { min-height: 0; }
+      .hero-text { width: 100%; text-align: center; padding-top: 6px; }
+      .hello { margin-left: 0; font-size: 34px; }
+      .name { margin-left: 0; font-size: 58px; }
+      .role-pill { font-size: 17px; padding: 9px 16px; gap: 8px; }
+      .hero-text .deco { display: none; }
+      .hero-art { position: relative; right: auto; top: auto; width: 250px; margin: 12px auto -6px; }
+      .role-pill .building { width: 22px; }
+      .together { right: -16px; top: 84px; font-size: 19px; }
+      .section-title { font-size: 26px; }
+      .about-table { font-size: 17px; }
+      .about-table th { width: 44%; }
+      .about-table th .label { gap: 10px; }
+      .interest img { height: 46px; }
+      .interest .tag { font-size: 12px; white-space: normal; }
+      .quote { font-size: 17px; white-space: normal; }
+      .cloud { width: 42%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <!-- 상단: 인사 + 캐릭터 -->
+    <header class="hero">
+      <div class="hero-text">
+        <img class="deco" src="images/sparks-top.png" alt="" style="left:6px; top:2px; width:58px">
+        <img class="deco" src="images/flower-left.png" alt="" style="left:38px; top:72px; width:44px">
+        <img class="deco" src="images/flower-right.png" alt="" style="right:-8px; top:50px; width:48px">
+        <img class="deco" src="images/sparks-left.png" alt="" style="left:54px; top:132px; width:32px">
+        <img class="deco" src="images/sparks-right.png" alt="" style="right:-6px; top:104px; width:30px">
+
+        <p class="hello">Hello, I'm</p>
+        <h1 class="name">최대준!</h1>
+        <div class="role-pill">
+          <span class="code">&lt;/&gt;</span>
+          <span>Developer</span>
+          <span class="divider" aria-hidden="true"></span>
+          <img class="building" src="images/icon-building.png" alt="">
+          <span>ABL생명</span>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <img src="images/hero.png" alt="노란 후드티를 입고 노트북 앞에서 턱을 괸 개발자 캐릭터와 고양이, 전구 일러스트">
+        <p class="together">Better<br>Together ♥</p>
+      </div>
+    </header>
+
+    <!-- 본문 카드 -->
+    <section class="card">
+      <h2 class="section-title">
+        <img src="images/sunflower.png" alt="">
+        About Me
+      </h2>
+
+      <table class="about-table">
+        <tbody>
+          <tr>
+            <th scope="row"><span class="label"><img src="images/icon-male.png" alt="">성별</span></th>
+            <td>남자</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="label"><img src="images/icon-laptop.png" alt="">직업</span></th>
+            <td>개발자</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="label"><img src="images/icon-clapper.png" alt="">취미</span></th>
+            <td>영화</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="label"><img src="images/icon-robot.png" alt="">관심사</span></th>
+            <td>AI</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="label"><img src="images/icon-sprout.png" alt="">MBTI</span></th>
+            <td>INFJ</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-title interests-title">
+        <img src="images/sunflower.png" alt="">
+        My Interests
+      </h2>
+
+      <div class="interests">
+        <div class="interest">
+          <img src="images/interest-movie.png" alt="">
+          <span class="tag">Movie</span>
+        </div>
+        <div class="interest">
+          <img src="images/interest-ai.png" alt="">
+          <span class="tag">Artificial Intelligence</span>
+        </div>
+        <div class="interest">
+          <img src="images/interest-dev.png" alt="">
+          <span class="tag">Development</span>
+        </div>
+      </div>
+
+      <p class="quote">
+        <img src="images/sunflower-small.png" alt="">
+        <span>“기술을 통해 더 나은 가치를 만들어가는 개발자, 최대준입니다.”</span>
+        <img src="images/sunflower-small.png" alt="">
+      </p>
+    </section>
+
+    <!-- 하단 인사 -->
+    <footer class="footer">
+      <p class="thanks">
+        <img src="images/twinkle.png" alt="">
+        Thanks for visiting!
+        <img src="images/twinkle.png" alt="">
+      </p>
+      <p class="nice-day">
+        <img src="images/smile.png" alt="">
+        Have a nice day!
+      </p>
+    </footer>
+
+    <img class="cloud cloud-left" src="images/cloud-left.png" alt="">
+    <img class="cloud cloud-right" src="images/cloud-right.png" alt="">
+  </main>
+</body>
+</html>
