@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>이주원 · 자기소개</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --md-primary: #365e91;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #d5e3ff;
+      --md-on-primary-container: #001c3b;
+      --md-secondary: #536176;
+      --md-secondary-container: #d7e3f8;
+      --md-tertiary: #705575;
+      --md-tertiary-container: #fbd7fa;
+      --md-surface: #f7f9ff;
+      --md-surface-container: #eef1f8;
+      --md-surface-high: #e8edf5;
+      --md-outline: #c3c7d0;
+      --md-on-surface: #191c20;
+      --md-on-surface-variant: #43474e;
+      --radius-card: 28px;
+      --radius-small: 16px;
+      --space: 24px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #dfe4ed; color: var(--md-on-surface); }
+    body { font-family: "Google Sans", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    .poster { width: 1600px; min-height: 100vh; margin: 0 auto; padding: 64px 76px 56px; background: var(--md-surface); }
+    .hero { position: relative; overflow: hidden; min-height: 440px; padding: 48px 54px; border-radius: 36px; color: var(--md-on-primary); background: var(--md-primary); }
+    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+    .hero::before { width: 390px; height: 390px; right: -58px; top: -175px; background: #7898c7; opacity: .46; }
+    .hero::after { width: 260px; height: 260px; right: 95px; bottom: -155px; background: #c2d5f6; opacity: .22; }
+    .hero-top, .hero-content { position: relative; z-index: 1; }
+    .hero-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 52px; }
+    .eyebrow { font-size: 17px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; opacity: .88; }
+    .study-pill { padding: 11px 17px; border: 1px solid rgba(255,255,255,.38); border-radius: 999px; background: rgba(255,255,255,.12); font-size: 16px; font-weight: 600; }
+    .hero-content { display: grid; grid-template-columns: 1fr 265px; gap: 32px; align-items: end; }
+    h1 { margin: 0; font-size: 62px; line-height: 1.14; letter-spacing: -.045em; }
+    .subtitle { margin: 18px 0 0; font-size: 25px; line-height: 1.5; color: #e0e9f8; }
+    .quote { max-width: 950px; margin: 28px 0 0; padding-left: 18px; border-left: 3px solid #bfd2ef; color: #f1f5fc; font-size: 19px; line-height: 1.65; }
+    .hero-profile { padding: 24px; border-radius: 24px; background: rgba(255,255,255,.13); backdrop-filter: blur(8px); }
+    .monogram { display: grid; width: 76px; height: 76px; margin-bottom: 16px; place-items: center; border-radius: 26px; color: var(--md-on-primary-container); background: var(--md-primary-container); font-size: 26px; font-weight: 800; }
+    .hero-profile strong { display: block; font-size: 18px; }
+    .hero-profile span { display: block; margin-top: 6px; color: #e0e9f8; font-size: 15px; }
+    .section { margin-top: 36px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin: 0 4px 17px; }
+    .section-kicker { display: block; margin-bottom: 5px; color: var(--md-primary); font-size: 14px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    h2 { margin: 0; font-size: 31px; line-height: 1.25; letter-spacing: -.025em; }
+    .section-note { color: var(--md-on-surface-variant); font-size: 16px; }
+    .surface { border: 1px solid rgba(67,71,78,.07); border-radius: var(--radius-card); background: var(--md-surface-container); }
+    .profile-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; }
+    .profile-card, .purpose-card { padding: 27px 30px; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 17px 22px; margin: 0; }
+    .facts div { min-width: 0; }
+    dt { margin-bottom: 5px; color: var(--md-on-surface-variant); font-size: 14px; font-weight: 600; }
+    dd { margin: 0; font-size: 18px; font-weight: 650; }
+    dd a { color: var(--md-primary); text-decoration: none; }
+    .purpose-card { background: var(--md-primary-container); }
+    .purpose-card h3 { margin: 0 0 9px; color: var(--md-on-primary-container); font-size: 19px; }
+    .purpose-card > p { margin: 0 0 18px; color: var(--md-on-primary-container); font-size: 17px; line-height: 1.65; }
+    .goal-list { display: grid; gap: 10px; }
+    .goal { padding-top: 10px; border-top: 1px solid rgba(0,28,59,.14); color: var(--md-on-primary-container); font-size: 15px; line-height: 1.55; }
+    .goal b { display: block; margin-bottom: 2px; font-size: 15px; }
+    .tech-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 17px; }
+    .chip { padding: 9px 15px; border: 1px solid #b9c9e1; border-radius: 999px; color: #213e65; background: #e8effb; font-size: 15px; font-weight: 650; }
+    .skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .skill-card { min-height: 128px; padding: 20px 23px; border-radius: 22px; background: var(--md-surface-container); }
+    .skill-card h3 { margin: 0 0 9px; color: var(--md-primary); font-size: 16px; }
+    .skill-card p { margin: 0; color: var(--md-on-surface-variant); font-size: 15px; line-height: 1.65; }
+    .project-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .project { display: flex; min-height: 125px; gap: 16px; padding: 21px 23px; border: 1px solid rgba(67,71,78,.10); border-radius: 22px; background: #f0f3f9; }
+    .project-mark { flex: 0 0 42px; display: grid; width: 42px; height: 42px; place-items: center; border-radius: 15px; color: var(--md-primary); background: var(--md-primary-container); font-size: 13px; font-weight: 800; }
+    .project h3 { margin: 0 0 5px; font-size: 18px; }
+    .project p { margin: 0 0 8px; color: var(--md-on-surface-variant); font-size: 15px; line-height: 1.5; }
+    .project a { color: var(--md-primary); font-size: 13px; overflow-wrap: anywhere; text-decoration: none; }
+    .project:last-child { background: var(--md-secondary-container); }
+    .profile-link { margin: 15px 3px 0; color: var(--md-on-surface-variant); font-size: 14px; }
+    .profile-link a { color: var(--md-primary); text-decoration: none; }
+    .collab-intro { margin: 0 4px 16px; color: var(--md-on-surface-variant); font-size: 16px; line-height: 1.6; }
+    .collab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .trait { min-height: 116px; padding: 22px 24px; border-radius: 22px; background: var(--md-tertiary-container); }
+    .trait:nth-child(even) { background: #e5eaf2; }
+    .trait h3 { margin: 0 0 8px; color: var(--md-tertiary); font-size: 17px; }
+    .trait p { margin: 0; color: var(--md-on-surface-variant); font-size: 15px; line-height: 1.6; }
+    .closing { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 36px; padding: 27px 32px; border-radius: 26px; color: var(--md-on-primary); background: var(--md-primary); }
+    .closing strong { font-size: 24px; letter-spacing: -.02em; }
+    .closing span { color: #e0e9f8; font-size: 14px; letter-spacing: .07em; }
+    @media print {
+      @page { size: 1600px 5000px; margin: 0; }
+      html, body { width: 1600px; background: #fff; }
+      .poster { width: 1600px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="poster">
+    <header class="hero">
+      <div class="hero-top">
+        <span class="eyebrow">Profile · 2026</span>
+        <span class="study-pill">함께 성장하기</span>
+      </div>
+      <div class="hero-content">
+        <div>
+          <h1>안녕하세요,<br>이주원입니다</h1>
+          <p class="subtitle">Full-Stack Developer <span aria-hidden="true">·</span> 기록으로 성장하는 학습자</p>
+          <p class="quote">“작은 학습을 꾸준히 쌓아, 동료와 나눌 수 있는 결과로 만들고 싶습니다.”</p>
+        </div>
+        <aside class="hero-profile">
+          <div class="monogram" aria-hidden="true">JW</div>
+          <strong>이주원 (Juwon Lee)</strong>
+          <span>Seoul, Korea</span>
+          <span>GitHub · juwonlee-dev</span>
+        </aside>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="section-head"><div><span class="section-kicker">About</span><h2>기본 프로필</h2></div><span class="section-note">사람과 관심사</span></div>
+      <div class="profile-grid">
+        <article class="surface profile-card">
+          <dl class="facts">
+            <div><dt>이름</dt><dd>이주원 (Juwon Lee)</dd></div>
+            <div><dt>직업</dt><dd>Full-Stack Developer</dd></div>
+            <div><dt>나이</dt><dd>28세 (Dummy Data)</dd></div>
+            <div><dt>MBTI</dt><dd>INFJ</dd></div>
+            <div><dt>성별</dt><dd>남성 (Dummy Data)</dd></div>
+            <div><dt>활동 지역</dt><dd>Seoul, Korea</dd></div>
+            <div><dt>GitHub</dt><dd><a href="https://github.com/juwonlee-dev">@juwonlee-dev</a></dd></div>
+          </dl>
+        </article>
+        <article class="surface purpose-card">
+          <h3>스터디 참여 목적</h3>
+          <p>혼자 이해한 지식을 함께 설명하고 피드백하며, <strong>꾸준히 완주하는 학습 습관</strong>을 만들고자 합니다.</p>
+          <div class="goal-list">
+            <div class="goal"><b>깊이 있는 이해</b>매주 배운 내용을 짧은 글과 예제로 정리합니다.</div>
+            <div class="goal"><b>실전 감각 향상</b>작은 기능을 직접 만들고 코드 리뷰를 주고받습니다.</div>
+            <div class="goal"><b>함께하는 성장</b>막힌 지점을 솔직하게 공유하고 서로의 해결 과정을 배웁니다.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><div><span class="section-kicker">Toolkit</span><h2>기술 스택</h2></div><span class="section-note">배우고 만들 때 사용하는 도구</span></div>
+      <div class="tech-chips" aria-label="주요 기술">
+        <span class="chip">Java</span><span class="chip">JavaScript</span><span class="chip">TypeScript</span><span class="chip">Spring Boot</span><span class="chip">Vue.js</span><span class="chip">React</span><span class="chip">Docker</span>
+      </div>
+      <div class="skill-grid">
+        <article class="skill-card"><h3>Language</h3><p>Java, JavaScript, TypeScript, JSP, Python, C++, C#, Assembly</p></article>
+        <article class="skill-card"><h3>Framework &amp; Backend</h3><p>Spring Boot, Spring Framework, Spring Batch, eGovFrame, RESTful API, JWT, MyBatis, Hibernate, Spring Data, Spring Security</p></article>
+        <article class="skill-card"><h3>Frontend</h3><p>Vue.js, React</p></article>
+        <article class="skill-card"><h3>Search &amp; Logging</h3><p>Elasticsearch, OpenSearch, Logstash, Kibana</p></article>
+        <article class="skill-card"><h3>Database</h3><p>MySQL, Oracle, PostgreSQL, MariaDB</p></article>
+        <article class="skill-card"><h3>Middleware &amp; Infra</h3><p>Nginx, Apache HTTP Server, Apache Tomcat, TmaxSoft JEUS, TmaxSoft WebtoB, Docker</p></article>
+        <article class="skill-card"><h3>Cloud &amp; OS</h3><p>Naver Cloud (NCP), Hyper-V, Red Hat, CentOS, Rocky Linux, Ubuntu, Windows Server, Android</p></article>
+        <article class="skill-card"><h3>Tools</h3><p>IntelliJ IDEA, WebStorm, Eclipse, VS Code, Git, GitLab, Figma, Android Studio, IDA Pro</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><div><span class="section-kicker">Selected work</span><h2>GitHub에서 이어지는 경험</h2></div></div>
+      <p class="collab-intro">GitHub에서 라이브러리, 위치 기반 애플리케이션, 웹 프로젝트를 만들고 학습 기록을 이어가고 있습니다.</p>
+      <div class="project-grid">
+        <article class="project"><div class="project-mark">PDF</div><div><h3>KurbyPdf</h3><p>암호화와 숨은 워터마크를 다루는 Java PDF 라이브러리</p><a href="https://github.com/juwonlee-dev/KurbyPdf">github.com/juwonlee-dev/KurbyPdf</a></div></article>
+        <article class="project"><div class="project-mark">WEB</div><div><h3>jagabi</h3><p>TypeScript·HTML·CSS 기반 웹 프로젝트</p><a href="https://github.com/juwonlee-dev/jagabi">github.com/juwonlee-dev/jagabi</a></div></article>
+        <article class="project"><div class="project-mark">BUS</div><div><h3>BusLocationTrackerUser.ver</h3><p>Java 기반 버스 위치 추적 애플리케이션</p><a href="https://github.com/juwonlee-dev/BusLocationTrackerUser.ver">github.com/juwonlee-dev/BusLocationTrackerUser.ver</a></div></article>
+        <article class="project"><div class="project-mark">JS</div><div><h3>lazyload-js</h3><p>jQuery `getScript`를 활용한 JavaScript 지연 로딩 모듈</p><a href="https://github.com/juwonlee-dev/lazyload-js">github.com/juwonlee-dev/lazyload-js</a></div></article>
+        <article class="project"><div class="project-mark">AI</div><div><h3>study-ai</h3><p>AI 학습과 스터디 기록을 위한 현재 프로젝트</p><a href="https://github.com/juwonlee-dev/study-ai">github.com/juwonlee-dev/study-ai</a></div></article>
+      </div>
+      <p class="profile-link">더 많은 기록은 <a href="https://github.com/juwonlee-dev">GitHub 프로필</a>에서 확인할 수 있습니다.</p>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><div><span class="section-kicker">How I work</span><h2>협업 &amp; 소통 스타일</h2></div></div>
+      <p class="collab-intro">공개 스터디 저장소에서 React·Spring·Kubernetes 주제를 주차별 PR로 꾸준히 제출한 기록을 바탕으로, 다음과 같은 성향을 확인할 수 있습니다.</p>
+      <div class="collab-grid">
+        <article class="trait"><h3>반복과 기록 중심의 학습자</h3><p>작은 단위를 주차별 PR로 쪼개고 학습 흐름을 남깁니다.</p></article>
+        <article class="trait"><h3>개념을 구현으로 검증</h3><p>`Effect`, 의존성 주입, 배포·인증 같은 주제를 코드 변경으로 연결합니다.</p></article>
+        <article class="trait"><h3>점진적 개선을 선호</h3><p>기능·설정·문서화를 나누어 커밋하며 결과를 다듬습니다.</p></article>
+        <article class="trait"><h3>협업 맥락에 익숙함</h3><p>개인 저장소뿐 아니라 공동 스터디 저장소에서 PR 기반으로 작업을 공유합니다.</p></article>
+      </div>
+    </section>
+
+    <footer class="closing"><strong>함께 배우고, 자주 나누고, 끝까지 완주해요!</strong><span>JUWON LEE&nbsp;&nbsp;·&nbsp;&nbsp;FULL-STACK DEVELOPER&nbsp;&nbsp;·&nbsp;&nbsp;SEOUL, KOREA</span></footer>
+  </main>
+</body>
+</html>
