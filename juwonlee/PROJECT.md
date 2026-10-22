@@ -49,8 +49,9 @@
 
 ## 6. PR 본문 기본 구성
 
-작업 내용 / 사용 AI 에이전트·모델(예: Claude Code / Opus 5.5)과 사용 위치·이유 / 검증 방법과 결과 / 결과물 미리보기(이미지 등) / 리뷰어 / `Closes #<Issue>`. Issue가 요구하는 필수 항목을 빠짐없이 넣는다.
+`Issue: #<번호>`(최상단) / 작업 내용 / 사용 AI 에이전트·모델(예: Claude Code / Opus 5.5)과 사용 위치·이유 / 검증 방법과 결과 / 결과물 미리보기(이미지 등) / 리뷰어. Issue가 요구하는 필수 항목을 빠짐없이 넣는다.
 
+- PR을 Issue의 Development에 연결하지 않는다(`Closes #<번호>` 같은 closing 키워드 포함). 연결하면 PR 병합 시 Issue가 닫힌다. Issue는 본문 최상단에 `Issue: #22` 형식으로만 기록한다.
 - 미리보기·결과물 스크린샷을 PR 본문에 첨부할 때는 저장소에 커밋해 링크하지 않는다. 브랜치가 병합·삭제되면 이미지가 보이지 않을 수 있기 때문이다.
 - 대신 `gh attach`(gh 확장 `sudosubin/gh-attach`, 없으면 `gh extension install sudosubin/gh-attach`로 설치)로 `gh attach <파일> -R juwonlee-dev/study-ai`를 실행해 업로드하고, 출력된 `https://github.com/user-attachments/assets/...` URL을 `<img>` 태그로 본문에 넣는다.
 - 첨부 후에는 렌더링된 PR 본문에서 이미지가 표시되는지 확인한다.
