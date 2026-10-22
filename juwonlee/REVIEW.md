@@ -143,3 +143,4 @@ git diff <이전 commit_id> FETCH_HEAD
    gh api repos/juwonlee-dev/study-ai/pulls/<PR>/comments/<comment_id>/replies --method POST -f body="..."
    ```
 3. 등록 결과 URL을 보고한다. 병합은 하지 않는다.
+4. 등록이 끝나면 이번 리뷰에 사용한 워크트리(리뷰용, §6 검증용)와 임시 브랜치, PR을 받아 둔 임시 ref를 삭제한다. 삭제 전에 커밋되지 않은 변경이나 고유 커밋이 없는지 확인하고, 있으면 삭제하지 않고 사용자에게 알린다.
