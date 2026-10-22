@@ -90,3 +90,44 @@
 > - 저장소 Collaborators를 조회해, 본인과 필수 리뷰어(@juhwanHeo)를 뺀 후보 중 무작위로 @LSHgy를 골랐습니다. 이 규칙은 이후 PR에도 적용하도록 기억해 두었습니다.
 > - `profile.html`을 1600px 폭으로 렌더링한 미리보기 이미지를 클립보드에 복사했습니다.
 > - PR 본문의 "결과물 미리보기" 자리에 사용자가 이미지를 붙여넣으면 `user-attachments` 링크로 업로드되도록 PR을 생성합니다.
+
+**Claude — PR 생성**
+
+> PR #37(https://github.com/juwonlee-dev/study-ai/pull/37)을 생성하고 리뷰어로 @juhwanHeo, @LSHgy를 지정했습니다. 클립보드의 미리보기 이미지를 PR 본문 편집 화면에 붙여넣어 달라고 안내했습니다.
+
+### 7. 미리보기 이미지 업로드
+
+**사용자**
+
+> gh attach 명령어를 사용해
+
+**Claude — 확인 질문**
+
+> 이 PC에는 `gh attach`가 설치돼 있지 않습니다(기본 명령이 아닌 서드파티 gh 확장). 어떤 확장을 설치할까요?
+> - sudosubin/gh-attach (Recommended)
+> - atani/gh-attach
+> - 설치하지 않음
+
+**사용자 — 선택**
+
+> sudosubin/gh-attach
+
+**Claude — 진행 내용**
+
+> - `gh extension install sudosubin/gh-attach`로 설치하고, `gh attach preview.png -R juwonlee-dev/study-ai`로 미리보기 이미지를 업로드했습니다.
+> - 출력된 `https://github.com/user-attachments/assets/2c74cfd4-...` 링크를 `<img>` 태그로 바꿔 PR 본문 "결과물 미리보기"에 넣었습니다(`gh pr edit 37 --body-file`).
+> - GitHub이 렌더링한 PR 본문의 이미지 URL이 200(image/png, 원본과 같은 크기)을 반환하는 것을 확인했습니다.
+
+**Claude — 결과 보고**
+
+> PR #37 본문 "결과물 미리보기"에 `gh attach`로 올린 `user-attachments` 이미지 링크를 넣었습니다. `prompt.md`는 아직 커밋 전이며, 커밋·푸시 여부를 확인 요청했습니다.
+
+### 8. PROJECT.md 지침 반영
+
+**사용자**
+
+> 미리보기나 결과물 스크린샷 캡쳐 등을 PR 본문에 첨부해야하는 경우에는 gh attach를 설치해서 사용하도록 PROJECT.md에 지침을 반영하고 커밋 푸시해줘
+
+**Claude — 진행 내용**
+
+> `juwonlee/PROJECT.md` §6에 PR 본문 이미지 첨부 지침을 추가했습니다. 저장소에 커밋해 링크하지 않고, `gh attach`(sudosubin/gh-attach)로 업로드한 `user-attachments` URL을 `<img>` 태그로 넣은 뒤 렌더링을 확인하는 내용입니다. 이어서 PROJECT.md 변경과 대화 기록을 각각 커밋해 푸시했습니다.
