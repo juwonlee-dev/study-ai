@@ -131,3 +131,33 @@
 **Claude — 진행 내용**
 
 > `juwonlee/PROJECT.md` §6에 PR 본문 이미지 첨부 지침을 추가했습니다. 저장소에 커밋해 링크하지 않고, `gh attach`(sudosubin/gh-attach)로 업로드한 `user-attachments` URL을 `<img>` 태그로 넣은 뒤 렌더링을 확인하는 내용입니다. 이어서 PROJECT.md 변경과 대화 기록을 각각 커밋해 푸시했습니다.
+
+**Claude — 결과 보고**
+
+> `ab0cba3`(PROJECT.md 지침 추가)와 `0fad7dd`(대화 기록)를 `week2/juwonlee`에 푸시했습니다.
+
+### 9. Issue 연결 금지 지침
+
+**사용자**
+
+> PROJECT.md 파일에 의미가 누락되거나 왜곡없이 동일하게 전달되는 조건으로 아래 문장을 압축해서 지침에 반영해줘
+> - PR을 등록할 때, Development에 해당 이슈를 등록하게 되면 해당 PR이 병합되면 이슈가 close되므로 등록해서는 안돼. PR 본문 최상단에 Issue: #22와 같은 형식으로만 기록해
+
+**Claude — 진행 내용**
+
+> `PROJECT.md` §6을 수정했습니다. 기본 구성에서 `Closes #<Issue>`를 빼고 맨 앞에 `Issue: #<번호>`(최상단)를 두었으며, 다음 지침을 추가했습니다.
+> - PR을 Issue의 Development에 연결하지 않는다(`Closes #<번호>` 같은 closing 키워드 포함). 연결하면 PR 병합 시 Issue가 닫힌다. Issue는 본문 최상단에 `Issue: #22` 형식으로만 기록한다.
+
+**Claude — 확인 요청**
+
+> PR #37 본문에 `Closes #22`가 있어 Issue #22가 Development에 연결돼 있습니다. PROJECT.md·prompt.md 커밋·푸시와 PR #37 본문 수정(`Closes #22` 삭제, 최상단 `Issue: #22` 추가)을 진행할지 확인을 요청했습니다.
+
+### 10. 커밋·푸시와 PR 본문 수정
+
+**사용자**
+
+> 진행해
+
+**Claude — 진행 내용**
+
+> PROJECT.md 지침 변경과 대화 기록을 각각 커밋해 푸시했습니다. PR #37 본문에서 `Closes #22`를 지우고 최상단에 `Issue: #22`를 넣은 뒤, Issue 연결(`closingIssuesReferences`)이 해제됐는지 확인했습니다.
