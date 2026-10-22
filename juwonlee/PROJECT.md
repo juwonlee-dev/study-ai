@@ -51,6 +51,10 @@
 
 작업 내용 / 사용 AI 에이전트·모델(예: Claude Code / Opus 5.5)과 사용 위치·이유 / 검증 방법과 결과 / 결과물 미리보기(이미지 등) / 리뷰어 / `Closes #<Issue>`. Issue가 요구하는 필수 항목을 빠짐없이 넣는다.
 
+- 미리보기·결과물 스크린샷을 PR 본문에 첨부할 때는 저장소에 커밋해 링크하지 않는다. 브랜치가 병합·삭제되면 이미지가 보이지 않을 수 있기 때문이다.
+- 대신 `gh attach`(gh 확장 `sudosubin/gh-attach`, 없으면 `gh extension install sudosubin/gh-attach`로 설치)로 `gh attach <파일> -R juwonlee-dev/study-ai`를 실행해 업로드하고, 출력된 `https://github.com/user-attachments/assets/...` URL을 `<img>` 태그로 본문에 넣는다.
+- 첨부 후에는 렌더링된 PR 본문에서 이미지가 표시되는지 확인한다.
+
 ## 7. 완료 보고
 
 변경 파일, 충족한 요구사항, 검증 결과, 남은 문제를 간결하게 보고한다. `git status`로 `juwonlee/` 밖에 의도하지 않은 변경이 없는지 확인한다. 다음 Git 단계는 제안만 하고 지시를 기다린다.
