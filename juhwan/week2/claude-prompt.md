@@ -283,3 +283,48 @@ I sent the completion report (`worker_done`) to the coordinator. I didn't commit
 - `/private/tmp/claude-501/-Users-heojuhwan-intellij-workspace-git-study-ai/df9cbcef-5af7-4ddf-bc1c-8236c66b9d73/scratchpad/week2.png`
 - `/private/tmp/claude-501/-Users-heojuhwan-intellij-workspace-git-study-ai/df9cbcef-5af7-4ddf-bc1c-8236c66b9d73/scratchpad/week2-mobile.png`
 ```
+
+```
+Task1 결과물은 Orca 오케스트레이션으로 Claude 워커 2개에 나눠 맡겨 끝냈고 커밋까지 했습니다. 푸시는 GitHub 인증 실패로 막혀 있고, PR은 아직 만들지 않았습니다.
+
+**오케스트레이션 진행 (Run `run_f0caa0f0fad9`)**
+- **워커 A**: Week1 이미지만 보고 `juhwan/week2/profile.html`을 순수 HTML/CSS로 만들었습니다.
+  - 워커가 찍은 1200x675 스크린샷을 원본 이미지와 직접 비교했는데 거의 같습니다. 폰트 차이 때문에 글자 굵기와 위치가 약간 다릅니다.
+  - `<img>`, `<script>`, `profile.png` 참조는 하나도 없습니다.
+- **워커 B**: 이번 세션과 워커 A의 대화 기록으로 `juhwan/week2/claude-prompt.md`를 week1과 같은 형식으로 정리했습니다. 이 대화가 1부, 워커 A에게 준 지시와 응답이 2부입니다. 이메일 같은 개인 정보는 들어가지 않았습니다.
+- 두 워커 모두 정상 완료 후 정리했고 남은 워커는 없습니다. 푸시 시도까지의 진행은 제가 로그에 직접 덧붙였습니다.
+
+**커밋 (`week2/juhwan`)**
+- `373872f week2/juhwan: 자기소개 HTML 페이지(profile.html) 추가`
+- `7919324 week2/juhwan: Claude 프롬프트 로그 추가`
+
+**이어서 하려면 두 가지가 필요합니다**
+1. `! gh auth login`을 실행해 주세요. 현재 git push와 gh 명령이 모두 인증 오류로 실패합니다.
+2. PR에 추가할 리뷰어 1명을 알려주세요. 이슈에서 1명 이상 더 지정하라고 되어 있습니다.
+
+두 가지를 받으면 푸시하고 PR을 만들겠습니다. PR 본문에는 `#22`와 사용 AI(Orca + Claude Code / Opus 5.5), 리뷰어 목록을 넣습니다. 이 응답과 이후 대화도 로그에 이어서 기록하겠습니다. 루트의 `.gitignore`는 커밋하지 않았습니다.
+
+Task2(다른 사람 PR 3개 이상 리뷰, 10/26 마감)는 다른 사람들의 PR이 올라온 뒤에 진행하겠습니다.
+```
+
+## Turn 7 — User
+
+```
+작업내용 Issue에서 규정한데로 PR 생성해주세요.
+```
+
+## Turn 8 — Assistant
+
+> 작업 과정 (도구 실행 요약)
+> 1. `gh auth status`로 인증 확인(juhwanHeo 로그인됨), `git status`, 기존 PR 목록 조회
+> 2. 추가 리뷰어 질문 (AskUserQuestion)
+>
+> ```
+> 이슈 규정상 @juwonlee-dev, @juhwanHeo 외에 리뷰어를 1명 이상 더 지정해야 합니다. 누구를 추가할까요? (@juhwanHeo는 PR 작성자 본인이라 GitHub에서 리뷰어로 요청할 수 없어 본문에만 표기합니다.)
+> ```
+>
+> 사용자 선택: `@ShsH0920 (suhyeon)`
+>
+> 3. 이 프롬프트 로그에 Turn 6 응답 전문과 Turn 7~8을 append 후 커밋
+> 4. `git push -u origin week2/juhwan`
+> 5. `gh pr create` — 제목 `Week2 / juhwan`, 본문에 `#22`, 작업 내용, 사용 AI 에이전트/모델, 지정 리뷰어 기재, 리뷰어 `juwonlee-dev`, `ShsH0920` 요청
