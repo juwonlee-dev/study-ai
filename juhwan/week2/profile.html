@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>허주환 자기소개</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 78px 80px;
+    font-family: Pretendard, -apple-system, "Apple SD Gothic Neo", sans-serif;
+    color: #fff;
+    background: linear-gradient(160deg, #1f1d4f 0%, #2d2a78 45%, #4a1f95 100%);
+  }
+  .card {
+    display: flex; align-items: center; gap: 56px;
+    width: 100%; max-width: 1040px; min-height: 520px;
+    padding: 40px 64px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: 32px;
+    background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.08));
+  }
+  .avatar {
+    flex: none; width: 240px; height: 240px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #a093fb 0%, #2fcbee 100%);
+    color: #1e1b4b; font-size: 92px; font-weight: 700;
+  }
+  .info { flex: 1; min-width: 0; }
+  .hello { color: #c4b8ff; font-size: 18px; letter-spacing: .25em; }
+  h1 { font-size: 56px; font-weight: 800; margin: 6px 0 40px; line-height: 1.2; }
+  dl {
+    display: grid; grid-template-columns: 126px 190px 126px auto;
+    row-gap: 19px; font-size: 22px;
+  }
+  dt { color: #b8acff; }
+  dd { font-weight: 700; }
+  hr { border: 0; border-top: 1px solid rgba(255, 255, 255, .22); margin: 30px 0 24px; }
+  .why { color: #5ee6f5; font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+  .reason { font-size: 21px; }
+
+  @media (max-width: 760px) {
+    body { padding: 24px 16px; }
+    .card { flex-direction: column; text-align: center; padding: 36px 24px; gap: 28px; min-height: 0; }
+    .avatar { width: 160px; height: 160px; font-size: 64px; }
+    h1 { font-size: 40px; margin-bottom: 24px; }
+    dl { grid-template-columns: auto 1fr; column-gap: 24px; text-align: left; font-size: 18px; }
+    .reason { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="avatar" aria-hidden="true">허</div>
+    <section class="info">
+      <p class="hello">HELLO, I'M</p>
+      <h1>허주환</h1>
+      <dl>
+        <dt>이름</dt><dd>허주환</dd>
+        <dt>성별</dt><dd>남</dd>
+        <dt>생년월일</dt><dd>1999-06-30</dd>
+        <dt>나이</dt><dd>28</dd>
+        <dt>MBTI</dt><dd>INFJ</dd>
+      </dl>
+      <hr>
+      <p class="why">Claude Code(AI) 사용 이유</p>
+      <p class="reason">업무 생산성 향상을 목적으로 사용했습니다.</p>
+    </section>
+  </main>
+</body>
+</html>
