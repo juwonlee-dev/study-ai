@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>조수현 프로필</title>
+  <style>
+    :root {
+      --ink: #29263e;
+      --muted: #77718e;
+      --purple: #7452d8;
+      --line: #e7e2ed;
+      --page: #f1edff;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--page);
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      pointer-events: none;
+      background: #e5dcff;
+    }
+
+    body::before {
+      width: 330px;
+      height: 330px;
+      top: -100px;
+      right: -70px;
+      border-radius: 50%;
+    }
+
+    body::after {
+      width: 290px;
+      height: 290px;
+      bottom: -100px;
+      left: -80px;
+      border-radius: 50%;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(1058px, calc(100% - 80px));
+      min-height: 1458px;
+      margin: 72px auto;
+      padding: 56px 48px 106px;
+      border-radius: 48px;
+      background: #fffefa;
+    }
+
+    .intro {
+      padding: 0 4px 38px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .intro h1 {
+      margin: 0;
+      font-size: clamp(46px, 5.6vw, 70px);
+      line-height: 1.24;
+      letter-spacing: -0.07em;
+      font-weight: 800;
+    }
+
+    .intro h1 .hello { display: block; }
+    .intro h1 .hello::first-letter { letter-spacing: 0; }
+    .intro h1 .name {
+      display: block;
+      color: var(--purple);
+    }
+
+    .intro p {
+      margin: 38px 0 0;
+      font-size: clamp(21px, 2.25vw, 29px);
+      line-height: 1.75;
+      letter-spacing: -0.055em;
+    }
+
+    section { padding: 40px 4px 48px; border-bottom: 2px solid var(--line); }
+    section:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 0 0 22px;
+      font-size: 36px;
+      line-height: 1.25;
+      letter-spacing: -0.06em;
+    }
+
+    h2 .emoji { font-size: 37px; line-height: 1; }
+
+    .facts { margin: 0; }
+    .fact {
+      display: grid;
+      grid-template-columns: 215px 1fr;
+      min-height: 59px;
+      align-items: center;
+      border-bottom: 1px solid #eeeaf1;
+      font-size: 27px;
+      letter-spacing: -0.07em;
+    }
+    .fact:last-child { border-bottom: 0; }
+    .fact dt { color: var(--muted); }
+    .fact dd { margin: 0; font-weight: 700; }
+
+    .interest-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 21px;
+    }
+
+    .interest {
+      display: flex;
+      align-items: center;
+      min-height: 86px;
+      padding: 0 28px;
+      border-radius: 28px;
+      font-size: 29px;
+      font-weight: 700;
+      letter-spacing: -0.07em;
+    }
+    .interest:first-child { background: #f5ebfa; }
+    .interest:last-child { background: #fff2e3; }
+    .interest .emoji { margin-right: 10px; font-size: 38px; }
+
+    .quote {
+      display: flex;
+      gap: 28px;
+      align-items: stretch;
+      margin-top: 22px;
+      padding: 27px 30px;
+      border-radius: 28px;
+      background: #f5f1ff;
+      font-size: 27px;
+      line-height: 2.3;
+      letter-spacing: -0.07em;
+    }
+    .quote::before {
+      content: "";
+      flex: 0 0 7px;
+      border-radius: 8px;
+      background: var(--purple);
+    }
+    .quote p { margin: 0; }
+
+    @media (max-width: 700px) {
+      .page {
+        width: calc(100% - 28px);
+        min-height: 0;
+        margin: 28px auto;
+        padding: 35px 25px 55px;
+        border-radius: 30px;
+      }
+      .intro { padding-bottom: 28px; }
+      .intro p { margin-top: 25px; }
+      section { padding: 30px 0 35px; }
+      h2 { font-size: 29px; }
+      h2 .emoji { font-size: 30px; }
+      .fact { grid-template-columns: 105px 1fr; font-size: 21px; }
+      .interest-list { grid-template-columns: 1fr; gap: 12px; }
+      .interest { min-height: 70px; font-size: 23px; }
+      .quote { gap: 17px; padding: 21px; font-size: 20px; line-height: 1.9; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="intro">
+      <h1>
+        <span class="hello">👋안녕하세요,</span>
+        <span class="name">조수현입니다.</span>
+      </h1>
+      <p>씨즈소프트에서 개발자로 재직 중인 조수현입니다.<br>잘 부탁드립니다. 😊</p>
+    </header>
+
+    <section aria-labelledby="about-title">
+      <h2 id="about-title"><span class="emoji">🙋‍♀️</span>About Me</h2>
+      <dl class="facts">
+        <div class="fact"><dt>이름</dt><dd>조수현</dd></div>
+        <div class="fact"><dt>나이</dt><dd>26세</dd></div>
+        <div class="fact"><dt>성별</dt><dd>여성</dd></div>
+        <div class="fact"><dt>직업</dt><dd>개발자</dd></div>
+        <div class="fact"><dt>MBTI</dt><dd>INFP</dd></div>
+      </dl>
+    </section>
+
+    <section aria-labelledby="interests-title">
+      <h2 id="interests-title"><span class="emoji">🎮</span>Interests</h2>
+      <div class="interest-list">
+        <div class="interest"><span class="emoji">🎵</span>공연 관람</div>
+        <div class="interest"><span class="emoji">🎮</span>게임</div>
+      </div>
+    </section>
+
+    <section aria-labelledby="motto-title">
+      <h2 id="motto-title"><span class="emoji">✨</span>한마디</h2>
+      <div class="quote">
+        <p>새로운 경험과 재미있는 것들을 좋아하는 개발자입니다.<br>앞으로도 꾸준히 배우고 성장해 나가고 싶습니다.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
