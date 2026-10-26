@@ -67,3 +67,32 @@ siyoungwoo/week1/profile.png 파일을 HTML 페이지로 만들어줘. 이미지
 - 결과 파일: [codex-prompt.md](./codex-prompt.md)
 - 저장 위치: `siyoungwoo/week2/codex-prompt.md`
 
+---
+
+## 4. Week2 Task2 진행 및 PR 보완
+
+### 사용자 요청
+
+```text
+해당 프로젝트의 Issues의 Week2의 내용을 보고 방금 올린 PR을 수정해줘.
+현재 Task1의 내용을 진행한거고, Task2의 내용도 진행해서 PR에 포함되게 해줘.
+```
+
+### Codex 응답 결과
+
+GitHub Issue [#22 2주차](https://github.com/juwonlee-dev/study-ai/issues/22)의 Task2 요구사항에 따라 다른 참여자의 Week2 PR 세 건을 AI로 검토하고 리뷰를 등록했습니다.
+
+| 리뷰 대상 | 검토 결과 | 주요 내용 |
+| --- | --- | --- |
+| [PR #40](https://github.com/juwonlee-dev/study-ai/pull/40) | 승인 | Task1 요구사항과 변경 파일을 확인했으며 blocking 문제 없음 |
+| [PR #39](https://github.com/juwonlee-dev/study-ai/pull/39) | 변경 요청 | 본인 폴더 밖의 공용 `.claude`, `.codex` 스킬 파일을 과제 PR에서 제외하도록 요청 |
+| [PR #38](https://github.com/juwonlee-dev/study-ai/pull/38) | 의견 작성 | PR 본문에 필수 지정 리뷰어 정보를 추가하도록 요청 |
+
+기존 [PR #41](https://github.com/juwonlee-dev/study-ai/pull/41)에는 다음 내용을 추가로 반영했습니다.
+
+- Task1 구현 내용과 제출 파일
+- Task2 리뷰 대상 및 검토 결과
+- 사용 AI 에이전트와 모델: Orca(OpenAI Codex) / GPT-5
+- 지정 리뷰어: `@juwonlee-dev`, `@juhwanHeo`, `@ShsH0920`
+- 빌드 및 테스트 미실행 사실
+
