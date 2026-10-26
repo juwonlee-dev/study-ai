@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이건상 - Profile Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    /* 어두운 원목 테이블 배경 */
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 5%, rgba(255, 225, 185, 0.08), transparent 60%),
+      radial-gradient(ellipse 40% 30% at 45% 0%, rgba(255, 220, 180, 0.05), transparent 70%),
+      repeating-linear-gradient(0deg,
+        transparent 0px, transparent 118px,
+        rgba(0, 0, 0, 0.28) 118px, rgba(0, 0, 0, 0.28) 121px,
+        transparent 121px, transparent 240px),
+      repeating-linear-gradient(0deg,
+        rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 2px,
+        transparent 2px, transparent 9px),
+      linear-gradient(180deg, #3a2b1d 0%, #2c2015 45%, #221710 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    padding: 40px 0;
+  }
+
+  /* 카드 전체: 기울기 + 원근감 */
+  .card {
+    position: relative;
+    width: 660px;
+    min-height: 940px;
+    padding: 52px 46px 0 46px;
+    background:
+      radial-gradient(ellipse 120% 60% at 30% 0%, rgba(255, 255, 255, 0.5), transparent 55%),
+      repeating-linear-gradient(0deg,
+        rgba(120, 95, 65, 0.02) 0px, rgba(120, 95, 65, 0.02) 1px,
+        transparent 1px, transparent 4px),
+      linear-gradient(160deg, #f8f2e5 0%, #f3ecdd 55%, #ede3d0 100%);
+    border-radius: 6px;
+    box-shadow:
+      0 60px 90px rgba(0, 0, 0, 0.55),
+      0 20px 35px rgba(0, 0, 0, 0.4),
+      inset 0 0 60px rgba(190, 165, 130, 0.18);
+    transform: perspective(1500px) rotateX(7deg) rotateY(9deg) rotateZ(11deg);
+    transform-style: preserve-3d;
+    overflow: hidden;
+  }
+
+  /* ---------- 상단 헤더 ---------- */
+  .sparkles {
+    position: absolute;
+    top: 96px;
+    left: 108px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+  }
+  .sparkles svg { display: block; fill: #a79a89; }
+  .sparkles .s1 { width: 10px; height: 10px; opacity: .8; }
+  .sparkles .s2 { width: 16px; height: 16px; opacity: .9; }
+  .sparkles .s3 { width: 8px; height: 8px; opacity: .7; align-self: flex-start; }
+
+  .thank-you {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 7px;
+    color: #7a6a58;
+    padding-left: 7px; /* letter-spacing 보정 */
+    margin-bottom: 10px;
+  }
+  .thank-you .line {
+    width: 74px;
+    height: 1px;
+    background: #a49581;
+  }
+
+  .name {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 900;
+    font-size: 74px;
+    letter-spacing: 14px;
+    color: #38281a;
+    text-align: center;
+    line-height: 1.1;
+    padding-left: 14px;
+  }
+
+  .name-en {
+    font-family: 'Great Vibes', cursive;
+    font-size: 46px;
+    color: #4a3a28;
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  /* ---------- 우측 강아지 + 인용구 ---------- */
+  .dog-area {
+    position: absolute;
+    top: 200px;
+    right: 34px;
+    width: 185px;
+    text-align: center;
+    z-index: 3;
+  }
+  .dog-area .dog-svg { width: 74px; height: 74px; fill: #42321f; }
+  .dog-area .paw-svg { width: 22px; height: 22px; fill: #42321f; margin-left: 6px; vertical-align: bottom; }
+
+  .quote {
+    margin-top: 14px;
+    font-family: 'Noto Serif KR', serif;
+    font-style: italic;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #584a38;
+    text-align: center;
+  }
+
+  /* ---------- 정보 행 ---------- */
+  .rows {
+    list-style: none;
+    margin-top: 34px;
+    position: relative;
+    z-index: 2;
+  }
+  .rows li {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 14px;
+    box-shadow:
+      0 3px 8px rgba(96, 74, 48, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    padding: 13px 22px 13px 16px;
+    margin-bottom: 13px;
+  }
+
+  .icon {
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.15);
+  }
+  .icon svg { width: 24px; height: 24px; }
+  .icon.c1 { background: #b56545; }
+  .icon.c2 { background: #84967a; }
+  .icon.c3 { background: #46586b; }
+  .icon.c4 { background: #cf9534; }
+  .icon.c5 { background: #96707e; }
+  .icon.c6 { background: #ad4d3c; }
+
+  .label {
+    flex: 0 0 92px;
+    margin-left: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #3d2d1f;
+    letter-spacing: 1px;
+  }
+
+  .divider {
+    flex: 0 0 1px;
+    width: 1px;
+    align-self: stretch;
+    margin: 2px 20px 2px 4px;
+    background: #c6b7a3;
+  }
+
+  .value {
+    flex: 1;
+    font-size: 15.5px;
+    font-weight: 500;
+    line-height: 1.55;
+    color: #40301f;
+  }
+
+  /* ---------- 하단 풍경 ---------- */
+  .landscape {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 215px;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .landscape svg { display: block; width: 100%; height: 100%; }
+
+  .motto {
+    position: absolute;
+    right: 42px;
+    bottom: 26px;
+    z-index: 3;
+    font-family: 'Great Vibes', cursive;
+    font-size: 37px;
+    line-height: 1.15;
+    color: #6b4f36;
+    text-align: center;
+    transform: rotate(-4deg);
+  }
+
+  /* 좁은 화면 대응: 카드 비율 유지하며 축소 */
+  @media (max-width: 760px) {
+    .card {
+      transform: perspective(1500px) rotateX(7deg) rotateY(9deg) rotateZ(11deg) scale(0.72);
+    }
+  }
+  @media (max-width: 480px) {
+    .card {
+      transform: perspective(1500px) rotateX(7deg) rotateY(9deg) rotateZ(11deg) scale(0.55);
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+
+    <!-- 상단 반짝임 장식 -->
+    <div class="sparkles">
+      <svg class="s1" viewBox="0 0 16 16"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
+      <svg class="s2" viewBox="0 0 16 16"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
+      <svg class="s3" viewBox="0 0 16 16"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
+    </div>
+
+    <!-- 헤더 -->
+    <div class="thank-you">
+      <span class="line"></span>
+      THANK YOU
+      <span class="line"></span>
+    </div>
+    <h1 class="name">이건상</h1>
+    <div class="name-en">Lee Gunsang</div>
+
+    <!-- 강아지 실루엣 + 발자국 + 인용구 -->
+    <div class="dog-area">
+      <svg class="dog-svg" viewBox="0 0 110 110">
+        <path d="M36 6
+                 C31 6 27 9 26 14
+                 L17 21 C14 23 14 27 17 29
+                 L24 32
+                 C23 37 24 42 26 47
+                 C29 56 33 63 37 69
+                 L34 86 L32 95
+                 C31 99 33 102 37 102
+                 L42 102
+                 C44 97 45 90 44 82
+                 C50 78 56 75 60 72
+                 C58 82 58 92 60 98 L60 102
+                 L84 102
+                 C92 102 98 100 101 95
+                 C103 91 100 87 95 86
+                 C90 85 84 86 80 87
+                 C87 79 90 68 89 58
+                 C88 46 82 36 72 30
+                 C70 20 60 11 48 9
+                 C44 6 40 6 36 6 Z"/>
+        <path d="M42 7 C48 8 52 14 51 21 C50 26 46 28 43 26 C44 19 43 12 42 7 Z"/>
+      </svg>
+      <svg class="paw-svg" viewBox="0 0 24 24">
+        <ellipse cx="12" cy="16" rx="6" ry="5"/>
+        <ellipse cx="4.5" cy="8.5" rx="2.4" ry="3.2"/>
+        <ellipse cx="12" cy="5.5" rx="2.4" ry="3.4"/>
+        <ellipse cx="19.5" cy="8.5" rx="2.4" ry="3.2"/>
+      </svg>
+      <div class="quote">
+        &ldquo;더 나은 서비스를 만드는<br>
+        웹 개발자, 이건상입니다.&rdquo;
+      </div>
+    </div>
+
+    <!-- 정보 행 -->
+    <ul class="rows">
+      <li>
+        <span class="icon c1">
+          <svg viewBox="0 0 24 24"><path fill="#fff" d="M7 2h2v3h6V2h2v3h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3V2zm13 8v9H4v-9h16zM7 13h3v3H7v-3zm7 0h3v3h-3v-3z"/></svg>
+        </span>
+        <span class="label">생년월일</span>
+        <span class="divider"></span>
+        <span class="value">2000. 10. 22</span>
+      </li>
+      <li>
+        <span class="icon c2">
+          <svg viewBox="0 0 24 24"><path fill="#fff" d="M12 3a4.2 4.2 0 1 1 0 8.4A4.2 4.2 0 0 1 12 3zM4.5 20.2c0-4.1 3.6-6.4 7.5-6.4s7.5 2.3 7.5 6.4v1.3h-15v-1.3z"/></svg>
+        </span>
+        <span class="label">성별</span>
+        <span class="divider"></span>
+        <span class="value">남</span>
+      </li>
+      <li>
+        <span class="icon c3">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 6.5 3 12l5.5 5.5M15.5 6.5 21 12l-5.5 5.5M13.4 4.5l-2.8 15"/></svg>
+        </span>
+        <span class="label">직무</span>
+        <span class="divider"></span>
+        <span class="value">Vue.js와 Spring Boot를 활용하는<br>풀스택 웹 개발자</span>
+      </li>
+      <li>
+        <span class="icon c4">
+          <svg viewBox="0 0 24 24"><path fill="#fff" d="M6 2h8l5 5v15H6V2zm7 1.8V8h4.2L13 3.8zM9 12h6.5v1.8H9V12zm0 4h6.5v1.8H9V16z" fill-rule="evenodd"/></svg>
+        </span>
+        <span class="label">주요 경험</span>
+        <span class="divider"></span>
+        <span class="value">공공기업 프로젝트에서 소상공인을 위한<br>지원사업 관련 메뉴 개발</span>
+      </li>
+      <li>
+        <span class="icon c5">
+          <svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2a6.5 6.5 0 0 0-3.7 11.8c.9.7 1.7 1.7 1.7 2.9V17h4v-.3c0-1.2.8-2.2 1.7-2.9A6.5 6.5 0 0 0 12 2zM9.5 18.5h5v1.5h-5v-1.5zM10.5 21h3a1.5 1.5 0 0 1-3 0z"/></svg>
+        </span>
+        <span class="label">개발 성향</span>
+        <span class="divider"></span>
+        <span class="value">주어진 업무를 다양한 관점에서 바라보고,<br>여러 상황과 예외를 고려하며 개발</span>
+      </li>
+      <li>
+        <span class="icon c6">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><circle cx="12" cy="12" r="8.5" stroke-width="2"/><circle cx="12" cy="12" r="4.8" stroke-width="2"/><circle cx="12" cy="12" r="1.7" fill="#fff" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span class="label">개발 목표</span>
+        <span class="divider"></span>
+        <span class="value">사용자와 운영 환경을 함께 고려하여<br>안정적이고 효율적인 서비스를 만드는 개발자</span>
+      </li>
+    </ul>
+
+    <!-- 하단 산/숲 풍경 -->
+    <div class="landscape">
+      <svg viewBox="0 0 660 215" preserveAspectRatio="xMidYMax slice">
+        <defs>
+          <g id="pine">
+            <path d="M0-34 L9-14 L4-14 L12 4 L6 4 L14 22 L-14 22 L-6 4 L-12 4 L-4-14 L-9-14 Z"/>
+            <rect x="-2" y="22" width="4" height="10"/>
+          </g>
+        </defs>
+
+        <!-- 뒷산 (연한 세피아) -->
+        <path fill="#c9b08b" d="M0 132 L58 62 L118 118 L188 66 L268 138 L340 112 L430 158 L660 168 L660 215 L0 215 Z"/>
+        <!-- 눈 덮인 산봉우리 -->
+        <path fill="#efe6d4" d="M58 62 L74 82 L64 78 L56 88 L48 76 L42 82 Z"/>
+        <path fill="#efe6d4" d="M188 66 L204 88 L192 82 L184 94 L176 82 L168 88 Z"/>
+        <!-- 중간 산 -->
+        <path fill="#a8896a" d="M0 162 L88 92 L168 150 L258 102 L348 168 L470 176 L660 182 L660 215 L0 215 Z"/>
+        <!-- 호수 -->
+        <path fill="#d9c6a6" d="M0 184 Q 170 172 340 182 T 660 190 L660 215 L0 215 Z"/>
+        <path fill="none" stroke="#b39a76" stroke-width="1.5" d="M60 195 h120 M210 201 h90 M400 197 h140 M90 206 h60" opacity=".6"/>
+        <!-- 앞 언덕 -->
+        <path fill="#8a6b4e" d="M0 200 Q 130 186 280 196 T 660 202 L660 215 L0 215 Z"/>
+
+        <!-- 나무들 (왼쪽 군락 + 우측 포인트) -->
+        <g fill="#5c4632">
+          <use href="#pine" transform="translate(26,168) scale(1.15)"/>
+          <use href="#pine" transform="translate(52,178) scale(.85)"/>
+          <use href="#pine" transform="translate(8,180) scale(.7)"/>
+          <use href="#pine" transform="translate(150,184) scale(.6)"/>
+          <use href="#pine" transform="translate(310,190) scale(.5)"/>
+          <use href="#pine" transform="translate(560,188) scale(.65)"/>
+          <use href="#pine" transform="translate(596,192) scale(.5)"/>
+        </g>
+        <g fill="#4a3826">
+          <use href="#pine" transform="translate(70,190) scale(.95)"/>
+          <use href="#pine" transform="translate(104,196) scale(.7)"/>
+          <use href="#pine" transform="translate(38,196) scale(.8)"/>
+          <use href="#pine" transform="translate(640,196) scale(.6)"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="motto">Keep<br>Growing<br>Always</div>
+
+  </div>
+
+</body>
+</html>
