@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="풀스택 개발자 우시영의 AI Study Profile">
+  <title>우시영 | AI Study Profile</title>
+  <style>
+    :root {
+      --navy: #020e23;
+      --navy-deep: #000815;
+      --panel: rgba(2, 20, 45, 0.82);
+      --white: #f7f9ff;
+      --muted: #cbd7ea;
+      --blue: #2a8cff;
+      --cyan: #00e3d3;
+      --purple: #a342ff;
+      --pink: #f08bff;
+      --orange: #ffad18;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: #000816;
+    }
+
+    body {
+      margin: 0;
+      color: var(--white);
+      background:
+        radial-gradient(circle at 14% 40%, rgba(0, 107, 255, 0.15), transparent 24rem),
+        radial-gradient(circle at 90% 45%, rgba(0, 101, 255, 0.12), transparent 22rem),
+        linear-gradient(180deg, #00142c 0%, #010a19 45%, #001433 100%);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      line-height: 1.5;
+    }
+
+    .profile-page {
+      position: relative;
+      width: min(100%, 1024px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 28px 24px 46px;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        linear-gradient(rgba(10, 99, 202, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10, 99, 202, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      box-shadow: 0 0 80px rgba(0, 79, 184, 0.24);
+    }
+
+    .profile-page::before,
+    .profile-page::after {
+      position: absolute;
+      z-index: -1;
+      content: "";
+      pointer-events: none;
+      filter: blur(8px);
+    }
+
+    .profile-page::before {
+      top: 0;
+      right: 0;
+      width: 42%;
+      height: 260px;
+      background: radial-gradient(circle, rgba(27, 105, 255, 0.28), transparent 66%);
+    }
+
+    .profile-page::after {
+      right: 0;
+      bottom: 0;
+      width: 55%;
+      height: 340px;
+      background: radial-gradient(circle, rgba(30, 65, 255, 0.23), transparent 70%);
+    }
+
+    .circuit-lines {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.42;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, transparent 47%, #0a74ff 48% 49%, transparent 50%) 0 0 / 120px 120px,
+        radial-gradient(circle, #1c8aff 0 2px, transparent 3px) 12px 28px / 88px 88px;
+      mask-image: linear-gradient(180deg, #000 0 21%, transparent 43% 70%, #000 100%);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 246px;
+      padding: 0 0 26px 112px;
+      border-bottom: 1px solid rgba(45, 132, 255, 0.38);
+    }
+
+    .hero-code {
+      position: absolute;
+      top: 174px;
+      left: 4px;
+      color: #2a84ff;
+      font: 700 39px/1 monospace;
+      text-shadow: 0 0 18px rgba(23, 120, 255, 0.9);
+      transform: rotate(-6deg);
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      font-size: clamp(2.4rem, 5.1vw, 4.1rem);
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      line-height: 1.14;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.72);
+    }
+
+    .hero h1 .avatar {
+      margin-right: 8px;
+      font-size: 0.82em;
+      letter-spacing: 0;
+    }
+
+    .hero h1 .divider {
+      display: inline-block;
+      padding: 0 10px 0 12px;
+      color: #dce6f4;
+      font-weight: 400;
+    }
+
+    .subtitle {
+      margin: 8px 0 17px;
+      color: #8fd9ff;
+      font-size: clamp(1.15rem, 2.45vw, 1.7rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 14px rgba(36, 169, 255, 0.55);
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge {
+      padding: 10px 17px;
+      border: 2px solid var(--badge-color);
+      border-radius: 16px;
+      background: rgba(6, 25, 51, 0.78);
+      font-size: 1rem;
+      box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.03), 0 0 11px color-mix(in srgb, var(--badge-color), transparent 52%);
+    }
+
+    .badge b {
+      margin-right: 14px;
+      color: color-mix(in srgb, var(--badge-color), white 25%);
+    }
+
+    .badge--purple { --badge-color: var(--purple); }
+    .badge--blue { --badge-color: #239cff; }
+    .badge--cyan { --badge-color: var(--cyan); }
+
+    .ai-head {
+      position: absolute;
+      top: -8px;
+      right: 32px;
+      width: 250px;
+      height: 228px;
+      opacity: 0.94;
+      filter: drop-shadow(0 0 11px rgba(22, 116, 255, 0.7));
+    }
+
+    .section {
+      position: relative;
+      margin-top: 16px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4.2vw, 3rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+      text-shadow: 0 3px 11px rgba(0, 0, 0, 0.7);
+    }
+
+    .section-title .icon {
+      font-size: 0.88em;
+      filter: drop-shadow(0 0 7px rgba(53, 137, 255, 0.7));
+    }
+
+    .about {
+      margin-top: 0;
+      padding: 18px 26px 24px;
+      border: 1px solid #276be2;
+      border-radius: 18px;
+      background: linear-gradient(130deg, rgba(1, 26, 60, 0.86), rgba(0, 9, 22, 0.78));
+      box-shadow: inset 0 0 32px rgba(0, 106, 255, 0.07), 0 13px 25px rgba(0, 0, 0, 0.28);
+    }
+
+    .about-content {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .profile-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid rgba(52, 143, 247, 0.75);
+      border-radius: 12px;
+      color: #f3f7ff;
+      background: rgba(0, 12, 30, 0.42);
+      font-size: 1.13rem;
+    }
+
+    .profile-table th,
+    .profile-table td {
+      padding: 7px 24px;
+      border-right: 1px solid rgba(64, 139, 226, 0.55);
+      border-bottom: 1px solid rgba(64, 139, 226, 0.55);
+      text-align: left;
+      line-height: 1.2;
+    }
+
+    .profile-table th {
+      width: 35%;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .profile-table td {
+      border-right: 0;
+      font-weight: 700;
+    }
+
+    .profile-table tr:last-child > * {
+      border-bottom: 0;
+    }
+
+    .quote {
+      position: relative;
+      margin: 0;
+      padding: 30px 30px 24px 52px;
+      font-size: clamp(1.22rem, 2.4vw, 1.58rem);
+      font-weight: 700;
+      line-height: 1.55;
+      letter-spacing: -0.03em;
+      text-shadow: 0 3px 7px #000;
+    }
+
+    .quote::before,
+    .quote::after {
+      position: absolute;
+      color: #55a3ff;
+      font-family: Georgia, serif;
+      font-size: 4.3rem;
+      line-height: 1;
+      text-shadow: 0 0 15px rgba(40, 135, 255, 0.7);
+    }
+
+    .quote::before {
+      top: 11px;
+      left: 3px;
+      content: "“";
+    }
+
+    .quote::after {
+      right: -2px;
+      bottom: -18px;
+      content: "”";
+    }
+
+    .goals-title {
+      margin: 23px 8px 10px;
+    }
+
+    .goal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .goal-card {
+      position: relative;
+      min-height: 430px;
+      padding: 20px 17px 18px;
+      overflow: hidden;
+      border: 2px solid var(--card-color);
+      border-radius: 17px;
+      background:
+        linear-gradient(180deg, color-mix(in srgb, var(--card-color), transparent 90%), rgba(1, 12, 30, 0.93)),
+        radial-gradient(circle at 50% 26%, color-mix(in srgb, var(--card-color), transparent 76%), transparent 34%);
+      box-shadow: inset 0 0 30px color-mix(in srgb, var(--card-color), transparent 88%), 0 0 14px color-mix(in srgb, var(--card-color), transparent 58%);
+    }
+
+    .goal-card::after {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      content: "";
+      opacity: 0.16;
+      background:
+        linear-gradient(120deg, transparent 43%, var(--card-color) 44% 44.5%, transparent 45%) 0 0 / 90px 90px,
+        linear-gradient(90deg, transparent 49.5%, var(--card-color) 50% 50.5%, transparent 51%) 0 0 / 40px 40px;
+    }
+
+    .goal-card--blue { --card-color: #20a9ff; }
+    .goal-card--purple { --card-color: #a63bff; }
+    .goal-card--orange { --card-color: #ffad18; }
+
+    .goal-card h3 {
+      min-height: 58px;
+      margin: 0;
+      color: color-mix(in srgb, var(--card-color), white 26%);
+      font-size: clamp(1.22rem, 2.25vw, 1.53rem);
+      font-weight: 900;
+      line-height: 1.22;
+      text-align: center;
+      letter-spacing: -0.035em;
+      text-shadow: 0 0 13px color-mix(in srgb, var(--card-color), transparent 35%);
+    }
+
+    .goal-card h3 .number-icon {
+      margin-right: 6px;
+      font-size: 1.35em;
+      vertical-align: -0.1em;
+    }
+
+    .goal-visual {
+      display: grid;
+      place-items: center;
+      height: 114px;
+      margin: 0 auto 9px;
+      font-size: 4.8rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 13px color-mix(in srgb, var(--card-color), transparent 25%));
+    }
+
+    .goal-visual svg {
+      width: 124px;
+      height: 104px;
+    }
+
+    .goal-card p {
+      margin: 0;
+      color: #eef4ff;
+      font-size: 0.99rem;
+      font-weight: 650;
+      line-height: 1.62;
+      letter-spacing: -0.025em;
+    }
+
+    .goal-card ul {
+      margin: 7px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .goal-card li {
+      position: relative;
+      padding-left: 22px;
+      color: #eef4ff;
+      font-size: 0.92rem;
+      font-weight: 650;
+      line-height: 1.53;
+      letter-spacing: -0.035em;
+    }
+
+    .goal-card li::before {
+      position: absolute;
+      top: 0.58em;
+      left: 2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--card-color);
+      box-shadow: 0 0 8px var(--card-color);
+      content: "";
+    }
+
+    .interests {
+      padding: 15px 16px 18px;
+      border: 1px solid rgba(35, 119, 230, 0.56);
+      border-radius: 17px;
+      background: rgba(1, 18, 40, 0.85);
+    }
+
+    .interests .section-title {
+      margin: 0 0 13px;
+      font-size: clamp(1.65rem, 3.2vw, 2.25rem);
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .tag {
+      flex: 0 1 auto;
+      padding: 9px 14px;
+      border: 2px solid var(--tag-color);
+      border-radius: 13px;
+      background: rgba(7, 24, 51, 0.8);
+      font-size: 0.93rem;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: inset 0 0 13px color-mix(in srgb, var(--tag-color), transparent 90%), 0 0 9px color-mix(in srgb, var(--tag-color), transparent 58%);
+    }
+
+    .tag:nth-child(1), .tag:nth-child(5) { --tag-color: #a43eff; }
+    .tag:nth-child(2), .tag:nth-child(6) { --tag-color: #269cff; }
+    .tag:nth-child(3) { --tag-color: #00e3ce; }
+    .tag:nth-child(4) { --tag-color: #ffad18; }
+
+    .ultimate {
+      min-height: 235px;
+      padding: 18px 22px 26px;
+      overflow: hidden;
+      border: 1px solid #3266fb;
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, rgba(2, 21, 49, 0.95) 0 53%, rgba(0, 18, 47, 0.35)),
+        radial-gradient(circle at 74% 77%, rgba(0, 151, 255, 0.42), transparent 35%);
+      box-shadow: inset 0 0 32px rgba(30, 91, 255, 0.11), 0 15px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    .ultimate .section-title {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 17px;
+    }
+
+    .ultimate-slogan {
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      font-size: clamp(1.65rem, 3.2vw, 2.25rem);
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.25;
+      letter-spacing: -0.035em;
+      background: linear-gradient(90deg, #ff86f8, #c0a3ff 38%, #5be5ff 68%, #b8ffd2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 9px rgba(104, 171, 255, 0.45));
+    }
+
+    .ultimate-description {
+      position: relative;
+      z-index: 2;
+      margin: 24px 0 0;
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      font-weight: 650;
+      text-align: center;
+      text-shadow: 0 3px 8px #000;
+    }
+
+    .mountain {
+      position: absolute;
+      right: -10px;
+      bottom: -12px;
+      width: 360px;
+      height: 208px;
+      opacity: 0.92;
+      filter: drop-shadow(0 0 13px rgba(35, 104, 255, 0.66));
+    }
+
+    @media (max-width: 820px) {
+      .hero {
+        padding-left: 38px;
+      }
+
+      .ai-head {
+        right: -52px;
+        opacity: 0.37;
+      }
+
+      .about-content {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .quote {
+        padding-top: 22px;
+      }
+
+      .goal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .goal-card {
+        min-height: 0;
+      }
+
+      .goal-card h3 {
+        min-height: 0;
+      }
+
+      .tag-list {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .profile-page {
+        padding: 20px 13px 30px;
+      }
+
+      .hero {
+        min-height: 260px;
+        padding: 0 0 24px;
+      }
+
+      .hero h1 .avatar {
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      .hero h1 .divider {
+        padding-left: 4px;
+      }
+
+      .badges {
+        gap: 8px;
+      }
+
+      .badge {
+        padding: 7px 11px;
+        font-size: 0.84rem;
+      }
+
+      .ai-head {
+        top: 44px;
+        right: -82px;
+        width: 220px;
+      }
+
+      .hero-code {
+        display: none;
+      }
+
+      .about {
+        padding: 16px 14px 20px;
+      }
+
+      .profile-table th,
+      .profile-table td {
+        padding: 7px 12px;
+      }
+
+      .quote {
+        padding-right: 13px;
+        padding-left: 42px;
+      }
+
+      .tag {
+        font-size: 0.82rem;
+      }
+
+      .mountain {
+        right: -75px;
+        opacity: 0.42;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="profile-page">
+    <div class="circuit-lines" aria-hidden="true"></div>
+
+    <header class="hero">
+      <div class="hero-code" aria-hidden="true">&lt;/&gt;</div>
+      <h1><span class="avatar" aria-hidden="true">👨‍💻</span>우시영 <span class="divider">|</span> AI Study Profile</h1>
+      <p class="subtitle">Full-Stack Developer · AI Agent · Automation</p>
+
+      <div class="badges" aria-label="프로필 핵심 정보">
+        <span class="badge badge--purple"><b>MBTI</b> ESTJ</span>
+        <span class="badge badge--blue"><b>Role</b> Full-Stack Developer</span>
+        <span class="badge badge--cyan"><b>Focus</b> AI Agent</span>
+      </div>
+
+      <svg class="ai-head" viewBox="0 0 270 235" role="img" aria-label="회로로 표현한 인공지능 옆모습">
+        <defs>
+          <linearGradient id="headLine" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2b5cff"/>
+            <stop offset="0.55" stop-color="#00aaff"/>
+            <stop offset="1" stop-color="#0261ff"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <path d="M43 201 C57 175 53 153 43 126 C30 92 39 51 71 28 C106 2 164 7 190 36 C208 56 209 77 222 89 L236 101 L219 111 C214 116 219 125 213 130 C219 140 209 147 209 157 C209 169 202 178 187 177 L169 175 L163 212" fill="rgba(0,34,76,.24)" stroke="url(#headLine)" stroke-width="2" filter="url(#glow)"/>
+        <g fill="none" stroke="#058dff" stroke-width="1.7" opacity=".95">
+          <path d="M58 88h39l16 16v51"/><path d="M68 64h33l14 14h39"/>
+          <path d="M58 108h28l20 20h50"/><path d="M78 45v18l21 21v63"/>
+          <path d="M124 43v25l17 16v75"/><path d="M153 51v30l18 16v44"/>
+          <path d="M49 132h30l15 15h48"/><path d="M93 36l12 12v21"/>
+        </g>
+        <g fill="#001b3e" stroke="#22a8ff" stroke-width="1.6">
+          <circle cx="58" cy="88" r="4"/><circle cx="68" cy="64" r="4"/><circle cx="58" cy="108" r="4"/>
+          <circle cx="78" cy="45" r="4"/><circle cx="124" cy="43" r="4"/><circle cx="153" cy="51" r="4"/>
+          <circle cx="49" cy="132" r="4"/><circle cx="93" cy="36" r="4"/><circle cx="113" cy="155" r="4"/>
+          <circle cx="154" cy="128" r="4"/><circle cx="171" cy="141" r="4"/>
+        </g>
+      </svg>
+    </header>
+
+    <section class="section about" aria-labelledby="about-title">
+      <h2 class="section-title" id="about-title"><span class="icon" aria-hidden="true">🙋‍♂️</span>About Me</h2>
+      <div class="about-content">
+        <table class="profile-table">
+          <tbody>
+            <tr><th scope="row">이름</th><td>우시영</td></tr>
+            <tr><th scope="row">나이</th><td>31세</td></tr>
+            <tr><th scope="row">성별</th><td>남자</td></tr>
+            <tr><th scope="row">MBTI</th><td>ESTJ</td></tr>
+            <tr><th scope="row">직업</th><td>풀스택 개발자</td></tr>
+          </tbody>
+        </table>
+        <blockquote class="quote">AI를 활용해 더 적은 리소스로,<br>더 빠르고 완성도 높은 결과물을<br>만드는 개발자를 지향합니다.</blockquote>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="goals-title">
+      <h2 class="section-title goals-title" id="goals-title"><span class="icon" aria-hidden="true">🎯</span>Study Goals</h2>
+      <div class="goal-grid">
+        <article class="goal-card goal-card--blue">
+          <h3><span class="number-icon" aria-hidden="true">⚡</span>01. 업무 효율 극대화</h3>
+          <div class="goal-visual" aria-hidden="true">
+            <svg viewBox="0 0 130 105">
+              <defs><linearGradient id="monitor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8feaff"/><stop offset="1" stop-color="#168dff"/></linearGradient></defs>
+              <rect x="18" y="10" width="95" height="70" rx="5" fill="#06356c" stroke="url(#monitor)" stroke-width="7"/>
+              <rect x="31" y="57" width="13" height="14" fill="#0f7fff"/><rect x="52" y="42" width="13" height="29" fill="#27a9ff"/><rect x="73" y="27" width="13" height="44" fill="#70d7ff"/>
+              <path d="M54 80v10M76 80v10M31 92h68" stroke="#49bdff" stroke-width="8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p>반복적인 개발 업무를 AI로 자동화하고,<br>기획 → 개발 → 검증 → 문서화 전반의<br>생산성을 높이는 것을 목표로 합니다.</p>
+        </article>
+
+        <article class="goal-card goal-card--purple">
+          <h3><span class="number-icon" aria-hidden="true">🤖</span>02. 1인 개발을 위한<br>AI Agent 활용</h3>
+          <div class="goal-visual" aria-hidden="true">🤖</div>
+          <p>AI를 단순한 질의응답 도구가 아니라,<br>실제 업무를 수행하는 개발 파트너이자<br>에이전트로 활용하고자 합니다.</p>
+          <ul>
+            <li>요구사항 분석 및 기획 보조</li>
+            <li>코드 작성 · 리팩터링 · 리뷰</li>
+            <li>테스트 및 디버깅 자동화</li>
+            <li>문서화 및 반복 업무 자동화</li>
+            <li>아이디어 검증과 빠른 MVP 개발</li>
+          </ul>
+        </article>
+
+        <article class="goal-card goal-card--orange">
+          <h3><span class="number-icon" aria-hidden="true">🪙</span>03. 최소한의 토큰으로<br>최대한의 효율 만들기</h3>
+          <div class="goal-visual" aria-hidden="true">🪙</div>
+          <p>불필요한 대화와 반복을 줄이고,<br>명확한 컨텍스트와 효율적인 프롬프트를<br>통해 적은 토큰으로 높은 품질의 결과를<br>얻는 방법을 연구합니다.</p>
+          <ul>
+            <li>핵심 정보만 전달하는 프롬프트 설계</li>
+            <li>컨텍스트 및 대화 길이 최적화</li>
+            <li>반복 작업의 템플릿화 · 자동화</li>
+            <li>비용 대비 성능이 높은 AI 활용 방식 탐색</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section interests" aria-labelledby="interests-title">
+      <h2 class="section-title" id="interests-title"><span class="icon" aria-hidden="true">🧩</span>관심 있는 활용 분야</h2>
+      <div class="tag-list">
+        <span class="tag">AI Agent</span>
+        <span class="tag">Automation</span>
+        <span class="tag">Full-Stack Development</span>
+        <span class="tag">Productivity</span>
+        <span class="tag">Solo Development</span>
+        <span class="tag">Token Optimization</span>
+      </div>
+    </section>
+
+    <section class="section ultimate" aria-labelledby="ultimate-title">
+      <h2 class="section-title" id="ultimate-title"><span class="icon" aria-hidden="true">🚀</span>Ultimate Goal</h2>
+      <p class="ultimate-slogan">Less Tokens · Less Repetition · More Output</p>
+      <p class="ultimate-description">AI를 활용해 개발 속도, 업무 효율, 결과물의 완성도를 동시에 높이는 것.</p>
+
+      <svg class="mountain" viewBox="0 0 390 220" aria-hidden="true">
+        <defs>
+          <linearGradient id="mountainFill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#084892" stop-opacity=".8"/><stop offset="1" stop-color="#01091b" stop-opacity=".95"/></linearGradient>
+          <linearGradient id="roadGlow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9cf6ff"/><stop offset=".45" stop-color="#00a7ff"/><stop offset="1" stop-color="#3547ff"/></linearGradient>
+        </defs>
+        <path d="M0 220L97 157l41 16 58-92 34 43 28-23 132 119z" fill="url(#mountainFill)" stroke="#125dff" stroke-width="1.5"/>
+        <path d="M197 80v-32M197 49l27 7-15 9 15 10-27-5" fill="#2fa6ff" stroke="#77d5ff" stroke-width="2"/>
+        <circle cx="197" cy="80" r="8" fill="#31baff" opacity=".65"/>
+        <path d="M178 219C146 205 148 192 203 182s77-25 20-34c-52-9-25-24-11-30" fill="none" stroke="#0754ff" stroke-width="15" opacity=".35"/>
+        <path d="M178 219C146 205 148 192 203 182s77-25 20-34c-52-9-25-24-11-30" fill="none" stroke="url(#roadGlow)" stroke-width="6"/>
+      </svg>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,69 @@
+# Week 2 작업 대화 기록
+
+이 문서는 Week 2 작업 과정에서 사용자가 요청한 내용과 Codex의 최종 응답 결과를 시간 순서대로 기록합니다.
+
+---
+
+## 1. 작업 브랜치 생성
+
+### 사용자 요청
+
+```text
+main 브랜치 기준으로 week2/siyoung 브랜치를 생성해줘.
+```
+
+### Codex 응답 결과
+
+`main` 기준으로 `week2/siyoung` 브랜치를 생성하고 해당 브랜치로 전환했습니다.
+
+- 생성 브랜치: `week2/siyoung`
+- 기준 브랜치: `main`
+- 기준 커밋: `c2efb08a64e4fa6c7159cd9ecb61bbe1abbb4054`
+
+---
+
+## 2. 프로필 이미지 HTML/CSS 구현
+
+### 사용자 요청
+
+```text
+siyoungwoo/week1/profile.png 파일을 HTML 페이지로 만들어줘. 이미지의 내용과 디자인을 HTML/CSS로 구현해줘.
+완성된 HTML 파일은 siyoungwoo/week2/profile.html로 저장해줘.
+```
+
+### Codex 응답 결과
+
+원본 이미지의 구성과 네온 디자인을 HTML/CSS로 구현했습니다.
+
+- 결과 파일: [profile.html](./profile.html)
+- 외부 이미지 없이 CSS와 인라인 SVG로 구성
+- 데스크톱 및 모바일 반응형 적용
+- 필수 섹션과 문구 누락 여부 정적 확인 완료
+- 요청에 따라 별도 실행이나 브라우저 테스트는 수행하지 않음
+
+구현된 주요 구성은 다음과 같습니다.
+
+- 상단 프로필 소개와 MBTI, Role, Focus 배지
+- About Me 정보 표와 소개 문구
+- 세 가지 Study Goals 카드
+- 관심 있는 활용 분야 태그
+- Ultimate Goal 영역
+- 네온 테두리, 회로 배경, AI 실루엣, 산과 목표 지점 그래픽
+
+---
+
+## 3. 작업 대화 기록 문서 생성
+
+### 사용자 요청
+
+```text
+지금까지의 대화내용과 너의 응답결과를 마크다운 파일로 week2 디렉터리 하위에 생성해줘.
+```
+
+### Codex 응답 결과
+
+지금까지의 사용자 요청과 Codex의 최종 응답 결과를 이 문서에 정리했습니다.
+
+- 결과 파일: [codex-prompt.md](./codex-prompt.md)
+- 저장 위치: `siyoungwoo/week2/codex-prompt.md`
+
