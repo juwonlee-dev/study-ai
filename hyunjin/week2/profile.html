@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>김현진 | Profile</title>
+    <style>
+      :root {
+        --ink: #3f315b;
+        --lavender: #a875e7;
+        --line: #e5d6ff;
+        --paper: rgb(255 255 255 / 94%);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        min-width: 320px;
+        margin: 0;
+        overflow-x: hidden;
+        color: var(--ink);
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+        background: #f8f3ff;
+      }
+
+      .page {
+        position: relative;
+        min-height: 100vh;
+        overflow: hidden;
+        padding: clamp(11rem, 34vw, 28rem) clamp(1rem, 5vw, 4rem) 3rem;
+        background:
+          radial-gradient(circle at 87% 66%, rgb(255 255 255 / 70%), transparent 17rem),
+          linear-gradient(135deg, #f2e6ff 4%, #fce9f4 55%, #e9ddff);
+      }
+
+      .scene {
+        position: absolute;
+        z-index: 0;
+        inset: 0 0 auto;
+        height: clamp(13rem, 34vw, 28rem);
+        overflow: hidden;
+        background: linear-gradient(120deg, #a68dda 0%, #d5b8ed 32%, #ffe2d0 64%, #a892df 100%);
+      }
+      .scene::before {
+        position: absolute;
+        inset: 0;
+        content: "";
+        background: linear-gradient(90deg, rgb(255 255 255 / 28%), transparent 29%, transparent 73%, rgb(255 255 255 / 22%));
+      }
+      .window {
+        position: absolute;
+        left: 23%; top: 0;
+        width: 48%; height: 73%;
+        border: 0.35rem solid rgb(255 247 255 / 57%);
+        border-top: 0;
+        background:
+          radial-gradient(circle at 69% 58%, #fffbd5 0 1.9rem, #ffe7b4 2rem 2.4rem, transparent 2.5rem),
+          linear-gradient(#d6c8fb 0 27%, #f7c7c7 58%, #ad9fe4 100%);
+        box-shadow: 0 0 2rem rgb(255 244 241 / 60%) inset;
+      }
+      .window::before, .window::after {
+        position: absolute; content: ""; top: 0; bottom: 0; width: 0.2rem; background: rgb(255 247 255 / 58%);
+      }
+      .window::before { left: 42%; }
+      .window::after { right: 34%; }
+      .mountains { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; height: 35%; background: #8173bc; clip-path: polygon(0 80%, 16% 42%, 28% 68%, 40% 17%, 55% 65%, 70% 30%, 83% 67%, 100% 44%, 100% 100%, 0 100%); opacity: .72; }
+      .city { position: absolute; z-index: 2; right: 10%; bottom: 18%; width: 24%; height: 25%; opacity: .52; background: repeating-linear-gradient(90deg, #8c78bd 0 1.7rem, transparent 1.7rem 2.2rem); clip-path: polygon(0 100%, 0 58%, 12% 58%, 12% 16%, 27% 16%, 27% 67%, 42% 67%, 42% 2%, 56% 2%, 56% 44%, 76% 44%, 76% 23%, 100% 23%, 100% 100%); }
+      .cloud { position: absolute; z-index: 3; width: 14rem; height: 4.2rem; border-radius: 5rem; background: rgb(255 255 255 / 84%); box-shadow: 0 .3rem 1rem rgb(134 94 177 / 12%); }
+      .cloud::before, .cloud::after { position: absolute; content: ""; bottom: 0; border-radius: 50%; background: inherit; }
+      .cloud::before { left: 2rem; width: 5.6rem; height: 5.6rem; }
+      .cloud::after { right: 1.7rem; width: 7.2rem; height: 7.2rem; }
+      .cloud.one { top: 20%; right: 17%; transform: scale(.8); }
+      .cloud.two { top: 43%; left: 31%; transform: scale(.35); opacity: .65; }
+      .foliage { position: absolute; z-index: 8; left: -1rem; top: -1rem; width: 10rem; height: 17rem; background: radial-gradient(ellipse at 25% 8%, #617b34 0 13%, transparent 14%), radial-gradient(ellipse at 68% 16%, #839d43 0 16%, transparent 17%), radial-gradient(ellipse at 30% 32%, #708b3d 0 14%, transparent 15%), radial-gradient(ellipse at 71% 43%, #5c7835 0 15%, transparent 16%), radial-gradient(ellipse at 21% 58%, #8aa14b 0 12%, transparent 13%), radial-gradient(ellipse at 70% 70%, #607c39 0 14%, transparent 15%); filter: drop-shadow(.15rem .2rem .2rem rgb(44 61 29 / 25%)); }
+      .server-rack { position: absolute; z-index: 4; right: 7%; top: 25%; width: 7rem; height: 8rem; border-radius: .5rem; background: repeating-linear-gradient(to bottom, #7a67bd 0 .9rem, #e3d3ff .95rem 1.15rem, #927dcf 1.2rem 1.9rem); box-shadow: 0 0 1.3rem rgb(243 223 255 / 76%); opacity: .82; }
+      .server-rack::before { position: absolute; content: ""; inset: .15rem .55rem; background: repeating-linear-gradient(to bottom, transparent 0 .55rem, #fceca7 .58rem .69rem, transparent .72rem 1.03rem); }
+      .lamp { position: absolute; z-index: 5; left: 9%; bottom: 1%; width: 11rem; height: 9rem; border-radius: 50% 50% 0 0; background: linear-gradient(100deg, #fff9d2, #ffe7a5); box-shadow: 0 0 3rem #ffdfa1; }
+      .lamp::before { position: absolute; content: ""; left: 48%; top: 95%; width: .65rem; height: 9rem; background: #c98d3b; box-shadow: 0 .1rem .4rem #85541f; }
+      .lamp::after { position: absolute; content: ""; left: 22%; top: 193%; width: 6.2rem; height: .65rem; border-radius: 50%; background: #d39748; }
+      .desk { position: absolute; z-index: 4; bottom: 0; left: 0; width: 100%; height: 17%; background: linear-gradient(#fff7f0, #f5d9d0); box-shadow: 0 -.4rem 1rem rgb(255 255 255 / 45%); }
+      .laptop { position: absolute; z-index: 6; left: 50%; bottom: 7%; width: min(26vw, 20rem); height: min(16vw, 12rem); transform: translateX(-50%); border: .65rem solid #332d52; border-bottom-width: 1.1rem; border-radius: .6rem .6rem .3rem .3rem; background: linear-gradient(#b6a6e6, #f8c9d0 62%, #786fb1); box-shadow: 0 .5rem .7rem rgb(69 43 83 / 25%); }
+      .laptop::before { position: absolute; content: ""; left: -15%; bottom: -1.7rem; width: 130%; height: .9rem; border-radius: 0 0 2rem 2rem; background: #897f9c; }
+      .cup { position: absolute; z-index: 7; right: 20%; bottom: 6%; width: 4.8rem; height: 4.2rem; border-radius: .45rem .45rem 1.4rem 1.4rem; background: #fff8eb; box-shadow: .35rem .45rem .6rem rgb(99 64 93 / 18%); }
+      .cup::before { position: absolute; content: ""; right: -1.4rem; top: .75rem; width: 1.5rem; height: 1.9rem; border: .45rem solid #fff8eb; border-left: 0; border-radius: 0 1.3rem 1.3rem 0; }
+      .cup::after { position: absolute; content: ""; left: .9rem; top: -1rem; width: 2.3rem; height: 1rem; border-top: .18rem solid rgb(255 255 255 / 60%); border-radius: 50%; transform: rotate(-20deg); }
+      .plant { position: absolute; z-index: 7; right: 6%; bottom: 3%; width: 5rem; height: 7rem; border-radius: 1rem 1rem 1.7rem 1.7rem; background: linear-gradient(100deg, #fffaf3, #d6c3ad); }
+      .plant::before { position: absolute; content: ""; left: .6rem; bottom: 5.4rem; width: 4rem; height: 5rem; background: radial-gradient(ellipse at 25% 35%, #7c9f4b 0 22%, transparent 23%), radial-gradient(ellipse at 70% 14%, #64893d 0 19%, transparent 20%), radial-gradient(ellipse at 75% 63%, #789a43 0 22%, transparent 23%), radial-gradient(ellipse at 22% 75%, #587b37 0 18%, transparent 19%); }
+
+      .profile { position: relative; z-index: 10; width: min(100%, 74rem); margin: auto; }
+      .card { margin-bottom: clamp(1rem, 2vw, 1.5rem); padding: clamp(1.35rem, 3.3vw, 2.75rem); border: .18rem solid var(--line); border-radius: clamp(1.4rem, 3vw, 2.2rem); background: var(--paper); box-shadow: 0 .5rem 1.6rem rgb(96 62 143 / 8%); backdrop-filter: blur(.25rem); }
+      .profile > :first-child { box-shadow: 0 .7rem 2rem rgb(96 62 143 / 12%); }
+      .intro { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+      h1 { margin: 0 0 .6rem; font-size: clamp(2rem, 5vw, 3.35rem); letter-spacing: -.08em; }
+      .identity { margin: 0; color: #715789; font-size: clamp(1rem, 2.5vw, 1.55rem); word-break: keep-all; }
+      .dots { display: flex; gap: .7rem; flex: 0 0 auto; }
+      .dots span { display: block; width: 1.5rem; aspect-ratio: 1; border-radius: 50%; background: #a269df; }
+      .dots span:nth-child(2) { background: #facb44; } .dots span:nth-child(3) { background: #cba0fa; }
+      .label { display: inline-block; min-width: 13rem; margin: 0 0 1rem; padding: .35rem 1.35rem; border-radius: 999px; color: #75579a; font-size: clamp(1rem, 2vw, 1.4rem); background: #e9dcff; }
+      .card p, .card li { margin: 0; font-size: clamp(1rem, 2.3vw, 1.4rem); line-height: 1.65; letter-spacing: -.03em; word-break: keep-all; }
+      .card ul { margin: 0; padding-left: 1.45rem; }
+      footer { padding: .65rem 1rem; color: #896baf; font-size: clamp(1rem, 2vw, 1.35rem); }
+      footer small { display: block; margin-top: .35rem; font-size: .8em; }
+      @media (max-width: 540px) { .intro { align-items: flex-start; } .dots { gap: .35rem; } .dots span { width: 1rem; } .label { min-width: 10rem; } .lamp { transform: scale(.58); transform-origin: bottom left; } .cup { transform: scale(.65); transform-origin: bottom right; } .plant { transform: scale(.6); transform-origin: bottom right; } }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="scene" aria-label="노을이 보이는 따뜻한 작업 공간 일러스트">
+        <div class="window"><div class="mountains"></div><div class="city"></div></div>
+        <div class="cloud one"></div><div class="cloud two"></div><div class="foliage" aria-hidden="true"></div><div class="server-rack" aria-hidden="true"></div><div class="lamp"></div>
+        <div class="desk"></div><div class="laptop" aria-hidden="true"></div><div class="cup" aria-hidden="true"></div><div class="plant" aria-hidden="true"></div>
+      </section>
+      <section class="profile">
+        <header class="card intro"><div><h1>김현진</h1><p class="identity">25살 여자&nbsp; · &nbsp;인프라 엔지니어&nbsp; · &nbsp;ENFP</p></div><div class="dots" aria-label="보라색, 노란색, 연보라색"><span></span><span></span><span></span></div></header>
+        <section class="card"><h2 class="label">스터디 참여 목적</h2><p>AI와 협업하며 내 역량을 마음껏 펼치기<br />마음의 짐을 덜고 내 시간을 확보하기<br />그래서 고민을 덜고, 집중하며 살기</p></section>
+        <section class="card"><h2 class="label">취미</h2><p>집 방 구조를 예쁘게 바꾸기<br />따뜻하고 포근한 느낌의 카페 가기</p></section>
+        <section class="card"><h2 class="label">좋아하는 것</h2><p>퇴근 후 맛있는 거 먹기</p><ul><li>깨거 크림새우 — 너무 감동적</li><li>죠죠 오코노미야끼·야끼소바 — 2시간 대기도 OK!</li></ul></section>
+        <section class="card"><h2 class="label">애착 캐릭터 · 이모티콘</h2><p>양파쿵야 · 별의 커비<br />귀여운 건 못 참지<br />:)&nbsp; ───&nbsp; &gt;&lt;찾기</p></section>
+        <footer>열심히 일하고 열심히 놀기<small>이모지 + 텍스트 스타일로 제작되었습니다.</small></footer>
+      </section>
+    </main>
+  </body>
+</html>
