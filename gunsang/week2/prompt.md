@@ -12,8 +12,10 @@ Week1에서 생성한 자기소개 이미지(`gunsang/week1/profile.png`)를 `<i
 
 # 전체 대화 기록
 
-> 아래 내용은 이번 Week2 과제 작업을 위해 현재 세션에서 Devin과 진행한 대화를 질문과 답변이 구분되도록 정리한 기록입니다.
-> AI 응답에는 실제로 사용자에게 표시된 텍스트와 함께 수행된 도구 호출(파일 읽기/작성, 브라우저 검증, 서브에이전트 리뷰)을 기록 형태로 포함했습니다.
+> 아래 내용은 Week2 과제 작업을 위해 Devin과 진행한 대화를 정리한 기록(정리본)입니다.
+> 사용자 질문은 입력 원문을 옮겼고, Devin 응답은 실제로 화면에 표시된 내용을 바탕으로 읽기 쉽게 정리·요약한 정리본입니다.
+> `(수행 내용)` 항목은 실행한 도구 호출(파일 읽기/작성, 브라우저 검증, 서브에이전트 리뷰)을 요약한 것이고,
+> `(리뷰 결과 요약)` 항목은 서브에이전트 응답 원문이 아니라 핵심 지적사항만 추린 요약입니다.
 
 ---
 
@@ -123,6 +125,10 @@ Week2 과제를 시작하겠습니다. 먼저 디렉터리 구조와 원본 이�
 - 수정된 `profile.html`에 대해 `global-code-reviewer` 서브에이전트 재실행(2차 리뷰)
 - `gunsang/week2/prompt.md`(본 파일) 작성
 
+(global-code-reviewer 2차 리뷰 결과)
+- 당시 세션에서 2차 리뷰를 실행했으나, 결과 원문이 이 기록에 별도로 남아 있지 않아 상세 지적사항은 기술할 수 없습니다(원문 미보존).
+- 기록으로 확인 가능한 사실: 2차 리뷰 이후 추가 코드 수정 없이 `profile.html`이 최종 상태로 커밋되어 PR #42에 반영되었습니다.
+
 ---
 
 ## 4. 검증 결과 요약
@@ -134,3 +140,39 @@ Week2 과제를 시작하겠습니다. 먼저 디렉터리 구조와 원본 이�
 - 로컬 HTTP 서버에서 Playwright로 렌더링 확인, 콘솔 오류는 favicon 404 1건뿐(페이지 동작과 무관)
 - `gunsang/week0`, `gunsang/week1`, 타인 폴더 미수정
 - Git Commit/Push는 요청이 없어 수행하지 않음
+
+---
+
+## 5. PR #42 리뷰 반영 작업 (별도 세션, 2026-10-29)
+
+### 사용자
+
+week2 에서 지금 다 했잖아 근데 거기서 지금 리뷰 달린 게 있을거야 그거 해당 사항 다 수정해서 처리하고 리뷰 다시 요청해 승인 안난건들에 대해서
+
+### Devin
+
+(수행 내용)
+- `gh api`로 PR #42(`Week2/gunsang`)의 리뷰·인라인 코멘트 조회 — @juwonlee-dev Approve, @ShsH0920·@bobo-h·@juhwanHeo Comment 상태 확인
+- `gunsang/week1/profile.png` 원본 이미지 재확인, `profile.html`·`prompt.md` 읽기
+- `profile.html`에 대해 `global-code-reviewer` 서브에이전트 백그라운드 실행(수정 후 리뷰)
+- `python -m http.server 8765` 로컬 서버 실행, Playwright MCP로 렌더링 검증
+
+리뷰어들이 지적한 사항을 모두 반영했습니다. 반영 내역:
+
+- **AI 에이전트/모델 표기 불일치** (공통 지적): PR 본문의 `Devin CLI / Claude Sonnet 5 (Low)`를 실제 사용 환경인 `Devin (Cognition, SWE-2 High)`으로 수정해 `prompt.md`·`task2-prompt.md`와 통일
+- **뷰포트 상단 잘림** (@juhwanHeo): `html, body { height: 100% }` 선언 삭제 → 1280×800에서 `THANK YOU`가 화면 상단 50px대에 정상 표시됨을 스크린샷으로 확인
+- **390px 모바일 겹침·줄바꿈** (@juwonlee-dev 인라인 코멘트): `.card`에 `flex-shrink: 0` 추가, 480px 구간 `scale(0.55)`→`scale(0.45)` → 카드 전체가 찌그러짐·겹침 없이 축소 표시됨을 확인
+- **장식 SVG 접근성** (@juhwanHeo): 반짝임 3, 강아지, 발자국, 행 아이콘 6, 풍경 총 12개 장식 SVG에 `aria-hidden="true"` 추가
+- **정보 행 시맨틱** (@juhwanHeo): `ul>li` 구조를 `dl>div>dt>dd`로 변환, `.divider` 요소를 `.value::before` 가상요소로 대체(시각 동일)
+- **타이포그래피** (@juhwanHeo): `.value`에 `word-break: keep-all`, `.name-en`에 `word-spacing: 6px` 추가
+- **강아지 실루엣** (@juwonlee-dev): path 재작업 — 처진 귀와 지면으로 뻗은 꼬리를 별도 path로 분리해 앉은 강아지 윤곽을 강조. `.dog-area` 스크린샷으로 형상 확인
+- **prompt.md 정리본 표기 + 2차 리뷰 결과 누락** (@juwonlee-dev 인라인 코멘트): 기록이 원문이 아닌 정리본임을 상단 안내문에 명시하고, 원문이 보존되지 않은 2차 리뷰 결과는 지어내지 않고 미보존 사실을 그대로 표기
+
+(global-code-reviewer 리뷰 결과 요약 — 이번 세션)
+- 판정 PASS: 요청한 6가지 수정이 모두 올바르게 반영됐고, `dl>div>dt/dd` 구조가 HTML 명세상 유효함을 확인
+- LOW: 저장소 루트의 stray 파일 `nul` 지적 → 커밋 대상에서 제외 처리
+- 참고: 모바일 scale 축소 시 `transform: scale()` 특성상 카드 아래 빈 스크롤 영역이 생기는 기존 특성은 유지(리뷰어 제안 방향과 동일)
+
+(수행 내용 — 이후 처리)
+- PR 본문 AI 표기 수정(`gh pr edit`)
+- 수정분 커밋·푸시 후 미승인 리뷰어(@ShsH0920, @bobo-h, @juhwanHeo)에게 재리뷰 요청
