@@ -10,8 +10,6 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html, body { height: 100%; }
-
   body {
     font-family: 'Noto Sans KR', sans-serif;
     /* 어두운 원목 테이블 배경 */
@@ -38,6 +36,7 @@
   .card {
     position: relative;
     width: 660px;
+    flex-shrink: 0;
     min-height: 940px;
     padding: 52px 46px 0 46px;
     background:
@@ -106,6 +105,7 @@
     color: #4a3a28;
     text-align: center;
     margin-top: 2px;
+    word-spacing: 6px;
   }
 
   /* ---------- 우측 강아지 + 인용구 ---------- */
@@ -132,12 +132,11 @@
 
   /* ---------- 정보 행 ---------- */
   .rows {
-    list-style: none;
     margin-top: 34px;
     position: relative;
     z-index: 2;
   }
-  .rows li {
+  .rows .row {
     display: flex;
     align-items: center;
     background: rgba(255, 255, 255, 0.5);
@@ -177,20 +176,29 @@
     letter-spacing: 1px;
   }
 
-  .divider {
-    flex: 0 0 1px;
-    width: 1px;
-    align-self: stretch;
-    margin: 2px 20px 2px 4px;
-    background: #c6b7a3;
+  .rows dt {
+    display: flex;
+    align-items: center;
   }
 
   .value {
     flex: 1;
+    position: relative;
+    padding-left: 25px;
     font-size: 15.5px;
     font-weight: 500;
     line-height: 1.55;
     color: #40301f;
+    word-break: keep-all;
+  }
+  .value::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 2px;
+    bottom: 2px;
+    width: 1px;
+    background: #c6b7a3;
   }
 
   /* ---------- 하단 풍경 ---------- */
@@ -226,7 +234,7 @@
   }
   @media (max-width: 480px) {
     .card {
-      transform: perspective(1500px) rotateX(7deg) rotateY(9deg) rotateZ(11deg) scale(0.55);
+      transform: perspective(1500px) rotateX(7deg) rotateY(9deg) rotateZ(11deg) scale(0.45);
     }
   }
 </style>
@@ -237,9 +245,9 @@
 
     <!-- 상단 반짝임 장식 -->
     <div class="sparkles">
-      <svg class="s1" viewBox="0 0 16 16"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
-      <svg class="s2" viewBox="0 0 16 16"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
-      <svg class="s3" viewBox="0 0 16 16"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
+      <svg class="s1" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
+      <svg class="s2" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
+      <svg class="s3" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0 L9.8 6.2 L16 8 L9.8 9.8 L8 16 L6.2 9.8 L0 8 L6.2 6.2 Z"/></svg>
     </div>
 
     <!-- 헤더 -->
@@ -253,30 +261,36 @@
 
     <!-- 강아지 실루엣 + 발자국 + 인용구 -->
     <div class="dog-area">
-      <svg class="dog-svg" viewBox="0 0 110 110">
-        <path d="M36 6
-                 C31 6 27 9 26 14
-                 L17 21 C14 23 14 27 17 29
-                 L24 32
-                 C23 37 24 42 26 47
-                 C29 56 33 63 37 69
-                 L34 86 L32 95
-                 C31 99 33 102 37 102
-                 L42 102
-                 C44 97 45 90 44 82
-                 C50 78 56 75 60 72
-                 C58 82 58 92 60 98 L60 102
-                 L84 102
-                 C92 102 98 100 101 95
-                 C103 91 100 87 95 86
-                 C90 85 84 86 80 87
-                 C87 79 90 68 89 58
-                 C88 46 82 36 72 30
-                 C70 20 60 11 48 9
-                 C44 6 40 6 36 6 Z"/>
-        <path d="M42 7 C48 8 52 14 51 21 C50 26 46 28 43 26 C44 19 43 12 42 7 Z"/>
+      <svg class="dog-svg" viewBox="0 0 110 110" aria-hidden="true">
+        <path d="M18 33
+                 C14 29 16 24 21 22
+                 C26 13 33 8 41 9
+                 C46 10 50 13 51 18
+                 C53 25 54 31 53 37
+                 C57 45 63 51 69 58
+                 C77 67 81 77 80 87
+                 C80 94 76 97 69 97
+                 C61 99 52 99 47 98
+                 C43 97 42 94 44 91
+                 C40 85 37 78 36 72
+                 C36 80 37 89 36 95
+                 C35 98 30 99 29 96
+                 C27 89 26 80 27 70
+                 C25 66 24 62 25 58
+                 C24 50 24 44 22 40
+                 C20 37 19 35 18 33 Z"/>
+        <path d="M44 12
+                 C50 14 55 22 56 32
+                 C57 40 54 46 50 44
+                 C48 42 47 36 47 30
+                 C47 23 46 16 44 12 Z"/>
+        <path d="M58 91
+                 C50 95 37 100 26 101
+                 C20 102 18 99 23 97
+                 C32 93 46 89 56 86
+                 C58 87 59 89 58 91 Z"/>
       </svg>
-      <svg class="paw-svg" viewBox="0 0 24 24">
+      <svg class="paw-svg" viewBox="0 0 24 24" aria-hidden="true">
         <ellipse cx="12" cy="16" rx="6" ry="5"/>
         <ellipse cx="4.5" cy="8.5" rx="2.4" ry="3.2"/>
         <ellipse cx="12" cy="5.5" rx="2.4" ry="3.4"/>
@@ -289,60 +303,66 @@
     </div>
 
     <!-- 정보 행 -->
-    <ul class="rows">
-      <li>
-        <span class="icon c1">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M7 2h2v3h6V2h2v3h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3V2zm13 8v9H4v-9h16zM7 13h3v3H7v-3zm7 0h3v3h-3v-3z"/></svg>
-        </span>
-        <span class="label">생년월일</span>
-        <span class="divider"></span>
-        <span class="value">2000. 10. 22</span>
-      </li>
-      <li>
-        <span class="icon c2">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M12 3a4.2 4.2 0 1 1 0 8.4A4.2 4.2 0 0 1 12 3zM4.5 20.2c0-4.1 3.6-6.4 7.5-6.4s7.5 2.3 7.5 6.4v1.3h-15v-1.3z"/></svg>
-        </span>
-        <span class="label">성별</span>
-        <span class="divider"></span>
-        <span class="value">남</span>
-      </li>
-      <li>
-        <span class="icon c3">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 6.5 3 12l5.5 5.5M15.5 6.5 21 12l-5.5 5.5M13.4 4.5l-2.8 15"/></svg>
-        </span>
-        <span class="label">직무</span>
-        <span class="divider"></span>
-        <span class="value">Vue.js와 Spring Boot를 활용하는<br>풀스택 웹 개발자</span>
-      </li>
-      <li>
-        <span class="icon c4">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M6 2h8l5 5v15H6V2zm7 1.8V8h4.2L13 3.8zM9 12h6.5v1.8H9V12zm0 4h6.5v1.8H9V16z" fill-rule="evenodd"/></svg>
-        </span>
-        <span class="label">주요 경험</span>
-        <span class="divider"></span>
-        <span class="value">공공기업 프로젝트에서 소상공인을 위한<br>지원사업 관련 메뉴 개발</span>
-      </li>
-      <li>
-        <span class="icon c5">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2a6.5 6.5 0 0 0-3.7 11.8c.9.7 1.7 1.7 1.7 2.9V17h4v-.3c0-1.2.8-2.2 1.7-2.9A6.5 6.5 0 0 0 12 2zM9.5 18.5h5v1.5h-5v-1.5zM10.5 21h3a1.5 1.5 0 0 1-3 0z"/></svg>
-        </span>
-        <span class="label">개발 성향</span>
-        <span class="divider"></span>
-        <span class="value">주어진 업무를 다양한 관점에서 바라보고,<br>여러 상황과 예외를 고려하며 개발</span>
-      </li>
-      <li>
-        <span class="icon c6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff"><circle cx="12" cy="12" r="8.5" stroke-width="2"/><circle cx="12" cy="12" r="4.8" stroke-width="2"/><circle cx="12" cy="12" r="1.7" fill="#fff" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke-width="2" stroke-linecap="round"/></svg>
-        </span>
-        <span class="label">개발 목표</span>
-        <span class="divider"></span>
-        <span class="value">사용자와 운영 환경을 함께 고려하여<br>안정적이고 효율적인 서비스를 만드는 개발자</span>
-      </li>
-    </ul>
+    <dl class="rows">
+      <div class="row">
+        <dt>
+          <span class="icon c1">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M7 2h2v3h6V2h2v3h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3V2zm13 8v9H4v-9h16zM7 13h3v3H7v-3zm7 0h3v3h-3v-3z"/></svg>
+          </span>
+          <span class="label">생년월일</span>
+        </dt>
+        <dd class="value">2000. 10. 22</dd>
+      </div>
+      <div class="row">
+        <dt>
+          <span class="icon c2">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 3a4.2 4.2 0 1 1 0 8.4A4.2 4.2 0 0 1 12 3zM4.5 20.2c0-4.1 3.6-6.4 7.5-6.4s7.5 2.3 7.5 6.4v1.3h-15v-1.3z"/></svg>
+          </span>
+          <span class="label">성별</span>
+        </dt>
+        <dd class="value">남</dd>
+      </div>
+      <div class="row">
+        <dt>
+          <span class="icon c3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 6.5 3 12l5.5 5.5M15.5 6.5 21 12l-5.5 5.5M13.4 4.5l-2.8 15"/></svg>
+          </span>
+          <span class="label">직무</span>
+        </dt>
+        <dd class="value">Vue.js와 Spring Boot를 활용하는<br>풀스택 웹 개발자</dd>
+      </div>
+      <div class="row">
+        <dt>
+          <span class="icon c4">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M6 2h8l5 5v15H6V2zm7 1.8V8h4.2L13 3.8zM9 12h6.5v1.8H9V12zm0 4h6.5v1.8H9V16z" fill-rule="evenodd"/></svg>
+          </span>
+          <span class="label">주요 경험</span>
+        </dt>
+        <dd class="value">공공기업 프로젝트에서 소상공인을 위한<br>지원사업 관련 메뉴 개발</dd>
+      </div>
+      <div class="row">
+        <dt>
+          <span class="icon c5">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M12 2a6.5 6.5 0 0 0-3.7 11.8c.9.7 1.7 1.7 1.7 2.9V17h4v-.3c0-1.2.8-2.2 1.7-2.9A6.5 6.5 0 0 0 12 2zM9.5 18.5h5v1.5h-5v-1.5zM10.5 21h3a1.5 1.5 0 0 1-3 0z"/></svg>
+          </span>
+          <span class="label">개발 성향</span>
+        </dt>
+        <dd class="value">주어진 업무를 다양한 관점에서 바라보고,<br>여러 상황과 예외를 고려하며 개발</dd>
+      </div>
+      <div class="row">
+        <dt>
+          <span class="icon c6">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke-width="2"/><circle cx="12" cy="12" r="4.8" stroke-width="2"/><circle cx="12" cy="12" r="1.7" fill="#fff" stroke="none"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3" stroke-width="2" stroke-linecap="round"/></svg>
+          </span>
+          <span class="label">개발 목표</span>
+        </dt>
+        <dd class="value">사용자와 운영 환경을 함께 고려하여<br>안정적이고 효율적인 서비스를 만드는 개발자</dd>
+      </div>
+    </dl>
 
     <!-- 하단 산/숲 풍경 -->
     <div class="landscape">
-      <svg viewBox="0 0 660 215" preserveAspectRatio="xMidYMax slice">
+      <svg viewBox="0 0 660 215" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
         <defs>
           <g id="pine">
             <path d="M0-34 L9-14 L4-14 L12 4 L6 4 L14 22 L-14 22 L-6 4 L-12 4 L-4-14 L-9-14 Z"/>
