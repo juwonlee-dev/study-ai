@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>이주원 · 자기소개</title>
+  <style>
+    :root {
+      --bg: #f6f8fd;
+      --navy: #375f91;
+      --navy-light: #5378a8;
+      --card: #eef1f8;
+      --card-border: #e2e6ee;
+      --blue-card: #d6e2fb;
+      --blue-border: #c3d3f2;
+      --pink-card: #fbd6f7;
+      --gray-card: #e5e9f1;
+      --text: #1b1d21;
+      --muted: #4a4e57;
+      --accent: #375f91;
+      --plum: #6b4e70;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+    a { color: inherit; text-decoration: none; }
+    .page { max-width: 1496px; margin: 0 auto; padding: 64px 24px 96px; }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 56px 54px 48px;
+      border-radius: 36px;
+      background: var(--navy);
+      color: #fff;
+    }
+    .hero::before, .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: var(--navy-light);
+    }
+    .hero::before { width: 420px; height: 420px; top: -200px; right: -90px; opacity: .9; }
+    .hero::after { width: 256px; height: 256px; right: 96px; bottom: -176px; opacity: .6; }
+    .hero-top, .hero-body { position: relative; z-index: 1; }
+    .hero-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .eyebrow { font-size: 17px; font-weight: 700; letter-spacing: .12em; }
+    .pill {
+      padding: 10px 18px;
+      border: 1px solid rgba(255, 255, 255, .45);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .1);
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .hero-body { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-top: 54px; }
+    .hero h1 { margin: 0; font-size: 62px; line-height: 1.15; letter-spacing: -.03em; }
+    .hero .subtitle { margin: 16px 0 0; font-size: 25px; color: #dfe8f7; }
+    .hero blockquote {
+      margin: 28px 0 0;
+      padding-left: 18px;
+      border-left: 3px solid #c9d8f0;
+      font-size: 19px;
+      color: #f1f5fc;
+    }
+    .id-card {
+      flex: 0 0 264px;
+      padding: 24px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .13);
+    }
+    .monogram {
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      margin-bottom: 18px;
+      border-radius: 24px;
+      background: #d6e2fb;
+      color: #0f2340;
+      font-size: 26px;
+      font-weight: 800;
+    }
+    .id-card strong { display: block; font-size: 17px; }
+    .id-card span { display: block; margin-top: 4px; font-size: 15px; color: #dfe8f7; }
+
+    /* Section */
+    section { margin-top: 40px; }
+    .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin: 0 4px 16px; }
+    .kicker { display: block; color: var(--accent); font-size: 14px; font-weight: 700; letter-spacing: .13em; }
+    h2 { margin: 2px 0 0; font-size: 34px; letter-spacing: -.02em; }
+    .section-note { color: var(--muted); font-size: 16px; }
+    .lead { margin: -4px 4px 18px; color: var(--muted); font-size: 16px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .card { padding: 28px 30px; border: 1px solid var(--card-border); border-radius: 28px; background: var(--card); }
+
+    /* About */
+    .about { grid-template-columns: 1.08fr .92fr; gap: 18px; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin: 0; }
+    .facts dt { font-size: 14px; color: var(--muted); }
+    .facts dd { margin: 2px 0 0; font-size: 18px; font-weight: 700; }
+    .facts .link { color: var(--accent); }
+    .purpose { background: var(--blue-card); border-color: var(--blue-border); }
+    .purpose h3 { margin: 0 0 8px; font-size: 19px; }
+    .purpose > p { margin: 0 0 14px; font-size: 17px; color: #2c3038; line-height: 1.65; }
+    .purpose ul { margin: 0; padding: 0; list-style: none; }
+    .purpose li { padding: 14px 0 12px; border-top: 1px solid #b9c7e4; }
+    .purpose li strong { display: block; font-size: 16px; }
+    .purpose li span { font-size: 15.5px; color: #2c3038; }
+
+    /* Toolkit */
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    .chip {
+      padding: 7px 15px;
+      border: 1px solid #c5d3ea;
+      border-radius: 999px;
+      background: #e3eaf8;
+      font-size: 15px;
+      font-weight: 700;
+      color: #26303f;
+    }
+    .stack .card { min-height: 128px; padding: 22px 23px; border: 0; }
+    .stack h3 { margin: 0 0 8px; color: var(--accent); font-size: 16px; }
+    .stack p { margin: 0; font-size: 15px; color: var(--muted); line-height: 1.65; }
+
+    /* Work */
+    .project { display: flex; gap: 16px; padding: 24px 22px; border-radius: 24px; }
+    .project.current { background: var(--blue-card); border-color: var(--blue-border); }
+    .badge {
+      display: grid;
+      place-items: center;
+      flex: 0 0 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: #d6e2fb;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .project.current .badge { background: transparent; }
+    .project h3 { margin: 0; font-size: 18px; }
+    .project p { margin: 2px 0 6px; font-size: 15.5px; color: #2c3038; }
+    .project > div { min-width: 0; }
+    .project .url { font-size: 13px; color: var(--accent); overflow-wrap: anywhere; }
+    .more { margin: 14px 4px 0; font-size: 14.5px; color: var(--muted); }
+    .more a { color: var(--accent); }
+
+    /* Work style */
+    .style .card { padding: 26px 24px; border: 0; }
+    .style h3 { margin: 0 0 6px; font-size: 17px; font-weight: 600; }
+    .style p { margin: 0; font-size: 15px; }
+    .style .pink { background: var(--pink-card); color: var(--plum); }
+    .style .gray { background: var(--gray-card); color: #4a5160; }
+
+    /* Footer */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-top: 36px;
+      padding: 26px 32px;
+      border-radius: 26px;
+      background: var(--navy);
+      color: #fff;
+    }
+    footer strong { font-size: 24px; }
+    footer span { font-size: 13.5px; letter-spacing: .08em; color: #dfe8f7; }
+
+    @media (max-width: 860px) {
+      .page { padding: 16px 16px 48px; }
+      .hero { padding: 32px 24px; border-radius: 28px; }
+      .hero-body { flex-direction: column; align-items: stretch; margin-top: 36px; }
+      .hero h1 { font-size: 40px; }
+      .hero .subtitle { font-size: 19px; }
+      .hero blockquote { font-size: 16px; }
+      .id-card { flex-basis: auto; }
+      .grid-2, .about { grid-template-columns: 1fr; }
+      .section-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+      h2 { font-size: 28px; }
+      .stack .card { min-height: 0; }
+      footer { flex-direction: column; align-items: flex-start; }
+      footer strong { font-size: 20px; }
+    }
+    @media (max-width: 480px) {
+      .facts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="hero-top">
+        <span class="eyebrow">PROFILE · 2026</span>
+        <span class="pill">함께 성장하기</span>
+      </div>
+      <div class="hero-body">
+        <div>
+          <h1>안녕하세요,<br>이주원입니다</h1>
+          <p class="subtitle">Full-Stack Developer · 기록으로 성장하는 학습자</p>
+          <blockquote>“작은 학습을 꾸준히 쌓아, 동료와 나눌 수 있는 결과로 만들고 싶습니다.”</blockquote>
+        </div>
+        <div class="id-card">
+          <div class="monogram">JW</div>
+          <strong>이주원 (Juwon Lee)</strong>
+          <span>Seoul, Korea</span>
+          <span>GitHub · juwonlee-dev</span>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <div><span class="kicker">ABOUT</span><h2>기본 프로필</h2></div>
+        <span class="section-note">사람과 관심사</span>
+      </div>
+      <div class="grid-2 about">
+        <div class="card">
+          <dl class="facts">
+            <div><dt>이름</dt><dd>이주원 (Juwon Lee)</dd></div>
+            <div><dt>직업</dt><dd>Full-Stack Developer</dd></div>
+            <div><dt>나이</dt><dd>28세 (Dummy Data)</dd></div>
+            <div><dt>MBTI</dt><dd>INFJ</dd></div>
+            <div><dt>성별</dt><dd>남성 (Dummy Data)</dd></div>
+            <div><dt>활동 지역</dt><dd>Seoul, Korea</dd></div>
+            <div><dt>GitHub</dt><dd><a class="link" href="https://github.com/juwonlee-dev">@juwonlee-dev</a></dd></div>
+          </dl>
+        </div>
+        <div class="card purpose">
+          <h3>스터디 참여 목적</h3>
+          <p>혼자 이해한 지식을 함께 설명하고 피드백하며, <strong>꾸준히 완주하는 학습 습관</strong>을 만들고자 합니다.</p>
+          <ul>
+            <li><strong>깊이 있는 이해</strong><span>매주 배운 내용을 짧은 글과 예제로 정리합니다.</span></li>
+            <li><strong>실전 감각 향상</strong><span>작은 기능을 직접 만들고 코드 리뷰를 주고받습니다.</span></li>
+            <li><strong>함께하는 성장</strong><span>막힌 지점을 솔직하게 공유하고 서로의 해결 과정을 배웁니다.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div><span class="kicker">TOOLKIT</span><h2>기술 스택</h2></div>
+        <span class="section-note">배우고 만들 때 사용하는 도구</span>
+      </div>
+      <div class="chips">
+        <span class="chip">Java</span>
+        <span class="chip">JavaScript</span>
+        <span class="chip">TypeScript</span>
+        <span class="chip">Spring Boot</span>
+        <span class="chip">Vue.js</span>
+        <span class="chip">React</span>
+        <span class="chip">Docker</span>
+      </div>
+      <div class="grid-2 stack">
+        <div class="card"><h3>Language</h3><p>Java, JavaScript, TypeScript, JSP, Python, C++, C#, Assembly</p></div>
+        <div class="card"><h3>Framework &amp; Backend</h3><p>Spring Boot, Spring Framework, Spring Batch, eGovFrame, RESTful API, JWT, MyBatis, Hibernate, Spring Data, Spring Security</p></div>
+        <div class="card"><h3>Frontend</h3><p>Vue.js, React</p></div>
+        <div class="card"><h3>Search &amp; Logging</h3><p>Elasticsearch, OpenSearch, Logstash, Kibana</p></div>
+        <div class="card"><h3>Database</h3><p>MySQL, Oracle, PostgreSQL, MariaDB</p></div>
+        <div class="card"><h3>Middleware &amp; Infra</h3><p>Nginx, Apache HTTP Server, Apache Tomcat, TmaxSoft JEUS, TmaxSoft WebtoB, Docker</p></div>
+        <div class="card"><h3>Cloud &amp; OS</h3><p>Naver Cloud (NCP), Hyper-V, Red Hat, CentOS, Rocky Linux, Ubuntu, Windows Server, Android</p></div>
+        <div class="card"><h3>Tools</h3><p>IntelliJ IDEA, WebStorm, Eclipse, VS Code, Git, GitLab, Figma, Android Studio, IDA Pro</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div><span class="kicker">SELECTED WORK</span><h2>GitHub에서 이어지는 경험</h2></div>
+      </div>
+      <p class="lead">GitHub에서 라이브러리, 위치 기반 애플리케이션, 웹 프로젝트를 만들고 학습 기록을 이어가고 있습니다.</p>
+      <div class="grid-2">
+        <a class="card project" href="https://github.com/juwonlee-dev/KurbyPdf">
+          <span class="badge">PDF</span>
+          <div><h3>KurbyPdf</h3><p>암호화와 숨은 워터마크를 다루는 Java PDF 라이브러리</p><span class="url">github.com/juwonlee-dev/KurbyPdf</span></div>
+        </a>
+        <a class="card project" href="https://github.com/juwonlee-dev/jagabi">
+          <span class="badge">WEB</span>
+          <div><h3>jagabi</h3><p>TypeScript·HTML·CSS 기반 웹 프로젝트</p><span class="url">github.com/juwonlee-dev/jagabi</span></div>
+        </a>
+        <a class="card project" href="https://github.com/juwonlee-dev/BusLocationTrackerUser.ver">
+          <span class="badge">BUS</span>
+          <div><h3>BusLocationTrackerUser.ver</h3><p>Java 기반 버스 위치 추적 애플리케이션</p><span class="url">github.com/juwonlee-dev/BusLocationTrackerUser.ver</span></div>
+        </a>
+        <a class="card project" href="https://github.com/juwonlee-dev/lazyload-js">
+          <span class="badge">JS</span>
+          <div><h3>lazyload-js</h3><p>jQuery `getScript`를 활용한 JavaScript 지연 로딩 모듈</p><span class="url">github.com/juwonlee-dev/lazyload-js</span></div>
+        </a>
+        <a class="card project current" href="https://github.com/juwonlee-dev/study-ai">
+          <span class="badge">AI</span>
+          <div><h3>study-ai</h3><p>AI 학습과 스터디 기록을 위한 현재 프로젝트</p><span class="url">github.com/juwonlee-dev/study-ai</span></div>
+        </a>
+      </div>
+      <p class="more">더 많은 기록은 <a href="https://github.com/juwonlee-dev">GitHub 프로필</a>에서 확인할 수 있습니다.</p>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div><span class="kicker">HOW I WORK</span><h2>협업 &amp; 소통 스타일</h2></div>
+      </div>
+      <p class="lead">공개 스터디 저장소에서 React·Spring·Kubernetes 주제를 주차별 PR로 꾸준히 제출한 기록을 바탕으로, 다음과 같은 성향을 확인할 수 있습니다.</p>
+      <div class="grid-2 style">
+        <div class="card pink"><h3>반복과 기록 중심의 학습자</h3><p>작은 단위를 주차별 PR로 쪼개고 학습 흐름을 남깁니다.</p></div>
+        <div class="card gray"><h3>개념을 구현으로 검증</h3><p>`Effect`, 의존성 주입, 배포·인증 같은 주제를 코드 변경으로 연결합니다.</p></div>
+        <div class="card pink"><h3>점진적 개선을 선호</h3><p>기능·설정·문서화를 나누어 커밋하며 결과를 다듬습니다.</p></div>
+        <div class="card gray"><h3>협업 맥락에 익숙함</h3><p>개인 저장소뿐 아니라 공동 스터디 저장소에서 PR 기반으로 작업을 공유합니다.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <strong>함께 배우고, 자주 나누고, 끝까지 완주해요!</strong>
+      <span>JUWON LEE · FULL-STACK DEVELOPER · SEOUL, KOREA</span>
+    </footer>
+  </main>
+</body>
+</html>
