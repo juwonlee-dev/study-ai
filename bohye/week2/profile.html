@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#eaf3ff" />
+    <title>김보혜 | AI-Powered Full-Stack Developer</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --navy: #142f5c;
+        --blue: #1366e8;
+        --muted: #52688a;
+        --cyan: #08afd4;
+        --surface: rgba(255, 255, 255, 0.9);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+          "Malgun Gothic", "Noto Sans KR", sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        color: var(--navy);
+        background:
+          radial-gradient(circle at 91% 8%, rgba(81, 111, 255, 0.28), transparent 27%),
+          radial-gradient(circle at 3% 91%, rgba(81, 163, 255, 0.26), transparent 25%),
+          radial-gradient(circle at 94% 89%, rgba(82, 163, 255, 0.22), transparent 28%),
+          #f5faff;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          linear-gradient(132deg, transparent 38%, rgba(68, 135, 238, 0.1) 38.12%, transparent 38.24%),
+          linear-gradient(44deg, transparent 60%, rgba(68, 135, 238, 0.1) 60.12%, transparent 60.24%),
+          radial-gradient(circle at 5% 5%, #a3c1ff 0 4px, transparent 5px),
+          radial-gradient(circle at 93% 45%, #9ed2ff 0 9px, transparent 10px),
+          radial-gradient(circle at 8% 72%, #8db8f1 0 8px, transparent 9px);
+      }
+
+      .poster {
+        width: min(100% - 80px, 1450px);
+        margin: 68px auto;
+        padding: 48px 40px 46px;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        border-radius: 46px;
+        box-shadow: 0 28px 90px rgba(71, 120, 186, 0.09);
+      }
+
+      .poster::before,
+      .poster::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+        border: 2px solid rgba(36, 114, 239, 0.16);
+        border-radius: 50%;
+      }
+
+      .poster::before {
+        width: 650px;
+        height: 650px;
+        right: -290px;
+        top: -350px;
+        box-shadow: 0 0 0 74px rgba(110, 159, 255, 0.04), 0 0 0 146px rgba(110, 159, 255, 0.035);
+      }
+
+      .poster::after {
+        width: 520px;
+        height: 520px;
+        right: -250px;
+        bottom: -365px;
+        box-shadow: 0 0 0 62px rgba(110, 159, 255, 0.04), 0 0 0 125px rgba(110, 159, 255, 0.035);
+      }
+
+      .hero {
+        min-height: 315px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 310px;
+        gap: 32px;
+        align-items: center;
+        position: relative;
+        padding: 0 18px 0 46px;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 12px;
+        width: 12px;
+        border-radius: 20px;
+        background: var(--blue);
+      }
+
+      .eyebrow {
+        margin: 0 0 22px;
+        color: var(--blue);
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(48px, 5vw, 70px);
+        line-height: 1.15;
+        letter-spacing: -0.065em;
+        font-weight: 850;
+      }
+
+      .role {
+        margin: 0 0 24px;
+        color: var(--muted);
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.45;
+        letter-spacing: -0.035em;
+      }
+
+      .intro {
+        max-width: 900px;
+        margin: 0;
+        font-size: 23px;
+        font-weight: 650;
+        line-height: 1.65;
+        letter-spacing: -0.04em;
+      }
+
+      .identity-art {
+        width: 292px;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        justify-self: end;
+        position: relative;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 62% 29%, rgba(255,255,255,.9) 0 17%, transparent 18%),
+          radial-gradient(circle at 36% 38%, rgba(235,246,255,.9) 0 31%, transparent 32%),
+          radial-gradient(circle at 64% 69%, rgba(140,181,247,.22) 0 38%, transparent 39%),
+          linear-gradient(140deg, #f4faff, #d5e6ff);
+      }
+
+      .identity-art::before,
+      .identity-art::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+      }
+
+      .identity-art::before {
+        width: 375px;
+        height: 375px;
+        border: 2px solid rgba(42, 120, 245, 0.23);
+        box-shadow: 0 0 0 33px rgba(77, 132, 243, 0.04);
+      }
+
+      .identity-art::after {
+        width: 190px;
+        height: 190px;
+        transform: rotate(-35deg) scaleX(1.38);
+        border: 25px solid rgba(152, 190, 247, 0.14);
+      }
+
+      .monogram {
+        z-index: 1;
+        width: 148px;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        border: 5px solid var(--blue);
+        border-radius: 50%;
+        background: #f9fcff;
+        color: var(--blue);
+        font-size: 42px;
+        font-weight: 800;
+      }
+
+      .facts {
+        margin: 8px 0 48px;
+        padding: 22px 24px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+        background: var(--surface);
+        border-radius: 28px;
+      }
+
+      .facts div { min-width: 0; }
+      .facts dt {
+        margin-bottom: 5px;
+        color: var(--blue);
+        font-size: 18px;
+        font-weight: 800;
+      }
+      .facts dd {
+        margin: 0;
+        font-size: 25px;
+        line-height: 1.35;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+      }
+
+      .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 20px;
+        margin: 0 0 24px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 37px;
+        line-height: 1.35;
+        font-weight: 850;
+        letter-spacing: -0.055em;
+      }
+
+      .section-heading span {
+        color: var(--blue);
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: .025em;
+      }
+
+      .skills {
+        margin-bottom: 44px;
+      }
+
+      .skill-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 28px;
+        padding: 27px 24px 36px;
+        background: var(--surface);
+        border-radius: 30px;
+      }
+
+      .skill-title {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .skill-number,
+      .goal-number {
+        flex: none;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: white;
+        font-weight: 800;
+      }
+
+      .skill-number {
+        width: 48px;
+        height: 48px;
+        background: var(--blue);
+        font-size: 20px;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 29px;
+        line-height: 1.35;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .skill-grid p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 21px;
+        font-weight: 650;
+        line-height: 1.65;
+        letter-spacing: -0.035em;
+      }
+
+      .goals,
+      .ai-use {
+        border-radius: 30px;
+        padding: 30px 34px 34px;
+      }
+
+      .goals {
+        margin-bottom: 38px;
+        background: rgba(236, 245, 255, 0.86);
+      }
+
+      .goals > p,
+      .ai-use p {
+        color: var(--muted);
+        font-size: 21px;
+        font-weight: 650;
+        line-height: 1.75;
+        letter-spacing: -0.037em;
+      }
+
+      .goals > p { margin: 16px 0 36px; }
+
+      .goal-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 15px;
+      }
+
+      .goal-list li {
+        display: flex;
+        align-items: center;
+        gap: 19px;
+        font-size: 22px;
+        line-height: 1.45;
+        font-weight: 750;
+        letter-spacing: -0.035em;
+      }
+
+      .goal-number {
+        width: 45px;
+        height: 45px;
+        background: var(--cyan);
+        font-size: 20px;
+      }
+
+      .ai-use {
+        background: var(--surface);
+      }
+
+      .ai-use p { margin: 15px 0 35px; }
+      .ai-use p:last-child { margin-bottom: 0; }
+      .ai-use .record {
+        color: var(--blue);
+        font-weight: 800;
+      }
+
+      .closing {
+        margin-top: 42px;
+        padding: 31px 24px;
+        border-radius: 29px;
+        background: #1b3764;
+        color: #fff;
+        text-align: center;
+        font-size: 23px;
+        font-weight: 800;
+        line-height: 1.5;
+        letter-spacing: -0.04em;
+      }
+
+      @media (max-width: 900px) {
+        .poster { width: min(100% - 32px, 760px); margin: 16px auto; padding: 28px 22px; border-radius: 28px; }
+        .hero { grid-template-columns: minmax(0, 1fr) 190px; gap: 18px; padding-left: 28px; min-height: 230px; }
+        .hero::before { width: 8px; }
+        .identity-art { width: 170px; }
+        .identity-art::before { width: 220px; height: 220px; }
+        .identity-art::after { width: 110px; height: 110px; border-width: 15px; }
+        .monogram { width: 92px; border-width: 3px; font-size: 29px; }
+        .eyebrow { font-size: 17px; margin-bottom: 12px; }
+        h1 { font-size: 48px; }
+        .role { font-size: 21px; margin-bottom: 12px; }
+        .intro { font-size: 18px; }
+        .facts { gap: 16px; }
+        .facts dt { font-size: 15px; }
+        .facts dd { font-size: 19px; }
+        h2 { font-size: 29px; }
+        .skill-grid { gap: 16px; }
+        .skill-title { gap: 10px; }
+        .skill-number { width: 36px; height: 36px; font-size: 16px; }
+        h3 { font-size: 21px; }
+        .skill-grid p, .goals > p, .ai-use p, .goal-list li { font-size: 17px; }
+      }
+
+      @media (max-width: 640px) {
+        .poster { width: min(100% - 20px, 480px); padding: 24px 16px; border-radius: 22px; }
+        .hero { display: block; min-height: 0; padding: 0 0 0 20px; }
+        .hero::before { bottom: 0; width: 6px; }
+        .identity-art { display: none; }
+        .eyebrow { font-size: 13px; margin-bottom: 9px; }
+        h1 { font-size: 42px; margin-bottom: 10px; }
+        .role { font-size: 17px; }
+        .intro { font-size: 16px; }
+        .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 28px 0 32px; padding: 18px; gap: 18px 12px; }
+        .facts dt { font-size: 13px; }
+        .facts dd { font-size: 17px; }
+        .section-heading { margin-bottom: 16px; }
+        .section-heading span { font-size: 13px; }
+        h2 { font-size: 26px; }
+        .skills { margin-bottom: 24px; }
+        .skill-grid { grid-template-columns: 1fr; padding: 18px; gap: 22px; }
+        .skill-title { margin-bottom: 8px; }
+        .skill-grid p { padding-left: 45px; }
+        .goals, .ai-use { padding: 22px 19px; border-radius: 22px; }
+        .goals { margin-bottom: 24px; }
+        .goals > p { margin: 13px 0 24px; }
+        .goal-list { gap: 14px; }
+        .goal-list li { align-items: flex-start; gap: 11px; }
+        .goal-number { width: 32px; height: 32px; font-size: 15px; }
+        .ai-use p { margin-bottom: 22px; }
+        .closing { margin-top: 24px; padding: 22px 15px; font-size: 17px; border-radius: 21px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="poster">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">AI-POWERED FULL-STACK DEVELOPER</p>
+          <h1>김보혜</h1>
+          <p class="role">Full-Stack Developer&nbsp; · &nbsp;AI를 효율적으로 활용하는 개발자</p>
+          <p class="intro">반복되는 개발 과정은 더 안정적으로, 새로운 기술은 더 깊이 있게 배우고 싶습니다.</p>
+        </div>
+        <div class="identity-art" aria-hidden="true"><span class="monogram">KB</span></div>
+      </header>
+
+      <dl class="facts" aria-label="기본 정보">
+        <div><dt>생년월일</dt><dd>1995.11.06</dd></div>
+        <div><dt>성별</dt><dd>여성</dd></div>
+        <div><dt>직업·역할</dt><dd>풀스택 개발자</dd></div>
+        <div><dt>MBTI</dt><dd>ENTJ</dd></div>
+      </dl>
+
+      <section class="skills" aria-labelledby="skills-title">
+        <div class="section-heading">
+          <h2 id="skills-title">관심 기술과 학습 분야</h2>
+          <span>INTERESTS</span>
+        </div>
+        <div class="skill-grid">
+          <article>
+            <div class="skill-title"><span class="skill-number" aria-hidden="true">01</span><h3>AI Engineering</h3></div>
+            <p>AI를 개발 과정에 안정적이고 효율적으로 적용하는 방법</p>
+          </article>
+          <article>
+            <div class="skill-title"><span class="skill-number" aria-hidden="true">02</span><h3>NestJS</h3></div>
+            <p>구조적이고 확장 가능한 백엔드 애플리케이션 개발</p>
+          </article>
+          <article>
+            <div class="skill-title"><span class="skill-number" aria-hidden="true">03</span><h3>Flutter</h3></div>
+            <p>하나의 코드베이스를 활용한 크로스 플랫폼 앱 개발</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="goals" aria-labelledby="goals-title">
+        <h2 id="goals-title">스터디 참여 목적</h2>
+        <p>AI를 단순한 코드 생성 도구로 사용하는 데 그치지 않고, 개발 과정 전반에서 더 효율적으로 활용하는 방법을 배우기 위해 참여했습니다.</p>
+        <ol class="goal-list">
+          <li><span class="goal-number" aria-hidden="true">1</span>역할과 기능에 맞는 AI 프롬프트 작성법</li>
+          <li><span class="goal-number" aria-hidden="true">2</span>불필요한 컨텍스트 사용을 줄이는 토큰 관리법</li>
+          <li><span class="goal-number" aria-hidden="true">3</span>AI를 활용하면서도 품질을 지킬 수 있는 TDD 개발 방향</li>
+        </ol>
+      </section>
+
+      <section class="ai-use" aria-labelledby="ai-title">
+        <h2 id="ai-title">AI 활용</h2>
+        <p>Codex를 사용해 AGENTS.md를 작성하고, 주차별 과제에서 반복되는 폴더 생성·브랜치 생성·작업 범위 등의 규칙을 미리 정의했습니다. 이를 통해 이후 과제를 일관된 방식으로 진행하고 반복 작업의 실수를 줄이고자 했습니다.</p>
+        <p>또한 GitHub Issue에서 실제 과제 요구사항과 스터디 운영 정보를 구분해 작업 범위를 정리하고, 자기소개에 필요한 정보는 질문을 통해 구체화한 뒤 README의 구조와 내용을 작성하는 데 활용했습니다.</p>
+        <p class="record">Codex와 주고받은 프롬프트 및 응답은 codex-prompt.txt에 기록했습니다.</p>
+      </section>
+
+      <footer class="closing">AI와 함께 더 효율적으로 개발하고, 배운 내용을 꾸준히 실전에 연결하겠습니다. 🌱</footer>
+    </main>
+  </body>
+</html>
