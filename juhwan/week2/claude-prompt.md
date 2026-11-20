@@ -132,6 +132,123 @@ Worker A가 완료를 보고했습니다. 결과물을 직접 확인하겠습니
 로그도 이상 없습니다. 이후 진행 상황을 로그에 덧붙이고, 의미 단위로 커밋한 뒤 푸시를 시도하겠습니다.
 ```
 
+```
+Task1 결과물은 Orca 오케스트레이션으로 Claude 워커 2개에 나눠 맡겨 끝냈고 커밋까지 했습니다. 푸시는 GitHub 인증 실패로 막혀 있고, PR은 아직 만들지 않았습니다.
+
+**오케스트레이션 진행 (Run `run_f0caa0f0fad9`)**
+- **워커 A**: Week1 이미지만 보고 `juhwan/week2/profile.html`을 순수 HTML/CSS로 만들었습니다.
+  - 워커가 찍은 1200x675 스크린샷을 원본 이미지와 직접 비교했는데 거의 같습니다. 폰트 차이 때문에 글자 굵기와 위치가 약간 다릅니다.
+  - `<img>`, `<script>`, `profile.png` 참조는 하나도 없습니다.
+- **워커 B**: 이번 세션과 워커 A의 대화 기록으로 `juhwan/week2/claude-prompt.md`를 week1과 같은 형식으로 정리했습니다. 이 대화가 1부, 워커 A에게 준 지시와 응답이 2부입니다. 이메일 같은 개인 정보는 들어가지 않았습니다.
+- 두 워커 모두 정상 완료 후 정리했고 남은 워커는 없습니다. 푸시 시도까지의 진행은 제가 로그에 직접 덧붙였습니다.
+
+**커밋 (`week2/juhwan`)**
+- `373872f week2/juhwan: 자기소개 HTML 페이지(profile.html) 추가`
+- `7919324 week2/juhwan: Claude 프롬프트 로그 추가`
+
+**이어서 하려면 두 가지가 필요합니다**
+1. `! gh auth login`을 실행해 주세요. 현재 git push와 gh 명령이 모두 인증 오류로 실패합니다.
+2. PR에 추가할 리뷰어 1명을 알려주세요. 이슈에서 1명 이상 더 지정하라고 되어 있습니다.
+
+두 가지를 받으면 푸시하고 PR을 만들겠습니다. PR 본문에는 `#22`와 사용 AI(Orca + Claude Code / Opus 5.5), 리뷰어 목록을 넣습니다. 이 응답과 이후 대화도 로그에 이어서 기록하겠습니다. 루트의 `.gitignore`는 커밋하지 않았습니다.
+
+Task2(다른 사람 PR 3개 이상 리뷰, 10/26 마감)는 다른 사람들의 PR이 올라온 뒤에 진행하겠습니다.
+```
+
+## Turn 7 — User
+
+```
+작업내용 Issue에서 규정한데로 PR 생성해주세요.
+```
+
+## Turn 8 — Assistant
+
+> 작업 과정 (도구 실행 요약)
+> 1. `gh auth status`로 인증 확인(juhwanHeo 로그인됨), `git status`, 기존 PR 목록 조회
+> 2. 추가 리뷰어 질문 (AskUserQuestion)
+>
+> ```
+> 이슈 규정상 @juwonlee-dev, @juhwanHeo 외에 리뷰어를 1명 이상 더 지정해야 합니다. 누구를 추가할까요? (@juhwanHeo는 PR 작성자 본인이라 GitHub에서 리뷰어로 요청할 수 없어 본문에만 표기합니다.)
+> ```
+>
+> 사용자 선택: `@ShsH0920 (suhyeon)`
+>
+> 3. 이 프롬프트 로그에 Turn 6 응답 전문과 Turn 7~8을 append 후 커밋
+> 4. `git push -u origin week2/juhwan`
+> 5. `gh pr create` — 제목 `Week2 / juhwan`, 본문에 `#22`, 작업 내용, 사용 AI 에이전트/모델, 지정 리뷰어 기재, 리뷰어 `juwonlee-dev`, `ShsH0920` 요청
+
+```
+PR을 만들었습니다: https://github.com/juwonlee-dev/study-ai/pull/40
+
+- **제목**: `Week2 / juhwan`
+- **본문**: `#22` 태그, 작업 내용, 진행 방식(Orca 오케스트레이션), 사용 AI 에이전트/모델(Orca + Claude Code / Opus 5.5), 지정 리뷰어를 넣었습니다. Claude 관련 문구는 넣지 않았습니다.
+- **리뷰어 요청**: @juwonlee-dev, @ShsH0920
+  - @juhwanHeo는 PR 작성자 본인이라 GitHub에서 리뷰 요청을 할 수 없어 본문 리뷰어 목록에만 적었습니다.
+- **커밋 3개** (Co-Authored-By 없음):
+  - profile.html 추가
+  - 프롬프트 로그 추가
+  - 로그에 이번 PR 생성 대화 추가
+
+**바로잡은 부분**: 처음 만든 PR에 week1 커밋 4개가 함께 들어가 있었습니다. week1 PR #15가 아직 main에 머지되지 않았는데, week2 브랜치를 week1 위에서 만들었기 때문입니다. week2 커밋 3개만 main 위로 옮긴 뒤 강제 푸시했습니다. 지금 PR에는 `juhwan/week2/` 파일 2개만 있습니다. week1 커밋은 PR #15에 그대로 남아 있습니다.
+
+PR #15(week1)는 아직 열려 있습니다. Task2(다른 사람 PR 3개 이상 리뷰)는 내일(10/26) 마감이고, 리뷰할 week2 PR로 #36, #37, #38, #39가 올라와 있습니다.
+```
+
+## Turn 9 — User
+
+```
+제게 남은 PR 리뷰, 과제들 오케스트레이션 시작해주세요
+```
+
+## Turn 10 — Assistant
+
+코디네이터 Claude가 PR #40 리뷰 반영을 Orca 워커(Codex `gpt-6.2-sol`)에 맡겼습니다.
+
+### 작업 지시서 전문
+
+#### `A-pr40.md`
+
+```
+Target: 현재 worktree(/Users/heojuhwan/intellij-workspace/git/study-ai, 브랜치 week2/juhwan), PR #40 (https://github.com/juwonlee-dev/study-ai/pull/40)의 수정 요청 반영. 파일: juhwan/week2/profile.html, juhwan/week2/claude-prompt.md.
+
+Change:
+1. profile.html: 761px~약 1055px 구간에서 4열 정보 표(dl, `126px 190px 126px auto`)가 카드 밖으로 넘치는 문제 수정. 리뷰어 제안대로 모바일 전환 미디어쿼리를 `@media (max-width: 1080px)`로 올린다(45행 근처). 1081px 이상에서는 기존과 동일하게 보여야 한다.
+2. claude-prompt.md:
+   a. 287행부터 파일 끝까지(Turn 6 마지막 응답, Turn 7·8)는 사용자↔코디네이터 대화인데 "2. 워커 Claude" 섹션 안에 들어가 있음. 워커 섹션(약 135~285행)을 파일 끝으로 옮겨 코디네이터 대화가 시간순으로 이어지게 하라. 문구는 바꾸지 말고 위치만 옮긴다.
+   b. 워커 B(프롬프트 로그 작성 워커)의 지시서와 응답이 없음. `git log -p`, Orca 기록(`orca orchestration inbox --terminal run:<run_id> --limit 50`, `orca orchestration worker-list --json` 등, 접근 가능할 때)에서 실제 원문을 찾을 수 있으면 "3. 워커 Claude (프롬프트 로그 작성)" 섹션으로 추가한다. 원문을 찾을 수 없으면 지어내지 말고 PR 본문의 "워커에게 준 지시 및 응답도 함께 담았다"를 "워커 A에게 준 지시 및 응답"으로 고친다(`gh pr edit 40 --body-file`). 어느 쪽을 했는지 보고한다.
+   c. Turn 8 끝에 PR 생성 후 AI가 보낸 마지막 응답이 빠져 있음. git 기록 등에서 원문을 찾을 수 있으면 넣고, 없으면 그 사실을 보고(지어내지 말 것).
+   d. 이번 리뷰 반영 작업을 새 Turn으로 append: 사용자 발화 원문 "제게 남은 PR 리뷰, 과제들 오케스트레이션 시작해주세요", 코디네이터가 이 작업을 Orca 워커(Codex gpt-6.2-sol)에 맡겼다는 사실, 이 지시서 전문(이 파일: /private/tmp/claude-501/-Users-heojuhwan-intellij-workspace-git-study-ai-juhwan/f7177d8c-752b-4b14-bcca-7a2f80e8f868/scratchpad/specs/A-pr40.md 와 common.md), 그리고 너의 완료 보고 전문.
+   파일명은 claude-prompt.md 유지(리뷰어가 유지해도 된다고 함).
+3. 의미 단위로 2개 이상 커밋(profile.html 수정 / 프롬프트 로그 정리), `git push origin week2/juhwan`.
+
+Constraints: juhwan/week2/ 밖 파일 수정 금지. 리뷰 코멘트에 답글 달기, 리뷰 재요청, 병합은 하지 말 것(코디네이터가 사용자 확인 후 처리). push 인증 실패 시 멈추고 보고.
+Ownership: juhwan/week2/profile.html, juhwan/week2/claude-prompt.md, PR #40 본문(2b의 경우만).
+Observable acceptance: 820px·1024px·1080px 폭에서 가로 스크롤/카드 넘침 없음, 1200px에서 기존과 동일함을 확인한 방법과 결과(가능하면 Orca 브라우저나 headless 브라우저로 scrollWidth 비교), push된 커밋 해시 목록, 2b/2c 처리 결과. 실패 시 --outcome failed.
+[공통 저장소 규칙 — study-ai (GitHub juwonlee-dev/study-ai), 사용자 GitHub 계정 juhwanHeo]
+- 브랜치 `week{N}/juhwan`, 작업은 `juhwan/` 아래에서만. 다른 멤버 폴더는 읽기만.
+- 커밋은 의미 단위로 나누고 메시지 형식은 `week{N}/juhwan: {한글 설명}`. `Co-Authored-By: Claude ...` 등 AI 트레일러 금지.
+- PR 본문에 "Generated with Claude Code" 같은 AI 도구 홍보 문구/링크 금지. PR 본문 최상단에 `Issue: #{번호}`.
+- 프롬프트 로그(`claude-prompt.md`)는 과제 관련 모든 사용자 발화와 AI 응답을 생략 없이 턴 단위로 기록. 여러 AI/워커를 썼으면 구분해서 기록.
+- 루트 `.gitignore`(untracked)가 `CLAUDE.md`를 무시하므로, 추적해야 하는 CLAUDE.md는 `git add -f`.
+```
+
+#### `common.md`
+
+```
+[공통 저장소 규칙 — study-ai (GitHub juwonlee-dev/study-ai), 사용자 GitHub 계정 juhwanHeo]
+- 브랜치 `week{N}/juhwan`, 작업은 `juhwan/` 아래에서만. 다른 멤버 폴더는 읽기만.
+- 커밋은 의미 단위로 나누고 메시지 형식은 `week{N}/juhwan: {한글 설명}`. `Co-Authored-By: Claude ...` 등 AI 트레일러 금지.
+- PR 본문에 "Generated with Claude Code" 같은 AI 도구 홍보 문구/링크 금지. PR 본문 최상단에 `Issue: #{번호}`.
+- 프롬프트 로그(`claude-prompt.md`)는 과제 관련 모든 사용자 발화와 AI 응답을 생략 없이 턴 단위로 기록. 여러 AI/워커를 썼으면 구분해서 기록.
+- 루트 `.gitignore`(untracked)가 `CLAUDE.md`를 무시하므로, 추적해야 하는 CLAUDE.md는 `git add -f`.
+```
+
+### 워커 완료 보고 전문
+
+```
+PR #40의 자기소개 페이지 모바일 전환 폭을 1080px로 높이고, 코디네이터 대화 순서를 바로잡은 프롬프트 로그에 워커 B의 지시와 응답 및 PR 생성 직후의 응답 원문을 복원했습니다. Orca 브라우저에서 820px·1024px·1080px의 페이지 scrollWidth가 각각 화면 폭과 같고 카드와 정보 표에 가로 넘침이 없으며, 1081px·1200px에서는 변경 전후 요소의 위치·크기와 4열 구성이 같은 것을 확인했습니다. 두 커밋을 origin/week2/juhwan에 푸시했고 후속 리뷰 확인은 코디네이터에게 넘깁니다.
+```
+
 ---
 
 # 2. 워커 Claude (Orca 오케스트레이션: profile.html 구현)
@@ -284,47 +401,50 @@ I sent the completion report (`worker_done`) to the coordinator. I didn't commit
 - `/private/tmp/claude-501/-Users-heojuhwan-intellij-workspace-git-study-ai/df9cbcef-5af7-4ddf-bc1c-8236c66b9d73/scratchpad/week2-mobile.png`
 ```
 
-```
-Task1 결과물은 Orca 오케스트레이션으로 Claude 워커 2개에 나눠 맡겨 끝냈고 커밋까지 했습니다. 푸시는 GitHub 인증 실패로 막혀 있고, PR은 아직 만들지 않았습니다.
+---
 
-**오케스트레이션 진행 (Run `run_f0caa0f0fad9`)**
-- **워커 A**: Week1 이미지만 보고 `juhwan/week2/profile.html`을 순수 HTML/CSS로 만들었습니다.
-  - 워커가 찍은 1200x675 스크린샷을 원본 이미지와 직접 비교했는데 거의 같습니다. 폰트 차이 때문에 글자 굵기와 위치가 약간 다릅니다.
-  - `<img>`, `<script>`, `profile.png` 참조는 하나도 없습니다.
-- **워커 B**: 이번 세션과 워커 A의 대화 기록으로 `juhwan/week2/claude-prompt.md`를 week1과 같은 형식으로 정리했습니다. 이 대화가 1부, 워커 A에게 준 지시와 응답이 2부입니다. 이메일 같은 개인 정보는 들어가지 않았습니다.
-- 두 워커 모두 정상 완료 후 정리했고 남은 워커는 없습니다. 푸시 시도까지의 진행은 제가 로그에 직접 덧붙였습니다.
+# 3. 워커 Claude (프롬프트 로그 작성)
 
-**커밋 (`week2/juhwan`)**
-- `373872f week2/juhwan: 자기소개 HTML 페이지(profile.html) 추가`
-- `7919324 week2/juhwan: Claude 프롬프트 로그 추가`
-
-**이어서 하려면 두 가지가 필요합니다**
-1. `! gh auth login`을 실행해 주세요. 현재 git push와 gh 명령이 모두 인증 오류로 실패합니다.
-2. PR에 추가할 리뷰어 1명을 알려주세요. 이슈에서 1명 이상 더 지정하라고 되어 있습니다.
-
-두 가지를 받으면 푸시하고 PR을 만들겠습니다. PR 본문에는 `#22`와 사용 AI(Orca + Claude Code / Opus 5.5), 리뷰어 목록을 넣습니다. 이 응답과 이후 대화도 로그에 이어서 기록하겠습니다. 루트의 `.gitignore`는 커밋하지 않았습니다.
-
-Task2(다른 사람 PR 3개 이상 리뷰, 10/26 마감)는 다른 사람들의 PR이 올라온 뒤에 진행하겠습니다.
-```
-
-## Turn 7 — User
+## Turn 1 — User (코디네이터가 주입한 작업 지시)
 
 ```
-작업내용 Issue에서 규정한데로 PR 생성해주세요.
+[Week2 Task1] Claude 프롬프트 로그(claude-prompt.md) 작성
+
+Target: /Users/heojuhwan/intellij-workspace/git/study-ai/juhwan/week2/claude-prompt.md (신규)
+
+입력 (Claude Code 세션 transcript, JSONL):
+1. 코디네이터 세션: /Users/heojuhwan/.claude/projects/-Users-heojuhwan-intellij-workspace-git-study-ai/ffb3799c-3cf6-4ec0-aa6c-ef767ff0c1f5.jsonl
+   - 사용자가 "이슈 https://github.com/juwonlee-dev/study-ai/issues/22 를 읽고 2주차 과제를 진행하려고 합니다." 라고 보낸 메시지부터 기록 (그 이전, /clear 이전 대화는 제외).
+2. 워커 A 세션(profile.html 구현, Orca 오케스트레이션으로 분장됨): /Users/heojuhwan/.claude/projects/-Users-heojuhwan-intellij-workspace-git-study-ai/df9cbcef-5af7-4ddf-bc1c-8236c66b9d73.jsonl
+   - 코디네이터가 주입한 작업 지시(프롬프트) 전체와 워커의 응답.
+
+Change:
+- 형식은 juhwan/week1/claude-prompt.md 를 그대로 따를 것(먼저 읽어볼 것): 헤더(사용 AI: Claude Code / Opus 5.5, 기록 범위), "## Turn N — User" / "## Turn N — Assistant", 사용자 발화는 코드블록에 원문 그대로, 도구 실행은 "> 작업 과정 (도구 실행 요약)" 인용 블록으로 요약, AI의 텍스트 응답은 생략 없이 원문 그대로.
+- 섹션 구분: "# 1. 코디네이터 Claude (사용자 ↔ Claude)" 와 "# 2. 워커 Claude (Orca 오케스트레이션: profile.html 구현)". 상단에 Orca 오케스트레이션으로 작업을 분장한 구조(Run/워커 A: HTML, 워커 B: 로그 작성)를 짧게 설명.
+- system-reminder, hook 출력, thinking, 스킬 본문 같은 시스템 주입 텍스트는 사용자 발화가 아니므로 제외. "[Request interrupted by user]" 는 그대로 표기.
+- 코디네이터 세션은 아직 진행 중임. transcript 마지막 시점까지만 기록하고, 이후 턴은 코디네이터가 직접 append 함.
+
+Constraints / Ownership:
+- juhwan/week2/claude-prompt.md 만 생성. 다른 파일 수정 금지. git commit/push 금지.
+- 개인 이메일 주소 등 transcript 메타데이터는 넣지 말 것.
+
+Observable acceptance:
+- 위 사용자 발화 원문(이슈 #22 요청, "네 과제 시작해주세요.", "프롬프트 기록과 과제 수행을 orca-cli를 통해서 클로드에게 작업 분장해주세요. 오케스트레이션 시작해주세요")이 모두 파일에 포함됨을 grep으로 확인.
+- 워커 A의 worker_done 요약과 코디네이터의 실행 계획 응답 전문이 포함됨을 확인.
 ```
 
-## Turn 8 — Assistant
+## Turn 2 — Assistant
 
-> 작업 과정 (도구 실행 요약)
-> 1. `gh auth status`로 인증 확인(juhwanHeo 로그인됨), `git status`, 기존 PR 목록 조회
-> 2. 추가 리뷰어 질문 (AskUserQuestion)
->
-> ```
-> 이슈 규정상 @juwonlee-dev, @juhwanHeo 외에 리뷰어를 1명 이상 더 지정해야 합니다. 누구를 추가할까요? (@juhwanHeo는 PR 작성자 본인이라 GitHub에서 리뷰어로 요청할 수 없어 본문에만 표기합니다.)
-> ```
->
-> 사용자 선택: `@ShsH0920 (suhyeon)`
->
-> 3. 이 프롬프트 로그에 Turn 6 응답 전문과 Turn 7~8을 append 후 커밋
-> 4. `git push -u origin week2/juhwan`
-> 5. `gh pr create` — 제목 `Week2 / juhwan`, 본문에 `#22`, 작업 내용, 사용 AI 에이전트/모델, 지정 리뷰어 기재, 리뷰어 `juwonlee-dev`, `ShsH0920` 요청
+```
+Now dump both transcripts compactly.
+```
+
+```
+The log is written and verified, so I'm sending the completion report to the coordinator.
+```
+
+### Orca 완료 보고 전문
+
+```
+juhwan/week2/claude-prompt.md를 week1 형식(헤더, Turn N — User/Assistant, 도구 실행 요약 인용 블록, AI 텍스트 원문)으로 새로 작성했습니다. 상단에 Orca 분장 구조를 설명하고, 섹션 1(코디네이터, Turn 1~6, interrupt 표기 포함)과 섹션 2(워커 A 작업 지시 전문과 응답)로 나눴습니다. 필수 사용자 발화 3개, 실행 계획 전문, 워커 A worker_done 요약이 들어 있는지 grep으로 확인했고 이메일은 0건이었습니다. 코디네이터 Turn 6은 워커 B 완료를 기다리는 시점에서 끝나므로 이후 턴은 코디네이터가 append해야 합니다.
+```
