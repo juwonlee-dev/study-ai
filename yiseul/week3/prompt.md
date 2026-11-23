@@ -95,3 +95,52 @@ API Error: Sonnet 5.5's safeguards flagged this message (https://www.anthropic.c
 🔧 **도구 사용 내역**
 - 이 기록 파일(`prompt.md`) 작성
 - 커밋, 푸시, PR 생성(리뷰어: `juwonlee-dev`, `juhwanHeo`, `hapyjin`)
+
+## 9. 🤖 Claude
+
+🔧 **도구 사용 내역**
+- `yiseul/week3/prompt.md` 작성 후 커밋(`bb7d9f9`), `week3/yiseul` 푸시
+- `gh pr create`로 PR #57 생성(리뷰어 `juwonlee-dev`, `juhwanHeo`, `hapyjin`)
+
+```
+PR을 생성했습니다: https://github.com/juwonlee-dev/study-ai/pull/57
+(week2 커밋 포함 여부와 prompt.md 완전성 관련 확인 사항을 안내함)
+```
+
+## 10. 👤 User
+
+```
+PR 제목은 Week3/yiseul로 지정 해당 내용은 기억
+```
+
+## 11. 🤖 Claude
+
+🔧 **도구 사용 내역**
+- `gh pr edit 57 --title "Week3/yiseul"`
+- 메모리 파일 `pr-title-format.md` 저장
+
+```
+PR #57의 제목을 `Week3/yiseul`로 바꿨습니다. 앞으로 과제 PR 제목은 `WeekN/yiseul` 형식으로 쓰도록 기억해 두었습니다.
+```
+
+## 12. 👤 User
+
+```
+PR 내용에 누락된 내용들 존재 지정 리뷰어 작성 필요
+관련해서 작성 (기록)
+프롬포트 업데이트 및 커밋
+```
+
+(사용자 메시지에는 API 오류 안내 `Sonnet 5.5's safeguards flagged this message ... [reasoning_extraction]`가 함께 붙어 있었음)
+
+## 13. 🤖 Claude
+
+🔧 **도구 사용 내역**
+- 이전 PR(#43) 본문 형식 확인
+- PR 본문 초안을 만드는 응답이 안전 분류기에 의해 중단됨. 같은 내용을 다시 쓰지 않고, 현재 PR 본문을 조회해 상태 확인
+- `gh pr edit 57`로 본문에 `## 리뷰어` 섹션 추가(필수: `juwonlee-dev`, `juhwanHeo` / 추가: `hapyjin`)
+- 이 기록(9~13번) 추가 후 커밋
+
+```
+PR 본문에 리뷰어 섹션을 추가했습니다. 다른 누락 항목(변경 사항 상세, 검증 표)은 어떤 것을 원하는지 확인이 필요합니다.
+```
