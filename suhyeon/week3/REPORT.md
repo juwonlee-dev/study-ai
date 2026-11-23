@@ -183,7 +183,7 @@ KurbyPdf는 그 자체가 보안 도구다. 이 유형은 "도구를 썼는데 �
 
 **공격 시나리오**
 1. *끼워 넣기*: V-01의 이식 공격에서 자기 워터마크를 지울 필요 없이, 타인의 유효한 `/_k1` 스트림을 가진 XObject를 첫 페이지 리소스의 앞쪽에 추가하면 된다. 검증은 타인의 클레임으로 `valid=true`를 반환한다. PDFBox 소스 확인: `PDResources.getXObjectNames()`는 딕셔너리의 `keySet()`을 그대로 반환하고(`PDResources.java:537-540, 597-605`), `COSDictionary`의 내부 맵(`SmallMap`, 항목이 많아지면 `LinkedHashMap` — `COSDictionary.java:50, 219-222`)은 두 경우 모두 삽입 순서로 순회한다(`SmallMap.java:277-290`). 즉 순서는 PDF를 만든 쪽이 정한다.
-2. *검증 방해*: 임의 바이트로 된 `/_k1` 스트림을 앞쪽에 추가하면 뒤에 유효한 워터마크가 있어도 검증이 예외로 끝난다. 13바이트 이상이면 `c.doFinal`(`:105`)에서 실패해 `EXCEPTION:AEADBadTagException`, 13바이트 미만이면 `:97-98`에서 `EXCEPTION:IllegalArgumentException`이다.
+2. *검증 방해*: 임의 바이트로 된 `/_k1` 스트림을 앞쪽에 추가하면 뒤에 유효한 워터마크가 있어도 검증이 예외로 끝난다. 예외 종류는 스트림 길이에 따라 다르다. 같은 복호화 코드(`:97-105`)를 로컬 Java 17.0.12에서 실행해 확인한 결과, 12바이트 이하는 `:97-98`에서 `IllegalArgumentException`, 13~27바이트는 `c.doFinal`(`:105`)에서 `java.security.ProviderException`, 28바이트 이상은 `javax.crypto.AEADBadTagException`이었다. 세 경우 모두 `PdfVerificationUtil.java:53`에서 잡혀 `EXCEPTION:<클래스명>`이 된다. Java 8에서는 실행하지 않았다.
 3. *재워터마킹*: 이미 워터마킹된 PDF를 다시 `KurbyPdf.watermark`에 넣으면 스트림이 둘이 되고, 위 순회 순서에 따라 이전 워터마크의 클레임이 검증 결과로 나온다. 1차 출력이 암호화되지 않은 경우에만 성립한다. `KurbyPdf.java:21`이 비밀번호 없이 로드하므로 사용자 비밀번호가 걸린 출력을 다시 넣으면 로드 단계에서 실패한다.
 4. *API 오용*: `extractFirst`/`extractAll`은 public이다. 호출자가 `isSignatureValid()`를 확인하지 않으면 서명이 틀린 클레임을 신뢰하게 된다.
 
@@ -191,7 +191,7 @@ KurbyPdf는 그 자체가 보안 도구다. 이 유형은 "도구를 썼는데 �
 잘못된 귀속(V-01 악화) 또는 유효한 워터마크가 남아 있는데도 검증 실패. 단, 공격자는 이미 V-02로 워터마크를 지울 수 있으므로 추가 영향은 "더 은밀하게 결과를 조작할 수 있다"는 정도다.
 
 **조치 방안**
-1. `PdfWatermarkInspector.java:62-66`에서 스트림별 복호화 실패를 예외로 던지지 말고 기록한 뒤 계속 순회한다.
+1. `PdfWatermarkInspector.java:62-66`에서 스트림별 복호화 실패를 예외로 던지지 말고 기록한 뒤 계속 순회한다. 잡을 예외에 `java.security.ProviderException`을 포함해야 한다. 이 예외는 `RuntimeException`이라 `GeneralSecurityException`만 잡으면 13~27바이트 스트림(시나리오 2)에서 빠져나간다.
 2. `PdfVerificationUtil.java:40`을 `extractAll` 기반으로 바꾸고 다음 규칙을 적용한다.
    - 유효한 워터마크가 0개: `WATERMARK_NOT_FOUND` 또는 `INVALID_SIGNATURE`
    - 유효한 워터마크들의 클레임·nonce가 모두 같음: 성공
@@ -290,7 +290,7 @@ null·잘못된 Base64는 `IllegalArgumentException`으로 통일한다. `KeyUti
 공격자가 작은 PDF(수 MB 이하)를 만든다. 첫 페이지 리소스에 `/_k1` 키를 가진 Form XObject를 두고, 그 스트림을 FlateDecode로 압축한 대량의 0 바이트로 채워 디코드 결과가 검증 서버의 힙 크기를 넘게 한다. 이 파일을 검증 기능(예: "유출 의심 파일 업로드" 엔드포인트)에 넣으면 디코드 도중 `OutOfMemoryError`가 발생한다. 이는 `Exception`이 아니므로 `verifyDetailed` 밖으로 전파된다. 같은 필터를 여러 번 겹쳐 압축비를 키우는 방법은 PDFBox가 거부한다(`COSInputStream.java:71-78`).
 
 **영향**
-검증 기능을 서비스로 노출한 애플리케이션의 가용성 침해. 같은 JVM의 다른 요청도 영향을 받는다. 워터마크 삽입 경로(`KurbyPdf.watermark`)도 사용자가 올린 PDF를 받는 구조라면 대형·악성 PDF 파싱으로 같은 문제가 생긴다.
+검증 기능을 서비스로 노출한 애플리케이션의 가용성 침해. 같은 JVM의 다른 요청도 영향을 받는다. 워터마크 삽입 경로(`KurbyPdf.watermark`)도 입력 크기 검사 없이(`KurbyPdf.java:14`) 메모리 상한 없는 설정으로 로드한다(`:21`). 다만 위 압축 폭탄이 삽입 경로에서도 메모리 고갈을 일으키는지는 확인하지 못했다.
 
 **조치 방안**
 1. `PDDocument.load` 호출(`PdfWatermarkInspector.java:46`, `KurbyPdf.java:21`)에 상한이 있는 메모리 설정을 넘긴다. 이것이 주 방어다. `load(InputStream, String, MemoryUsageSetting)` 오버로드는 2.0.30에 있다(`PDDocument.java:1204`).
@@ -511,3 +511,12 @@ V-05처럼 번들된 의존성에 취약점이 공개돼도, 소비자 프로젝
 - 본문을 유형별 장(3~5장)으로 재배치하고 각 장 앞에 유형 설명과 요약표를 붙였다. 1.2의 분류표를 유형 × 위험도 표로 바꿨다.
 - 이에 따라 장 번호가 바뀌었다(개선 권고 4→6장, 미분류 확인 사항 5→7장, 2차 검토 기록 6→8장). 8.2 표의 "분류표에서 I-03을 옮김"은 변경 전 1.2 표에 대한 기록이다.
 - 각 항목의 ID, 위험도, 위치, 시나리오, 영향, 조치 방안 내용은 바꾸지 않았다.
+
+### 8.6 PR 제출 후 자체 재검토에서 고친 내용 (2026-11-23)
+
+다른 팀원의 보고서를 리뷰한 뒤 이 보고서를 다시 읽고, 틀렸거나 근거 없이 쓴 문장 두 곳을 고쳤다. 이 수정은 별도 에이전트의 재검증을 거치지 않았다.
+
+| 항목 | 고치기 전 | 고친 내용 | 근거 |
+|---|---|---|---|
+| V-04 시나리오 2 | "13바이트 이상이면 `AEADBadTagException`" | 13~27바이트는 `ProviderException`, 28바이트 이상은 `AEADBadTagException`으로 정정. 조치 방안 1에 `ProviderException`을 잡아야 한다는 점 추가 | 같은 복호화 코드를 로컬 Java 17.0.12에서 길이별(12, 13, 20, 27, 28, 64바이트)로 실행. 8.2 표의 V-04 행에 적힌 "13바이트 미만일 때의 예외 종류 추가"는 2차 검토 지적을 실행 확인 없이 옮긴 것이었다 |
+| V-03 영향 | 삽입 경로도 "같은 문제가 생긴다" | 삽입 경로에 입력 크기 검사와 메모리 상한이 없다는 사실만 남기고, 압축 폭탄이 이 경로에서 재현되는지는 확인하지 못했다고 명시 | `KurbyPdf.java:14, 21`. 삽입 경로에서의 재현은 소스로도 실행으로도 확인한 적이 없었다 |
