@@ -9,7 +9,7 @@
 - 과제에 적힌 파일명·경로를 그대로 지킨다(예: `juhwan/week3/REPORT.md`). 임의로 이름을 바꾸지 않는다.
 - 커밋은 의미 단위로 나누고 메시지는 `week{N}/juhwan: {한글 설명}`. AI 트레일러(`Co-Authored-By: Claude` 등) 금지.
 - PR 본문 최상단은 `Issue: #{번호}`. "Generated with Claude Code" 같은 AI 도구 홍보 문구·링크 금지.
-- 루트 `.gitignore`가 `CLAUDE.md`를 무시하므로 이 파일은 `git add -f`로 추가한다.
+- 로컬 Git 무시 설정에 걸린 새 파일을 과제에서 추적하라고 요구하면 `git check-ignore -v`로 원인을 확인한 뒤 해당 파일만 `git add -f`로 추가한다.
 - 커밋·푸시·PR은 사용자가 요청했을 때만 한다.
 
 ## 2. 먼저 생각하기 (가정 명시)
