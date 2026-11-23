@@ -1,6 +1,6 @@
 # Week3 과제 프롬프트 로그
 
-이 문서는 study-ai Week3 과제(이슈 #46: CLAUDE.md 작성 + KurbyPdf 보안 취약점 보고서)를 수행하며 오간 사용자 발화와 AI 응답, 그리고 에이전트 간 지시·보고를 생략 없이 턴 단위로 기록한다. 과제는 Orca 멀티 에이전트 오케스트레이션으로 여러 Claude 워커가 분담해 수행했으므로, 화자를 구분해 기록한다.
+이 문서는 study-ai Week3 과제(이슈 #46: CLAUDE.md 작성 + KurbyPdf 보안 취약점 보고서) 관련 대화와 에이전트 간 지시·보고를 화자별로 기록한다. Turn 5 말미와 §2-4에는 기존 요약이 포함돼 있다. 두 구간의 원문과 PR 생성 후 코디네이터의 마지막 응답은 확보하지 못해 해당 위치에 표시했다.
 
 ## 작업 분담 구조
 
@@ -16,11 +16,11 @@
 
 # 1. 코디네이터 Claude
 
-> 사용자 ↔ 코디네이터 Claude Code 대화 전문(Week3 관련 턴). 아래는 코디네이터 세션 로그 원문이다.
+> 사용자 ↔ 코디네이터 Claude Code 대화 기록(Week3 관련 턴).
 
 # 코디네이터 Claude (사용자 ↔ Claude Code, Orca 코디네이터)
 
-> 이 세션은 남은 PR 리뷰와 과제를 함께 오케스트레이션했다. 아래는 그중 Week3 과제와 관련된 사용자 발화와 코디네이터 응답 전문이다. (오케스트레이션 시스템 알림 "You have 1 orchestration message..."는 사용자 발화가 아니라 Orca 자동 알림이다.)
+> 이 세션은 남은 PR 리뷰와 과제를 함께 오케스트레이션했다. 아래는 그중 Week3 과제와 관련된 사용자 발화와 코디네이터 응답 기록이다. (오케스트레이션 시스템 알림 "You have 1 orchestration message..."는 사용자 발화가 아니라 Orca 자동 알림이다.)
 
 ## Turn 1 — User
 
@@ -79,7 +79,7 @@ R1 is working again on a narrower scope:
 
 The other three workers (A, R2, B) haven't reported any trouble.
 
-(이후 R1이 다시 차단되어 #6은 새 Codex 워커 R3로 옮기고 #48·#47은 보류했다.)
+> **요약 (원문 미확보):** 이후 R1이 다시 차단되어 #6은 새 Codex 워커 R3로 옮기고 #48·#47은 보류했다.
 
 ## Turn 6 — User
 
@@ -139,6 +139,10 @@ Worker B finished Phase 1 of Week3 in the `week3/juhwan` worktree.
 ## Turn 11 — Assistant (2차 검토 완료 후)
 
 2차 검토 워커 C가 끝났습니다(KP-01·02·03·05 수정 필요, KP-04·06·07 확인, 새 취약점·오탐 없음). 워커 B에게 Phase 2(2차 검토 반영, 프롬프트 로그 작성, 커밋·푸시·PR)를 보냅니다.
+
+## PR 생성 후 코디네이터 응답
+
+> **기록 누락 (원문 미확보):** PR 생성 후 코디네이터의 마지막 응답은 확보하지 못했다.
 
 ---
 
@@ -211,6 +215,8 @@ Observable acceptance: 커밋 해시 3개, PR URL, REPORT.md 최종 위험도별
 ```
 
 ## 2-4. Phase 2 완료 보고 (워커 B → 코디네이터)
+
+**요약 (원문 미확보)** — 아래 인용문은 워커 B의 Phase 2 완료 보고를 정리한 기존 문구다.
 
 > 워커 C의 2차 검토(`week3-review.md`)를 읽고 REPORT.md에 반영했다. KP-01에 두 번째 sink(`PdfWatermarkInspector.java:56` Image XObject `[/FlateDecode /JPXDecode]` 폭탄)와 세 번째 sink(깊은 중첩 PDF의 파서 `StackOverflowError`)를 추가하고 `MemoryUsageSetting` 상한을 필수 조치로 명시했으며, (b)는 상한 적용 시 948ms에 거부·(c)는 pdfbox 2.0.37에서 거부됨을 로컬로 확인해 넣었다. KP-02는 ContentDigest가 마지막 콘텐츠 스트림·리소스·주석을 놓쳐 본문 변조를 못 막는 점을 반영해 조치 범위를 "이식 탐지"로 한정하고 변조 탐지는 발급 기록 대조로 보완했다. KP-03 catch에 `java.security.ProviderException`을 추가, KP-04에 `verifyBase64` 디코딩 위치(`:26-27`)와 검증 경로 `Result.fail` 권고 추가, KP-05는 OSV 12/4건 표기·`looksLikeValidNumber` 도달 불가 확인·CVSS 미산정 각주, KP-06은 `userPassword`가 비면 `ownerPassword`가 무시되는 점을 반영했다. "2차 검토" 섹션(§5)에 검토자(Codex 차단으로 Claude 워커 수행)·방법·항목별 판정과 반영 내역 표를 넣었고, 통계 표 합계(7) = 본문 `### KP-`(7) 일치를 재확인했다. 파서 재귀 한도는 "확인 필요"로 남기지 않고 로컬에서 확인해 KP-01(c)로 편입했다(건수 7 유지). 이어서 `juhwan/week3/claude-prompt.md`를 작성하고, 의미 단위 커밋 3건(CLAUDE.md / REPORT.md / claude-prompt.md, 메시지 `week3/juhwan: …`, AI 트레일러 없음)으로 나눠 `week3/juhwan`에 푸시한 뒤 `juwonlee-dev/study-ai`에 PR을 생성했다. 최종 위험도별 건수는 Critical 0 / High 1 / Medium 1 / Low 3 / Info 2(합계 7), 오탐·새 취약점 없음. (구체적 커밋 해시 3건과 PR URL은 코디네이터에게 보낸 `worker_done` 메시지에 기록 — 이 로그 파일 자체의 커밋 이후 생성되므로 여기에는 싣지 않는다.)
 
