@@ -273,7 +273,7 @@
   - `userPassword`가 비어 있으면(`KurbyPdf.java:35`) `if` 블록 전체를 건너뛰므로 암호화·권한이 전혀 적용되지 않고, **호출자가 넘긴 `ownerPassword`까지 조용히 무시됩니다**(`:35-41`). "열람은 자유, 편집만 제한"(소유자 암호만 설정) 용도가 동작하지 않습니다. 이 경우 명시적 신호는 없고 `WatermarkResult.getOwnerPassword()`가 `null`이라는 간접 신호만 있습니다(`:34,45`) — 즉 **명시적 `encrypted` 플래그가 없는** 것이 문제입니다.
   - `ownerPassword == userPassword`인 경우도 막지 않습니다. 이 경우 사용자 암호로 열면 소유자 권한을 얻습니다.
   - KP-03 PoC에서는 사용자 암호로 연 문서에 `setAllSecurityToBeRemoved(true)`를 호출해 암호를 해제한 사본을 저장할 수 있었습니다(로컬에서 확인). 권한 비트는 강제력이 없는 권고일 뿐이라는 뜻입니다.
-- **조치 방안:**
+- **조치 방안 (미검증, 스니펫을 적용해 실행하지 않음):**
   ```java
   // PdfProtector.applyUserPassword()
   if (ownerPassword.equals(userPassword)) throw new IllegalArgumentException("owner password must differ from user password");
@@ -281,7 +281,7 @@
   ap.setCanPrint(true);
   ap.setCanExtractContent(false);
   ap.setCanModify(false);
-  ap.setCanAssemble(false);
+  ap.setCanAssembleDocument(false);
   ap.setCanModifyAnnotations(false);
   ap.setCanFillInForm(false);
   ```
