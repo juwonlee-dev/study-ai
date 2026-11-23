@@ -105,15 +105,27 @@ CVSS를 그대로 쓰지 않고, 이 라이브러리가 README.md:8-15에서 약
 추적 결과가 엉뚱한 사람을 가리킬 수 있어 워터마크의 증거 가치가 사라진다. 사용자가 `verify()==true`를 "문서가 변조되지 않았다"로 해석하면 잘못된 판단을 하게 된다.
 
 **조치 방안 (현재 코드 기준)**
-1. 페이로드에 원본 식별값을 넣는다. `KurbyPdf.java:28`에서 `SHA-256(inputPdf)`를 계산해 `buildPayload`에 넘기고, `WatermarkPayload.java:27-31`의 `body`에 `doc` 필드로 추가해 HMAC 대상에 포함시킨다.
+1. 페이로드에 원본 식별값을 넣는다. `KurbyPdf.java:28`에서 `SHA-256(inputPdf)`를 계산해 `buildPayload`에 넘기고, `WatermarkPayload.java:27-31`의 `body`에 `doc` 필드로 추가해 HMAC 대상에 포함시킨다. `doc`의 직렬화 형식은 SHA-256 32바이트를 표준 Base64로 인코딩한 문자열로 고정한다(`sig`와 같은 방식).
    ```java
    // KurbyPdf.java (import java.security.MessageDigest)
    byte[] docHash = MessageDigest.getInstance("SHA-256").digest(inputPdf);
    byte[] payload = WatermarkPayload.buildPayload(claims, docHash, hmacKey, aesKey);
    ```
-2. 검증 측(`PdfWatermarkInspector.java:121-128`)의 body 재구성에도 `doc`를 같은 순서로 넣어야 서명이 맞는다. 페이로드 형식이 바뀌므로 `WatermarkPayload.java:28`의 `v`를 2로 올리고, 기존 v1 페이로드를 거부할지 "문서 바인딩 없음"으로 표시할지 정한다.
-3. `PdfVerificationUtil.verifyDetailed`에 "기대 원본 해시"를 받는 오버로드를 추가해 불일치 시 `Result.fail("DOCUMENT_MISMATCH")`를 반환한다.
-4. 위 조치는 **다른 문서로의 이식**만 막는다. 본문 변조까지 검출하려면 PDF 전자서명(PDFBox `PDSignature`)을 별도로 적용해야 한다. `README.md:15`의 문구도 "페이로드 무결성 확인"으로 바로잡는다.
+2. `body`에만 넣으면 결과물에 `doc`가 남지 않는다. 실제로 직렬화·암호화되는 맵은 `body`가 아니라 필드를 하나씩 복사해 만드는 `wrap`(`WatermarkPayload.java:41-48`)이기 때문이다. 따라서 `wrap`에도 같은 값을 `body`와 같은 위치(`nonce` 다음, `sig` 앞)에 저장한다.
+   ```java
+   // WatermarkPayload.java — v2
+   body.put("v", 2);
+   // ... claims, ts, nonce
+   body.put("doc", Base64.getEncoder().encodeToString(docHash));   // HMAC 대상
+   // ...
+   wrap.put("nonce", body.get("nonce"));
+   wrap.put("doc", body.get("doc"));                               // 검증 측이 읽을 수 있게 저장
+   wrap.put("sig", Base64.getEncoder().encodeToString(sig));
+   ```
+3. 검증 측(`PdfWatermarkInspector.java:121-128`)은 복호화한 `wrap`에서 `doc`를 읽어 body 재구성에 같은 순서로 넣어야 서명이 맞는다. 페이로드 형식이 바뀌므로 `v`를 2로 올리고, 기존 v1 페이로드를 거부할지 "문서 바인딩 없음"으로 표시할지 정한다.
+4. `PdfVerificationUtil.verifyDetailed`에 "기대 원본 해시"를 받는 오버로드를 추가해, 서명 검증을 통과한 `doc`와 다르면 `Result.fail("DOCUMENT_MISMATCH")`를 반환한다.
+5. **전제**: 이식 방지는 호출자가 검증 대상 문서의 기대 원본 해시를 **신뢰할 수 있는 경로**(예: 발급 시점에 서버 DB에 문서 ID와 함께 저장한 값)로 확보해 넘길 때만 성립한다. 워터마킹된 결과물은 원본과 바이트가 달라 결과물에서 해시를 다시 계산해 비교할 수 없고, 기대 해시 없이 `doc`가 "들어 있는지"만 확인하면 이식된 페이로드도 그대로 통과한다.
+6. 위 조치는 **다른 문서로의 이식**만 막는다. 본문 변조까지 검출하려면 PDF 전자서명(PDFBox `PDSignature`)을 별도로 적용해야 한다. `README.md:15`의 문구도 "페이로드 무결성 확인"으로 바로잡는다.
 
 ---
 
@@ -215,7 +227,7 @@ CVSS를 그대로 쓰지 않고, 이 라이브러리가 README.md:8-15에서 약
 - `build.gradle.kts:64` — shadow JAR에 재배치되어 포함된다.
 
 **확인한 사실 (확인 방법: Advisory DB, 2026-11-23 조회)**
-`com.fasterxml.jackson.core:jackson-databind@2.17.1`에 해당하는 권고 12건, `jackson-core@2.17.1`에 4건, 합계 **16건**이 조회됐다(GitHub severity 라벨 기준 High 8건/Medium 8건, CVSS 점수 7.0 기준으로는 High 7건/Medium 9건 — jackson-core의 CVE-2026-68494·CVE-2026-18401은 라벨은 high/medium이나 CVSS 점수가 없다). 대표적으로 PolymorphicTypeValidator 우회(CVE-2026-54512/54513, High 8.1), forward-reference 2차 시간 복잡도(CVE-2026-91777, High 7.5), `NumberInput` ReDoS(CVE-2026-89407, High 7.5) 등이다. 2.18.11과 2.18.12에 해당하는 권고는 **0건**이다.
+`com.fasterxml.jackson.core:jackson-databind@2.17.1`에 해당하는 권고 12건, `jackson-core@2.17.1`에 4건, 합계 **16건**이 조회됐다(GitHub severity 라벨 기준 High 8건/Medium 8건, CVSS v3 점수 7.0 기준으로는 16건 중 High 7건/Medium 7건/v3 점수 없음 2건 — jackson-core의 CVE-2026-68494·CVE-2026-18401은 v3 점수가 없고 CVSS v4 점수만 각각 8.7·6.9로 등록돼 있으며, 이는 라벨 high/medium과 일치한다). 대표적으로 PolymorphicTypeValidator 우회(CVE-2026-54512/54513, High 8.1), forward-reference 2차 시간 복잡도(CVE-2026-91777, High 7.5), `NumberInput` ReDoS(CVE-2026-89407, High 7.5) 등이다. 2.18.11과 2.18.12에 해당하는 권고는 **0건**이다.
 
 **도달 가능성 (확인 방법: 소스)**
 - KurbyPdf의 Jackson 사용은 `OM.readTree(byte[])`(`PdfWatermarkInspector.java:107`)와 `OM.writeValueAsBytes(Map)`(`:128`, `WatermarkPayload.java:33, 48`)뿐이다. POJO 역직렬화, 다형성 타이핑, Jackson 어노테이션은 쓰지 않는다.
@@ -361,7 +373,7 @@ V-07처럼 번들된 의존성에 취약점이 공개돼도, 패키지명 기반
 
 | 항목 | 판정 | 초안에서 바뀐 내용 |
 |---|---|---|
-| V-07 집계 | **수정** | "합계 16건(High 7 / Medium 9)"에서 집계 기준을 명시하지 않았다. GitHub severity 라벨 기준은 High 8 / Medium 8이고, 초안의 7/9는 CVSS 7.0 임계값 기준이었다. jackson-core의 CVE-2026-68494·CVE-2026-18401이 라벨은 high/medium이나 CVSS 점수가 없어 두 집계가 갈린다. 두 기준을 모두 적도록 고쳤다. 합계 16건과 결론은 그대로다. |
+| V-07 집계 | **수정** | "합계 16건(High 7 / Medium 9)"에서 집계 기준을 명시하지 않았다. GitHub severity 라벨 기준은 High 8 / Medium 8이고, 초안의 7/9는 CVSS v3 점수 7.0 임계값 기준이면서 v3 점수가 없는 2건을 Medium에 넣은 값이었다. jackson-core의 CVE-2026-68494·CVE-2026-18401은 v3 점수 없이 CVSS v4 점수(8.7·6.9)만 있어 두 집계가 갈린다. v3 기준은 16건 중 High 7 / Medium 7 / v3 점수 없음 2로 적고, 두 기준을 모두 적도록 고쳤다. 합계 16건과 결론은 그대로다. |
 | V-03 시나리오 | **수정** | "필터를 여러 번 겹쳐 압축비를 키우는 방법은 PDFBox가 거부한다"가 `COSInputStream.java:71-78`을 잘못 일반화했다. 이 코드는 `HashSet`으로 **동일 필터의 중복**만 막고 서로 다른 필터 체인은 막지 않는다. 그렇게 한정하고, 단일 FlateDecode 폭탄만으로 공격이 성립한다는 점을 덧붙였다. |
 | 인용 줄 번호 (V-01~V-08, I-01~I-05) | 확인 | 검토자가 `74d3aed` 소스와 표본 대조해 전부 일치. |
 | 실행 확인 (V-04, V-05, V-06) | 확인 | 검토자가 로컬 Java 1.8.0_261에서 재현: 소유자 비번만 준 요청의 `isEncrypted=false`, 사용자 비번 문서의 권한 플래그, user==owner 허용, 복호화 길이별 예외, HMAC/AES 키 길이 동작이 초안과 모두 일치. |
