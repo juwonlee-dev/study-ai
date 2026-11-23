@@ -6,10 +6,10 @@
 | --- | --- | :---: |
 | 🟥 치명 (Critical) | 인증 없이 원격 코드 실행, 키·원문 대량 유출처럼 즉시 전면 피해 | **0** |
 | 🟧 높음 (High) | 라이브러리의 핵심 보안 기능(위변조 검출·추적)이 키 없이 무력화됨 | **2** |
-| 🟨 중간 (Medium) | 조건(사용자 암호 보유, 검증 키 보유, 신뢰할 수 없는 입력 등)이 필요하지만 보안 목적을 훼손하거나 서비스 장애를 일으킴 | **6** |
-| 🟩 낮음 (Low) | 오용 가능성을 높이거나 방어를 약화하지만 단독 피해는 제한적 | **3** |
+| 🟨 중간 (Medium) | 조건(사용자 암호 보유, 검증 키 보유, 신뢰할 수 없는 입력 등)이 필요하지만 보안 목적을 훼손하거나 서비스 장애를 일으킴. 알려진 HIGH 등급 취약점이 있는 의존성을 사용자가 교체할 수 없게 배포물에 내장한 경우도 도달 가능성과 무관하게 여기에 둔다 | **6** |
+| 🟩 낮음 (Low) | 오용 가능성을 높이거나 방어를 약화하지만 단독 피해는 제한적 | **4** |
 | ⬜ 정보 (Info) | 직접적인 취약점은 아니지만 개선이 필요한 구성·문서 | **3** |
-| **합계** | | **14** |
+| **합계** | | **15** |
 
 | ID | 위험도 | 취약점 | 재현 | 조치 검증 |
 | --- | --- | --- | :---: | :---: |
@@ -19,16 +19,17 @@
 | M-2 | 중간 | 가짜 워터마크 하나로 검증 전체가 실패함 | ✅ | ✅ 차단 |
 | M-3 | 중간 | 고정 마커(`/_k1`)로 워터마크를 쉽게 찾아 제거할 수 있음 | ✅ | 완화만 가능 |
 | M-4 | 중간 | 사용자 암호 보유자에게 수정·조립·주석 권한을 허용함 | ✅ | ✅ 차단 |
-| M-5 | 중간 | 압축 폭탄 PDF로 검증·삽입 시 자원 고갈(OOM) | ✅ | ✅ 차단(상한 내 비용 남음) |
+| M-5 | 중간 | 압축 폭탄 PDF로 검증 시 자원 고갈(OOM) | ✅ | ✅ 차단(상한 내 비용 남음) |
 | M-6 | 중간 | 알려진 취약점이 있는 Jackson 2.17.1 사용(Fat JAR에 내장) | 조회 | 버전 상향 |
 | L-1 | 낮음 | HMAC·AES 키 길이와 null 여부를 검증하지 않음 | ✅ | ✅ 차단 |
 | L-2 | 낮음 | 워터마크 위치를 예측 가능한 난수(`java.util.Random` + 현재 시각)로 정함 | 코드 | 코드 수정 |
 | L-3 | 낮음 | 사용자 암호를 주지 않으면 소유자 암호·권한 보호 없이 저장됨 | ✅ | ✅ 차단 |
+| L-4 | 낮음 | 소유자 암호와 사용자 암호가 같아도 허용해 권한 제한이 풀림 | 코드 | ✅ 차단 |
 | I-1 | 정보 | 테스트 코드의 고정 키와 소유자 암호 콘솔 출력 | 코드 | - |
 | I-2 | 정보 | Gradle Wrapper 파일 누락, 이관된 Shadow 플러그인 ID 사용 | 코드 | - |
 | I-3 | 정보 | README의 보안 기능 설명과 API가 실제 코드와 다름 | 코드 | - |
 
-> **재현** ✅: PoC로 실제 동작을 확인함 · 조회: 취약점 DB 조회 · 코드: 소스 정적 분석으로 확인함
+> **재현** ✅: PoC로 실제 동작을 확인함 · 조회: 취약점 DB 조회 · 코드: 소스 정적 분석으로 확인함(L-4는 PDFBox 소스로 확인)
 >
 > **조치 검증** ✅: 6장의 조치 코드를 적용한 사본에서 같은 PoC가 막히는 것을 확인함 · 부분 차단: 일부 시나리오만 막힘(한계는 각 항목에 적음)
 
@@ -56,6 +57,7 @@
 4. 조치 코드를 원본 사본에 적용해 같은 PoC를 다시 실행하고, 정상 기능(원래 테스트 PDF의 삽입·검증)이 유지되는지 확인했다(6장).
 5. 의존성 버전을 OSV.dev에서 조회했다.
 6. 독립 에이전트가 보고서를 2차 검토했고, 지적사항을 반영해 조치 코드와 보고서를 고친 뒤 다시 검증했다(7장).
+7. PR 리뷰 지적을 검토해 반영했다(8장).
 
 ---
 
@@ -75,7 +77,7 @@
 - **영향**: 변조된 문서가 정상 원본으로 판정된다. 계약서·시험지처럼 내용 무결성이 중요한 용도에서 위험하다.
 - **조치 방안**:
   1. (근본) 내용 무결성이 필요하면 워터마크와 별개로 PDF 전자서명(PAdES)을 쓴다. PDFBox의 `PDDocument.addSignature`와 BouncyCastle로 구현할 수 있다. **무결성은 이 방법으로만 보장된다.**
-  2. (현재 구조 유지) 서명 대상에 문서 지문을 넣는다. 지문은 페이지 수, 각 페이지의 MediaBox·CropBox·Rotate, 콘텐츠 스트림을 SHA-256으로 해시한 값이고, `body.doc`에 넣는다. 검증할 때는 워터마크가 덧붙인 마지막 스트림을 빼고 같은 해시를 다시 계산한다. 이때 마지막 스트림이 워터마크 형식인지도 확인한다. 허용 연산자는 `q Q cm re W n h Do`뿐이고, `re`는 0×0만 허용한다. 그래야 마지막 스트림을 공격자 내용으로 바꾸는 변조(R1)도 걸러진다. 코드는 6장 조치 ①을 참고한다.
+  2. (현재 구조 유지) 서명 대상에 문서 지문을 넣는다. 지문은 페이지 수, 각 페이지의 MediaBox·CropBox·Rotate, 콘텐츠 스트림을 SHA-256으로 해시한 값이고, `body.doc`에 넣는다. 검증할 때는 워터마크가 덧붙인 마지막 스트림을 빼고 같은 해시를 다시 계산한다. 이때 마지막 스트림이 워터마크 형식인지도 확인한다. 워터마크 스트림은 `q → cm → re → W → n → h → Do → Q` 묶음의 반복만 허용한다. `cm`은 평행 이동만, `re`는 0×0만, `Do`는 `/_k1`이 달린 Form만 허용하고, 스트림은 디코딩 후 4 KiB까지만 읽는다. 그래야 마지막 스트림을 공격자 내용으로 바꾸는 변조(R1)가 걸러지고, 허용 연산자만으로 클리핑 없이 임의 Form을 그리는 형태도 형식 검사에서 거부된다(후자는 PR 리뷰에서 지적받아 코드로 막았고, 해당 시나리오 PoC는 실행하지 않았다). 코드는 6장 조치 ①을 참고한다.
   3. README의 "위변조 여부 확인" 문구를 실제 보장 범위에 맞게 고친다.
 - **조치 ②의 한계**:
   - 지문은 콘텐츠 스트림과 페이지 기하만 덮는다. 폰트·이미지 같은 리소스 교체, 주석·양식 필드 추가는 검출하지 못한다.
@@ -125,6 +127,7 @@
   ```
 - **영향**: 정상 워터마크가 남아 있어도 "검증 실패"가 된다. 워터마크를 지우지 않고도 유출 추적을 피할 수 있다(안티 포렌식).
 - **조치 방안**: 후보별로 복호화·파싱 예외(`GeneralSecurityException`, `IOException`, `IllegalArgumentException`)만 잡아 그 후보를 건너뛴다. 키 설정 오류는 후보 루프에 들어가기 전에 `verifyDetailed`에서 먼저 걸러 `INVALID_KEYS`로 돌려준다(L-1). 그래서 키 오류가 "가짜 후보"로 묻히지 않는다. 복호화에 성공한 후보는 서명·지문이 맞지 않아도 결과에 남긴다. `extractFirst`는 유효한 후보를 먼저 돌려주고, 없으면 무효 후보를 돌려준다. 그 결과 "워터마크 없음(`WATERMARK_NOT_FOUND`)"과 "변조·이식 탐지(`INVALID_SIGNATURE`)"가 구분된다. 코드는 6장 조치 ②를 참고한다.
+- **추가 권장(미적용)**: 클레임이 서로 다른 유효 후보가 둘 이상이면 첫 번째를 돌려주지 말고 `MULTIPLE_WATERMARKS` 같은 별도 사유로 알린다. 정상 삽입은 문서 전체에 페이로드 스트림 하나만 쓰므로, 유효 후보가 여럿이면 누군가 손댄 문서다.
 
 ### M-3. 고정 마커(`/_k1`)로 워터마크를 쉽게 찾아 제거할 수 있음 — 🟨 중간
 
@@ -139,6 +142,7 @@
   1. 마커 이름을 문서마다 무작위로 정한다(예: 페이로드 해시에서 파생). 검증기는 모든 Form 딕셔너리의 스트림 값을 후보로 검사한다(M-2 조치로 가짜 후보는 안전하게 무시된다).
   2. M-4 조치로 수정 권한을 막아, 일반 편집 도구로 문서를 고치려면 소유자 암호가 필요하게 한다.
   3. 검증 결과 `WATERMARK_NOT_FOUND`를 "정상 아님"으로 다루는 운영 정책을 README에 명시한다. H-2 보완책처럼 눈에 보이는 추적 ID를 함께 넣는다.
+- **조치 ②의 부작용**: 조치 ②는 `/Filter`가 붙은 후보를 풀지 않고 버린다. 그래서 qpdf `--compress-streams=y`나 Acrobat "최적화"처럼 스트림을 다시 압축하는 도구로 저장한 정상 문서도 `WATERMARK_NOT_FOUND`가 된다. 이를 살리려면 `FlateDecode` 하나만 허용하고, `createRawInputStream()`으로 읽은 원본 바이트를 `java.util.zip.Inflater`로 풀되 출력이 64 KiB를 넘으면 즉시 중단한다(미적용).
 
 ### M-4. 사용자 암호 보유자에게 수정·조립·주석 권한을 허용함 — 🟨 중간
 
@@ -149,22 +153,25 @@
   [6] 사용자 암호로 연 문서 : isOwner=false canModify=true canAssemble=true canModifyAnnotations=true canFillInForm=true canExtract=false canPrint=true
   ```
 - **영향**: PDF 편집기에서 소유자 암호 없이 문서를 수정할 수 있어 H-1·M-3 공격이 더 쉬워진다.
-- **조치 방안**: 수정·조립·주석·양식 권한을 끄고 `setReadOnly()`로 고정한다. 코드는 6장 조치 ③을 참고한다. PDF 권한은 호환 뷰어가 지키는 약속일 뿐이고 qpdf 같은 도구로 해제할 수 있다. 따라서 이 조치는 공격 비용을 높일 뿐 위변조 방지 수단이 아니라는 점을 README에 적는다.
+- **조치 방안**: 수정·조립·주석·양식 권한을 끄고 `setReadOnly()`로 고정한다. 코드는 6장 조치 ③을 참고한다. PDF 권한은 호환 뷰어가 지키는 약속일 뿐이고 qpdf 같은 도구로 해제할 수 있다. 따라서 이 조치는 공격 비용을 높일 뿐 위변조 방지 수단이 아니라는 점을 README에 적는다. 소유자 암호가 사용자 암호와 같으면 이 조치가 무력화되므로 L-4 조치를 함께 적용한다.
 
-### M-5. 압축 폭탄 PDF로 검증·삽입 시 자원 고갈(OOM) — 🟨 중간
+### M-5. 압축 폭탄 PDF로 검증 시 자원 고갈(OOM) — 🟨 중간
 
-- **위치**: `PdfWatermarkInspector.java:46, 80-94`, `KurbyPdf.java:21`, `PdfVerificationUtil.java:53-55`
-- **설명**: 검증과 삽입 모두 외부에서 받은 PDF를 메모리 제한 없이 읽는다(`PDDocument.load`). 검증할 때 `/_k1` 스트림은 크기 제한 없이 끝까지 풀어서 메모리에 담는다. `verifyDetailed`는 `Exception`만 잡으므로 `OutOfMemoryError`가 호출자까지 그대로 전파된다.
+- **위치**: `PdfWatermarkInspector.java:46, 80-94`, `PdfVerificationUtil.java:53-55`
+- **설명**: 검증은 외부에서 받은 PDF를 메모리 제한 없이 읽고(`PDDocument.load`), `/_k1` 스트림을 크기 제한 없이 끝까지 풀어서 메모리에 담는다. `verifyDetailed`는 `Exception`만 잡으므로 `OutOfMemoryError`가 호출자까지 그대로 전파된다.
 - **재현**: 1 GiB의 0을 Flate로 압축한 스트림(PDF 약 1 MB)을 `/_k1`에 넣고 힙 256 MB로 검증했다.
   ```
   [7] 1 GiB 압축 폭탄(1,044,755 B) : THROWN java.lang.OutOfMemoryError: Java heap space
   ```
-- **영향**: 업로드된 PDF에 워터마크를 넣거나 검증하는 서버라면, 1 MB 요청 하나로 JVM이 메모리 부족에 빠져 서비스가 중단될 수 있다.
+- **삽입 경로는 해당하지 않음**: 원본 삽입 흐름(`KurbyPdf.java:21` 로드 → `PdfForensicEmbedder.embed` → `doc.save`)은 새 스트림을 덧붙이고 기존 스트림을 인코딩된 그대로 쓰거나 암호화할 뿐, 기존 콘텐츠·`/_k1` 스트림을 디코딩하지 않는다. 그래서 같은 Flate 폭탄으로 삽입 쪽 OOM이 난다는 근거는 없다. 삽입 쪽 메모리 상한은 조치 ①의 지문 계산이 콘텐츠 스트림을 디코딩하게 되면서 필요해지는 방어다.
+- **영향**: 업로드된 PDF를 검증하는 서버라면, 1 MB 요청 하나로 JVM이 메모리 부족에 빠져 서비스가 중단될 수 있다.
 - **조치 방안**:
   1. **디코딩 전에 거른다.** 정상 페이로드는 필터 없이 수백 바이트로 기록된다(`PdfForensicEmbedder.java:43-48`). 따라서 `/Filter`가 있거나 `/Length`가 64 KiB를 넘는 후보는 풀지 않고 버린다. PDFBox의 `COSStream.createInputStream()`은 필터 출력 전체를 먼저 디코딩하므로, 읽은 다음에 크기를 검사해서는 소용없다.
-  2. **PDF 전체에 상한을 둔다.** 삽입과 검증 모두 `MemoryUsageSetting.setupMixed(16 MiB, 256 MiB)`로 메모리와 임시 파일 사용량의 상한을 건다. 상한값은 서비스가 다루는 PDF 크기에 맞게 정한다.
-  3. 서비스 쪽에서도 업로드 크기와 처리 시간을 제한한다.
+  2. **PDF 전체에 상한을 둔다.** 검증에서 `MemoryUsageSetting.setupMixed(16 MiB, 256 MiB)`로 메모리와 임시 파일 사용량의 상한을 건다. 조치 ①을 적용하면 삽입도 지문 계산 때문에 콘텐츠 스트림을 디코딩하므로 같은 상한을 건다. 상한값은 서비스가 다루는 PDF 크기에 맞게 정한다.
+  3. **마지막 스트림은 크기를 제한해 읽는다.** 조치 ①이 워터마크 형식을 확인할 때 마지막 콘텐츠 스트림을 `toByteArray()`로 통째로 힙에 올리면, `setupMixed`의 두 번째 인자(임시 저장소 상한)는 이 힙 복사본을 막지 못한다. 그래서 디코딩 결과를 4 KiB까지만 읽고, 넘으면 워터마크 형식이 아닌 것으로 판정한다.
+  4. 서비스 쪽에서도 업로드 크기와 처리 시간을 제한한다.
   - 코드는 6장 조치 ①·②를 참고한다.
+- **조치 ②의 부작용**: `/Filter`가 붙은 후보를 모두 버리므로 다시 압축된 정상 워터마크도 찾지 못한다. 한계와 대안은 M-3에 적었다.
 - **조치 후 남는 비용**: 조치 ①의 지문 계산은 콘텐츠 스트림을 디코딩하므로, 콘텐츠 스트림에 넣은 압축 폭탄은 상한(256 MiB)에 닿을 때까지 디스크를 쓴다. 실측 결과 임시 파일은 약 186 MB까지 쓰였고, 1.5초 뒤 `IOException`으로 실패했다(5장 [B2]). OOM은 나지 않지만, 요청당 비용을 더 줄이려면 상한을 낮추거나 요청 동시성을 제한한다.
 
 ### M-6. 알려진 취약점이 있는 Jackson 2.17.1 사용(Fat JAR에 내장) — 🟨 중간
@@ -172,7 +179,7 @@
 - **위치**: `build.gradle.kts:28, 42-64`
 - **설명**: OSV.dev에서 조회한 결과, `jackson-databind 2.17.1`에 12건, `jackson-core 2.17.1`에 4건의 공개 권고가 있다. 그중 HIGH가 8건이다(예: GHSA-j3rv-43j4-c7qm, GHSA-rmj7-2vxq-3g9f, GHSA-cxp5-3px4-pw24, GHSA-p6pp-m3f8-5c89). 2.18 계열에서는 모두 2.18.11에서 수정됐다. `pdfbox 2.0.30`, `fontbox 2.0.30`, `commons-logging 1.2`는 조회 결과 권고가 없었다.
 - **실제 도달 가능성**: KurbyPdf는 AES-GCM 복호화에 성공한 JSON만 `readTree`로 파싱하고 다형성 역직렬화를 쓰지 않는다. 키 없는 공격자가 이 라이브러리를 통해 취약 코드에 도달할 가능성은 낮다.
-- **위험도를 중간으로 둔 이유**: README는 배포 방법으로 JAR 파일을 직접 참조하라고 안내한다(README.md:25-40). 그리고 `shadowJar`가 Jackson을 `io.github.juwonlee.shadow.jackson`으로 재배치해 JAR 안에 넣는다. 그래서 라이브러리 사용자가 자기 프로젝트의 의존성 관리로 버전을 올릴 수 없고, 고치려면 라이브러리를 새로 배포해야 한다. 앞으로 Maven 저장소에 POM과 함께 배포하면 `api(...)` 범위 때문에 취약 버전이 전이 의존성으로도 노출된다.
+- **위험도를 중간으로 둔 이유**: 1장 기준표의 "교체할 수 없게 내장한 HIGH 취약점 의존성" 규칙을 적용했다. 피해 자체는 제한적이지만, 사용자가 스스로 고칠 수 없다는 점을 위험으로 본 것이다. README는 배포 방법으로 JAR 파일을 직접 참조하라고 안내한다(README.md:25-40). 그리고 `shadowJar`가 Jackson을 `io.github.juwonlee.shadow.jackson`으로 재배치해 JAR 안에 넣는다. 그래서 라이브러리 사용자가 자기 프로젝트의 의존성 관리로 버전을 올릴 수 없고, 고치려면 라이브러리를 새로 배포해야 한다. 앞으로 Maven 저장소에 POM과 함께 배포하면 `api(...)` 범위 때문에 취약 버전이 전이 의존성으로도 노출된다.
 - **조치 방안**: Java 8과 호환되는 2.18.11 이상으로 올리고, BOM으로 core·databind·annotations 버전을 함께 고정한다. Jackson은 내부 구현에만 쓰이므로 `implementation`으로 바꾼다. 이후 새 버전을 배포한다.
   ```kotlin
   dependencies {
@@ -217,11 +224,18 @@
 - **조치 방안**: 사용자 암호가 없어도 빈 사용자 암호와 무작위 소유자 암호로 항상 보호를 적용한다. 빈 사용자 암호는 누구나 열 수 있으므로 기밀성은 없고, 권한 제한(M-4)과 스트림 암호화만 더해진다. 코드는 6장 조치 ③을 참고한다.
 - **호환성 영향**: 조치 후에는 모든 출력이 AES-256으로 암호화되고, `canExtractContent=false`와 읽기 전용 권한이 항상 적용된다. `WatermarkResult.getOwnerPassword()`도 항상 null이 아닌 값을 반환한다. 이 동작 변경은 릴리스 노트에 적는다.
 
+### L-4. 소유자 암호와 사용자 암호가 같아도 허용해 권한 제한이 풀림 — 🟩 낮음
+
+- **위치**: `KurbyPdf.java:34-41`, `PdfProtector.java:8-16`
+- **설명**: 원본도, 조치 ③도 `ownerPwd.equals(userPwd)`를 검사하지 않는다. PDFBox는 문서를 열 때 소유자 암호를 먼저 비교하고(`StandardSecurityHandler.java:236`) 그다음에 사용자 암호를 비교한다(`:264`). 따라서 호출자가 `WatermarkRequest`에 두 암호를 같은 값으로 넣으면, 사용자 암호로 연 사람이 소유자 권한(`isOwnerPermission=true`)을 얻어 모든 권한 제한이 풀린다.
+- **영향**: 호출자의 설정 실수 하나로 M-4 조치가 무력화된다. 호출자가 실수해야 하므로 단독 피해는 제한적이다.
+- **조치 방안**: 보호를 적용하기 직전에 두 암호가 같으면 거부한다. 코드는 6장 조치 ③을 참고한다.
+
 ### I-1. 테스트 코드의 고정 키와 소유자 암호 콘솔 출력 — ⬜ 정보
 
-- **위치**: `KurbyPdfTest.java:24-29, 80`
-- **설명**: 테스트 키는 `0x11`, `0x22`로 채운 고정값이다. 생성된 소유자 암호는 표준 출력으로 찍힌다. 테스트 전용이지만 예제 코드를 그대로 옮겨 쓰면 운영 로그에 소유자 암호가 남는다.
-- **조치 방안**: 테스트에서도 `SecureRandom`으로 키를 만들고, 소유자 암호는 출력하지 않고 `assertNotNull`로만 확인한다.
+- **위치**: `KurbyPdfTest.java:24-30, 80-81`
+- **설명**: 테스트 키는 `0x11`, `0x22`로 채운 고정값이다. 생성된 소유자 암호와 사용자 암호가 표준 출력으로 찍힌다. 테스트 전용이지만 예제 코드를 그대로 옮겨 쓰면 운영 로그에 소유자 암호가 남는다.
+- **조치 방안**: 테스트에서도 `SecureRandom`으로 키를 만들고, 암호는 출력하지 않고 `assertNotNull`로만 확인한다.
 
 ### I-2. Gradle Wrapper 파일 누락, 이관된 Shadow 플러그인 ID 사용 — ⬜ 정보
 
@@ -249,7 +263,7 @@
 | 유출자가 가짜 `/_k1`을 덧붙여 유출 | 사용자 암호 | 검증 실패로 추적 불가 | M-2 |
 | 내용을 고친 문서를 원본처럼 유통 | 사용자 암호 | 검증 성공 | H-1, M-4 |
 | 검증 서버 운영자·협력사가 특정인을 모함 | 검증 키 | 임의 `uid`의 유효한 워터마크 생성 | M-1 |
-| 삽입·검증 API에 1 MB PDF 업로드 | 없음 | JVM 메모리 고갈 | M-5 |
+| 검증 API에 1 MB PDF 업로드 | 없음 | JVM 메모리 고갈 | M-5 |
 
 ---
 
@@ -258,7 +272,7 @@
 - 원본 소스(`74d3aed`)를 JDK 1.8.0_261 `javac`로 컴파일했다.
 - 의존성은 `build.gradle.kts`와 같은 버전의 JAR를 Maven Central에서 받아 SHA-1을 대조했다(pdfbox·fontbox 2.0.30, jackson-* 2.17.1, commons-logging 1.2).
 - PoC는 저장소 밖 임시 폴더에서 실행했다. 피해자 문서는 `uid=victim-001`, 사용자 암호 `userpw`로 만들었다. 공격은 모두 HMAC·AES 키 없이 수행했다([5] 제외).
-- [R1], [R1b], [R2], [B2]는 2차 검토 과정에서 추가한 시나리오다.
+- [R1], [R1b], [R2], [B2]는 2차 검토 과정에서 추가한 시나리오다. 2차 검토자가 작성한 [R3](`/_k1`에 넣은 압축 폭탄)은 1차 PoC [7]과 같은 시나리오라 [7] 행에 함께 기록했다.
 
 | 번호 | 시나리오 | 원본 결과 | 조치 후 |
 | --- | --- | --- | --- |
@@ -273,17 +287,18 @@
 | [5] | 검증 키로 `uid=innocent-user` 워터마크 생성 | `valid=true` ❌ | `valid=true` ❌ (M-1 설계 변경 필요) |
 | [6] | 사용자 암호로 연 문서의 권한 | `canModify=true` 등 ❌ | `canModify=false` 등 ✅ |
 | [6b] | 사용자 암호 없이 생성 | `encrypted=false` ❌ | `encrypted=true` ✅ |
-| [7] | 1 GiB 압축 폭탄 `/_k1`, 힙 256 MB | `OutOfMemoryError` ❌ | `WATERMARK_NOT_FOUND`, 2 ms, 임시 파일 0 MB ✅ |
+| [7]·[R3] | 1 GiB 압축 폭탄 `/_k1`, 힙 256 MB | `OutOfMemoryError` ❌ | `WATERMARK_NOT_FOUND`, 2 ms, 임시 파일 0 MB ✅ |
 | [B2] | 1 GiB 압축 폭탄을 콘텐츠 스트림에 넣음, 힙 256 MB | `WATERMARK_NOT_FOUND`(콘텐츠를 읽지 않음) | `EXCEPTION:IOException`, 1.5 s, 임시 파일 약 186 MB (상한 내) |
 | - | 원래 테스트 PDF(`sample.pdf`) 삽입·검증(암호 있음/없음) | `valid=true` | `valid=true` ✅ |
 | - | 1바이트 HMAC 키 | 허용 ❌ | `hmacKey must be >= 32 bytes` ✅ |
 | - | null HMAC 키 | `NullPointerException` ❌ | `keys must not be null` ✅ |
+| - | 소유자 암호와 사용자 암호를 같게 지정(8장에서 추가) | 허용 ❌ | `ownerPassword must differ from userPassword` ✅ |
 
 ---
 
 ## 6. 조치 코드 (현재 소스 기준)
 
-아래 조치 ①~④는 원본 사본에 그대로 적용해 컴파일하고, 5장의 "조치 후" 결과를 얻은 코드다. M-1(비대칭 서명), M-6(의존성 상향), L-2(위치 난수)는 설계·빌드 변경이라 이 패치에 넣지 않았다.
+아래 조치 ①~④는 원본 사본에 그대로 적용해 컴파일하고, 5장의 "조치 후" 결과를 얻은 코드다. 8장에서 고친 부분(`isWatermarkStream`의 순서·대상·크기 검사, 조치 ③의 암호 동일 거부)도 사본에 적용해 컴파일하고, 정상 기능 회귀와 암호 동일 거부를 실행해 확인했다. M-1(비대칭 서명), M-6(의존성 상향), L-2(위치 난수)는 설계·빌드 변경이라 이 패치에 넣지 않았다.
 
 ### 조치 ① 문서 지문 바인딩과 메모리 상한 (H-1, H-2, M-5)
 
@@ -293,27 +308,33 @@
 package io.github.juwonlee.kurbypdf;
 
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 final class DocFingerprint {
     static final String MISMATCH = "MISMATCH";
-    /** 워터마크 스트림에 허용하는 연산자. 0x0 클리핑 안에서 Form을 그리는 것 외에는 아무것도 할 수 없다. */
-    private static final Set<String> WM_OPS = new HashSet<String>(Arrays.asList("q", "Q", "cm", "re", "W", "n", "h", "Do"));
+    /** 워터마크 스트림 한 묶음의 연산자 순서(PdfForensicEmbedder가 복제본마다 쓰는 순서). 이 묶음의 반복만 허용한다. */
+    private static final List<String> WM_SEQ = Arrays.asList("q", "cm", "re", "W", "n", "h", "Do", "Q");
+    /** 워터마크 스트림의 디코딩 크기 상한. 정상 스트림은 복제본 3개 기준 수백 바이트다. */
+    private static final int MAX_WM_STREAM = 4 * 1024;
+    private static final COSName WM_KEY = COSName.getPDFName("_k1");
 
     private DocFingerprint() {}
 
@@ -330,7 +351,7 @@ final class DocFingerprint {
             for (Iterator<PDStream> it = page.getContentStreams(); it.hasNext(); ) streams.add(it.next());
             int n = streams.size();
             if (forVerify) {
-                if (n == 0 || !isWatermarkStream(streams.get(n - 1))) return MISMATCH;
+                if (n == 0 || !isWatermarkStream(streams.get(n - 1), page.getResources())) return MISMATCH;
                 n--;
             }
             for (int i = 0; i < n; i++) {
@@ -348,22 +369,60 @@ final class DocFingerprint {
         return b.getLowerLeftX() + "," + b.getLowerLeftY() + "," + b.getUpperRightX() + "," + b.getUpperRightY() + ";";
     }
 
-    private static boolean isWatermarkStream(PDStream s) throws Exception {
-        PDFStreamParser parser = new PDFStreamParser(s.toByteArray());
+    /** 마지막 스트림이 "평행 이동 → 0x0 클리핑 → 페이로드 Form 그리기" 묶음의 반복인지 확인한다. */
+    private static boolean isWatermarkStream(PDStream s, PDResources res) throws Exception {
+        byte[] data;
+        try (InputStream in = s.createInputStream()) {
+            data = readAtMost(in, MAX_WM_STREAM);
+        }
+        if (data == null || res == null) return false;
+        PDFStreamParser parser = new PDFStreamParser(data);
         parser.parse();
         List<Object> operands = new ArrayList<Object>();
+        int k = 0;
         for (Object token : parser.getTokens()) {
             if (!(token instanceof Operator)) { operands.add(token); continue; }
             String op = ((Operator) token).getName();
-            if (!WM_OPS.contains(op)) return false;
-            if (op.equals("re")) {
-                for (Object o : operands) {
-                    if (!(o instanceof COSNumber) || ((COSNumber) o).floatValue() != 0f) return false;
-                }
-            }
+            if (!op.equals(WM_SEQ.get(k % WM_SEQ.size()))) return false;
+            if (op.equals("cm") && !isTranslation(operands)) return false;
+            if (op.equals("re") && !isZeroRect(operands)) return false;
+            if (op.equals("Do") && !isPayloadForm(res, operands)) return false;
+            if (!op.equals("cm") && !op.equals("re") && !op.equals("Do") && !operands.isEmpty()) return false;
             operands.clear();
+            k++;
         }
-        return true;
+        return k > 0 && k % WM_SEQ.size() == 0 && operands.isEmpty();
+    }
+
+    private static boolean isTranslation(List<Object> o) {
+        return o.size() == 6 && num(o, 0) == 1f && num(o, 1) == 0f && num(o, 2) == 0f && num(o, 3) == 1f
+                && o.get(4) instanceof COSNumber && o.get(5) instanceof COSNumber;
+    }
+
+    private static boolean isZeroRect(List<Object> o) {
+        return o.size() == 4 && num(o, 0) == 0f && num(o, 1) == 0f && num(o, 2) == 0f && num(o, 3) == 0f;
+    }
+
+    private static float num(List<Object> o, int i) {
+        return o.get(i) instanceof COSNumber ? ((COSNumber) o.get(i)).floatValue() : Float.NaN;
+    }
+
+    private static boolean isPayloadForm(PDResources res, List<Object> o) throws Exception {
+        if (o.size() != 1 || !(o.get(0) instanceof COSName)) return false;
+        PDXObject x = res.getXObject((COSName) o.get(0));
+        return x instanceof PDFormXObject && ((PDFormXObject) x).getCOSObject().containsKey(WM_KEY);
+    }
+
+    /** limit 바이트까지만 읽는다. 넘으면 null을 반환해 힙에 큰 배열을 만들지 않는다. */
+    private static byte[] readAtMost(InputStream in, int limit) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        int r;
+        while ((r = in.read(buf)) != -1) {
+            if (out.size() + r > limit) return null;
+            out.write(buf, 0, r);
+        }
+        return out.toByteArray();
     }
 }
 ```
@@ -381,7 +440,7 @@ final class DocFingerprint {
 +        wrap.put("doc", body.get("doc"));
 ```
 
-`KurbyPdf.java` — 메모리 상한, 삽입 직전 지문 계산(키 검증은 조치 ④, 보호 적용은 조치 ③):
+`KurbyPdf.java` — 삽입 직전 지문 계산과, 그 디코딩에 대비한 메모리 상한(키 검증은 조치 ④, 보호 적용은 조치 ③):
 
 ```diff
 -            doc = PDDocument.load(bin);
@@ -446,7 +505,7 @@ final class DocFingerprint {
                              }
 ```
 
-### 조치 ③ 권한 축소와 항상 보호 적용 (M-4, L-3)
+### 조치 ③ 권한 축소와 항상 보호 적용 (M-4, L-3, L-4)
 
 `PdfProtector.java`:
 
@@ -476,6 +535,7 @@ final class DocFingerprint {
 +                ownerPwd = KeyUtil.randomOwnerPassword();
 +            }
 +            String userPwd = req.getUserPassword() == null ? "" : req.getUserPassword();
++            if (ownerPwd.equals(userPwd)) throw new IllegalArgumentException("ownerPassword must differ from userPassword");
 +            PdfProtector.applyUserPassword(doc, userPwd, ownerPwd);
 ```
 
@@ -526,7 +586,7 @@ final class DocFingerprint {
 | --- | --- |
 | 검토자 | 1차 작성 세션과 분리된 독립 Claude Code 에이전트(Opus 5.5) |
 | 일자 | 2026-11-17 |
-| 방법 | 보고서의 모든 파일:라인 인용을 원본 소스와 대조했다. OSV.dev를 다시 조회했다. 원본과 조치본에서 PoC를 직접 다시 실행했다. 새 공격 시나리오(R1, R1b, R2, R3)도 작성해 실행했다. |
+| 방법 | 보고서의 모든 파일:라인 인용을 원본 소스와 대조했다. OSV.dev를 다시 조회했다. 원본과 조치본에서 PoC를 직접 다시 실행했다. 새 공격 시나리오(R1, R1b, R2, R3)도 작성해 실행했다. R3은 1차 PoC [7]과 같은 시나리오다. |
 | 결론 | 라인 인용, 통계 합계, OSV 수치, 원본 재현 결과는 정확함. 다만 1차 초안의 조치 ①·②가 일부 시나리오를 막지 못해, H-1·H-2·M-5의 "✅ 차단" 표기가 과장이라는 지적을 받았다. |
 
 ### 지적사항과 반영 결과
@@ -535,7 +595,7 @@ final class DocFingerprint {
 | --- | --- | --- | --- |
 | 1 | 조치 오류 | 같은 원본을 받은 수신자끼리 페이로드를 바꾸면([R2]) 지문이 같아 통과함 | H-2를 "부분 차단"으로 낮추고 한계와 보완책(수신자별 표식, 발급 기록 대조)을 추가함. [R2]를 5장에 기록함 |
 | 2 | 조치 오류 | 마지막 스트림을 무조건 제외해 스트림 교체([R1])와 CropBox·Rotate 변조([R1b])가 통과함 | 지문에 페이지 기하를 넣고, 마지막 스트림 연산자 화이트리스트를 추가함. 재실행 결과 둘 다 `INVALID_SIGNATURE`로 검출됨. 남는 한계는 H-1에 명시함 |
-| 3 | 조치 오류 | 64 KiB 상한은 디코딩 후에 적용돼 압축 폭탄이 디스크 약 1 GB 소모로 바뀜. 지문 계산이 새 공격면이 됨 | 디코딩 전에 `/Filter`·`/Length`로 거르게 바꿈([7]: 2 ms, 임시 파일 0 MB). 저장 공간 상한(256 MiB)을 추가함. 콘텐츠 스트림 폭탄([B2])의 잔여 비용을 M-5에 명시함 |
+| 3 | 조치 오류 | ([R3]) 64 KiB 상한은 디코딩 후에 적용돼 압축 폭탄이 디스크 약 1 GB 소모로 바뀜. 지문 계산이 새 공격면이 됨 | 디코딩 전에 `/Filter`·`/Length`로 거르게 바꿈([7]: 2 ms, 임시 파일 0 MB). 저장 공간 상한(256 MiB)을 추가함. 콘텐츠 스트림 폭탄([B2])의 잔여 비용을 M-5에 명시함 |
 | 4 | 조치 오류 | 모든 예외를 삼키고 무효 후보를 버려, 변조와 워터마크 없음이 구분되지 않음 | 예외 범위를 좁히고, 무효 후보는 남겨 `INVALID_SIGNATURE`를 돌려주도록 바꿈 |
 | 5 | 누락 | 검증 쪽 키 검증이 없고, `verifyBase64`가 예외를 던짐 | L-1 위치와 조치 ④에 검증 쪽 코드를 추가함 |
 | 6 | 누락 | 삽입 쪽(`KurbyPdf.java:21`)도 메모리 제한 없이 로드함 | M-5 위치와 조치 ①에 추가함 |
@@ -549,3 +609,23 @@ final class DocFingerprint {
 ### 반영 후 재검증
 
 보강한 조치 코드를 원본 사본에 다시 적용했다. 그 상태로 1차 PoC([0]~[7])와 2차 검토 PoC([R1], [R1b], [R2], [R3], [B2]), 원래 테스트 PDF를 모두 다시 실행했다. 결과는 5장 "조치 후" 열과 같다. 차단되지 않은 [R2], [3], [5]는 각각 H-2, M-3, M-1의 한계로 명시했다.
+
+---
+
+## 8. PR 리뷰 반영
+
+PR #48 리뷰(juhwanHeo, ShsH0920)의 지적을 소스와 대조해 타당성을 검토하고 반영했다. 새 공격 PoC는 추가로 실행하지 않았다. 고친 조치 코드는 사본에 적용해 컴파일했고, 원래 테스트 PDF(`sample.pdf`)의 삽입·검증(암호 있음/없음)이 `valid=true`로 유지되는지와 암호 동일 거부를 실행해 확인했다.
+
+| # | 리뷰어 | 지적 | 검토 | 반영 |
+| --- | --- | --- | --- | --- |
+| 1 | juhwanHeo | M-5 삽입 경로(`KurbyPdf.java:21`)의 OOM 근거가 없음 | 타당. 원본 삽입 흐름은 기존 스트림을 디코딩하지 않으며, 삽입 쪽 재현도 없었음 | M-5를 "검증 시"로 좁히고 위치에서 삽입 경로를 뺌. 삽입 쪽 상한은 조치 ① 적용 시의 방어로 옮김 |
+| 2 | juhwanHeo | M-6 중간 등급이 기준표와 맞지 않음 | 타당. 근거가 피해가 아니라 패치 불가와 노출 범위였음 | 기준표 중간 행에 "교체할 수 없게 내장한 HIGH 취약점 의존성" 규칙을 추가해 통계와 기준을 맞춤 |
+| 3 | juhwanHeo | `/Filter` 후보 일괄 거부로 재압축된 정상 워터마크도 사라짐 | 타당 | M-3·M-5에 부작용과 대안(`FlateDecode`만 허용하고 출력 64 KiB에서 중단)을 적음. 코드는 미적용 |
+| 4 | juhwanHeo | 소유자·사용자 암호가 같으면 소유자 권한이 열림 | 타당. PDFBox가 소유자 암호를 먼저 비교함(ShsH0920도 소스로 확인) | L-4(낮음) 추가, 통계를 낮음 4·합계 15로 갱신, 조치 ③에 거부 코드를 넣고 실행 확인 |
+| 5 | juhwanHeo | 대화 기록이 없어 CLAUDE.md 사용 조건을 확인할 수 없음 | 타당. 저장소 공통 규칙도 `prompt.md` 제출을 요구함 | `week3/prompt.md` 추가 |
+| 6 | ShsH0920 | 화이트리스트가 연산자 순서와 `Do` 대상을 검사하지 않음 | 타당. 코드상 클리핑 없는 `q cm Do Q`가 통과함 | 묶음 순서, `cm` 평행 이동, `re` 0×0, `Do` 대상(`/_k1` Form)까지 검사하도록 조치 ①을 고침 |
+| 7 | ShsH0920 | 마지막 스트림을 크기 제한 없이 힙에 복사함 | 타당. `toByteArray()`는 `setupMixed` 상한 대상이 아님 | 디코딩 결과를 4 KiB까지만 읽도록 조치 ①을 고치고 M-5에 적음 |
+| 8 | ShsH0920 | [R3] 결과가 5장에 없음 | 타당 | [R3]이 [7]과 같은 시나리오임을 5장·7장에 밝히고 [7] 행에 함께 표기 |
+| 9 | ShsH0920 | 유효 워터마크가 여럿일 때 구분이 없음(제안) | 타당 | M-2에 `MULTIPLE_WATERMARKS` 권장을 적음. 코드는 미적용 |
+| 10 | ShsH0920 | I-1 인용 범위(제안) | 타당 | `KurbyPdfTest.java:24-30, 80-81`로 고치고 사용자 암호 출력도 적음 |
+| 11 | juhwanHeo | CLAUDE.md에 저장소 규칙 추가(선택) | 반영하지 않음 | Task1은 "기존 CLAUDE.md를 한국어로 옮기기만" 하라는 사용자 지시로 수행했고, 저장소 규칙은 `juwonlee/PROJECT.md`에 따로 있음 |
