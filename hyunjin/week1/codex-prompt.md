@@ -1,6 +1,6 @@
 # Codex Prompt Log — Week1
 
-- 사용 AI: ChatGPT/Codex
+- 사용 AI: Codex (GPT-6 Sol)
 - 사용 스킬: `imagegen`
 - 기록 범위: Week1 과제 확인부터 이미지 생성·검증까지의 대화 흐름
 
