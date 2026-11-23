@@ -182,9 +182,18 @@ Avoid: character lookalikes, copied franchise elements, dense clutter, dark mood
 
 ### imagegen 응답
 
+도구 출력 원문입니다. 텍스트 사이의 `[생성된 배경 이미지]` 자리에 이미지 1장이 출력되었습니다.
+
 ```text
-보라색·노란색의 아늑한 작업 공간, 서버·클라우드 장식, 네 개의 텍스트 영역을
-갖춘 배경 일러스트를 생성했습니다.
+Script completed
+Wall time 29.9 seconds
+Output:
+
+[생성된 배경 이미지]
+
+Generated images are saved to /Users/hapyjin_macbook/.codex/generated_images/01a0e2ef-1a91-7ec1-bf99-35958ec772e2 as /Users/hapyjin_macbook/.codex/generated_images/01a0e2ef-1a91-7ec1-bf99-35958ec772e2/exec-642ac550-42ef-4561-876e-3b5c9c90074b.png by default.
+If you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.
+The generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.
 ```
 
 ### Codex
