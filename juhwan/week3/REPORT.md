@@ -74,7 +74,7 @@
 - **조치 방안:**
   1. `:46`의 `MemoryUsageSetting` 상한을 **필수**로 적용합니다(힙 폭주 (a)(b)를 함께 막는 1차 방어). 로컬에서 Image 폭탄 (b)는 상한을 걸자 `IOException: Maximum allowed scratch file memory exceeded.`로 **948ms** 만에 거부됐습니다.
   2. `streamToBytes()`의 필터·크기 검사는 `/_k1` 전용 보조 방어로 둡니다(필터 붙은 `_k1`을 위조로 거부). (a) 폭탄 PDF는 이 패치 적용 후 `-Xmx256m`에서 **163ms** 만에 `EXCEPTION:IOException`으로 거부되고 정상 워터마크 검증은 계속 `valid=true`였습니다.
-  3. (c) 파서 스택 소진: pdfbox를 **2.0.37**로 올리면 막힙니다. 같은 `deep.pdf`가 2.0.30에서는 `StackOverflowError`, 2.0.37에서는 `EXCEPTION:IOException`으로 거부됨을 로컬에서 확인했습니다(중첩 한도 추가). `verifyDetailed()` 시작부의 입력 크기 상한(예: `pdfBytes.length > 50MB` → `Result.fail("PDF_TOO_LARGE")`)으로 부분 완화됩니다.
+  3. (c) 파서 스택 소진: PDFBox를 **2.0.37**로 올립니다. 기존 로컬 검토에서는 같은 입력이 2.0.30에서 `StackOverflowError`, 중첩 한도가 추가된 2.0.37에서 `EXCEPTION:IOException`으로 거부됐습니다. 업그레이드 전에는 `verifyDetailed()`에서 `StackOverflowError`를 별도로 잡아 `Result.fail("EXCEPTION:StackOverflowError")`로 반환하는 임시 완화책을 둘 수 있습니다(**미검증**). 이 처리는 파서의 스택 소진 이후 호출자에 실패 결과를 돌려줍니다. 힙 소진은 1번의 메모리 상한으로 제한합니다.
   ```java
   // PdfWatermarkInspector.java
   import org.apache.pdfbox.io.MemoryUsageSetting;
@@ -123,7 +123,7 @@
   ```
   - 공격 시나리오 1 (오귀속): 실제 유출자 bob이 유출할 문서에서 자기 워터마크를 지우고(KP-03), alice 문서의 `_k1`을 붙여 넣습니다. 검증 결과는 "alice가 유출"이 됩니다.
   - 공격 시나리오 2 (변조 미탐지): 받은 계약서 본문을 고쳐도 `verify()`는 `true`를 반환합니다. "정상 문서"라는 근거로 오용될 수 있습니다.
-- **조치 방안:** 삽입 전에 원본 콘텐츠 스트림의 다이제스트를 서명 대상 claims에 넣고, 검증 시 다시 계산해 비교합니다. **단, 2차 검토에서 이 다이제스트만으로는 본문 변조(시나리오 2)를 완전히 막지 못함이 확인되었습니다. 아래 조치는 "이식 탐지"(시나리오 1: 다른 문서로 `_k1` 복사)에 한정해 유효하며, 변조 탐지는 뒤의 발급 기록 대조로 보완해야 합니다.**
+- **조치 방안:** 삽입 전에 원본 콘텐츠 스트림의 다이제스트를 서명 대상 페이로드의 별도 필드에 넣고, 검증 시 다시 계산해 비교합니다. **2차 검토 결과 이 조치의 범위는 이식 탐지(시나리오 1)이며, 본문 변조 탐지(시나리오 2)는 아래의 발급 기록 대조로 보완합니다.**
   - 한계 (2차 검토): 검증 시 `ContentDigest.of(doc, true)`는 페이지의 **마지막 콘텐츠 스트림을 내용 확인 없이 제외**합니다. 공격자가 그 마지막 스트림을 `q … /Fm0 Do Q` + 보이는 변조 텍스트로 바꾸면 나머지 스트림 다이제스트는 그대로라 통과합니다. 또 다이제스트 대상이 콘텐츠 스트림뿐이라, 이름으로 참조되는 이미지·폰트 XObject 데이터와 `/Annots`(FreeText 주석·양식 값)는 바꿔도 탐지하지 못합니다.
   - 아래 `ContentDigest` 계산 자체는 로컬에서 확인했습니다(이식·변조 모두 값이 달라짐). 하지만 위 한계 때문에 "본문 변조 전면 차단"으로 주장하지 않습니다.
   ```java
@@ -147,20 +147,22 @@
       return Base64.getEncoder().encodeToString(md.digest());
   }
 
-  // KurbyPdf.java:26-28 — 호출자 Map을 바꾸지 않도록 복사 후 바인딩 값 추가
-  Map<String, String> claims = new HashMap<>(req.getClaims());
-  claims.put("_cd", ContentDigest.of(doc, false));
-  byte[] payload = WatermarkPayload.buildPayload(claims, hmacKey, aesKey);
+  // KurbyPdf.java:26-28 — 호출자 claims와 문서 다이제스트를 별도로 전달
+  String contentDigest = ContentDigest.of(doc, false);
+  byte[] payload = WatermarkPayload.buildPayload(req.getClaims(), hmacKey, aesKey, contentDigest);
 
   // PdfForensicEmbedder.java:59 — resetContext=true는 맨 앞에 "q" 스트림을 끼워 넣어 원본 스트림 배열을 바꾸므로 false로 변경
   //   (각 복제본은 이미 :80/:86에서 save/restoreGraphicsState로 감싸져 있음)
   new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.APPEND, true, false)
 
-  // PdfWatermarkInspector.extractAll() — 문서 로드 직후 한 번 계산하고, :136 판정에 결합
+  // PdfWatermarkInspector.extractAll() — 문서 로드 직후 한 번 계산해 decryptAndVerify에 전달
   String cd = ContentDigest.of(doc, true);
-  boolean valid = MessageDigest.isEqual(expect, got) && cd.equals(claims.get("_cd"));
+
+  // PdfWatermarkInspector.decryptAndVerify() — 검증 시 서명된 다이제스트와 비교
+  boolean valid = MessageDigest.isEqual(expect, got) && cd.equals(root.path("contentDigest").asText());
   ```
-  - 이 패치를 적용하면 `_cd`가 없는 기존 문서는 `valid=false`가 됩니다. 호환이 필요하면 `Result`에 `contentBound` 플래그를 따로 두는 편이 낫습니다. `extractAll()`에서 계산한 `cd`를 `:136` 판정에 쓰려면 `decryptAndVerify(...)`(`:96`) 시그니처에 `cd`를 넘기도록 바꿔야 하므로, 위 한 줄은 그대로 적용되지 않고 시그니처 수정이 함께 필요합니다.
+  - `WatermarkPayload.java:27-31,41-46`에서 `contentDigest`를 `body`와 `wrap`의 최상위 필드에 넣습니다. 검증기는 `PdfWatermarkInspector.java:122-136`에서 동일한 필드 순서로 서명 입력을 재구성합니다. 이 방식은 호출자 claims의 `_cd` 값을 보존하며 `getClaims()`에는 사용자 claims만 반환합니다.
+  - 이 예시의 검증 판정에서는 `contentDigest`가 없는 기존 문서가 `valid=false`가 됩니다. 기존 문서도 받아야 한다면 기존 서명 형식을 별도로 검증한 뒤 `Result`의 `contentBound`로 문서 결합 여부를 구분합니다. 페이로드 필드와 메서드 시그니처를 반영한 통합 패치는 **미검증**입니다.
   - **변조 탐지(권장): 발급 기록 대조.** 발급 시 `nonce → (수신자, fileId, SHA-256(출력 PDF 바이트))`를 서버에 저장합니다. 검증 시 제출된 PDF 바이트 해시를 이 기록과 비교해, 다르면 "워터마크는 유효하나 문서가 발급본과 다름"으로 보고합니다. 이렇게 하면 마지막 스트림·리소스·주석 변조까지 모두 잡히고, 재사용(동일 nonce 재제출)도 함께 탐지됩니다.
   - README의 "위변조 방지" 문구는 "워터마크 페이로드 위변조 방지"로 범위를 좁혀 고칩니다(문서 본문 무결성은 발급 기록 대조로 보장).
 
@@ -192,15 +194,15 @@
       continue; // 위조/손상 스트림은 무시
   }
 
-  // PdfWatermarkInspector.java:31-33 — 첫 번째가 아니라 유효한 것을 선택
+  // PdfWatermarkInspector.java:31-33 — 유효한 후보 우선, 없으면 기존 실패 사유 유지
   for (DecodedWatermark d : list) if (d.isSignatureValid()) return d;
-  return null;
+  return list.isEmpty() ? null : list.get(0);
 
   // PdfForensicEmbedder.java:40 — 위치 난수는 SecureRandom 사용 (시드 지정 오버로드는 테스트 전용으로 분리)
   Random rnd = new java.security.SecureRandom();
   ```
   - 키 이름은 비밀 키에서 유도합니다(예: `HMAC(hmacKey, "kurbypdf-name")` 앞 8바이트를 hex로). 이렇게 하면 `/_k1` 같은 고정 문자열 검색으로는 찾지 못합니다. 다만 구조 분석으로 찾아 지우는 것까지 막을 수는 없습니다. 추적이 중요하면 보이는 워터마크나 서버 측 배포 로그를 함께 쓰라고 README에 적습니다.
-  - 유효한 워터마크가 둘 이상이고 claims가 서로 다르면(공격자가 이식한 유효 워터마크를 앞에 둔 경우) `Result.fail("CONFLICTING_WATERMARKS")`로 처리합니다. 이 분기 수정은 **미검증**입니다(패치를 적용해 실행하지 않음).
+  - 디코딩된 후보가 없으면 `WATERMARK_NOT_FOUND`, 디코딩된 후보는 있으나 모두 서명이 무효면 `INVALID_SIGNATURE`를 반환합니다(`PdfVerificationUtil.java:42-47`). 유효한 워터마크가 둘 이상이고 claims가 서로 다르면 `Result.fail("CONFLICTING_WATERMARKS")`로 처리합니다. 후보 선택과 충돌 분기는 **미검증**입니다.
 
 ### KP-04 키 길이·키 분리를 검증하지 않음
 
