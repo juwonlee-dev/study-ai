@@ -11,11 +11,11 @@
 | Info | 점수 없음 (보안 약점·개선 권고) | 2 | KP-06, KP-07 |
 | **합계** | | **7** | |
 
-[^kp05]: KP-05는 현재 코드 경로에서 도달 불가한 의존성 권고라 CVSS를 산정하지 않았다. 업스트림 최고 위험도(HIGH)와 배포 경로(`api` 전이·fat JAR relocate 은닉)를 고려해 Low로 분류했다.
+[^kp05]: KP-05는 현재 코드 경로에서 도달 불가한 의존성 권고라 CVSS를 산정하지 않았다. 업스트림 최고 위험도(HIGH), fat JAR 배포 시 relocate에 따른 탐지 누락 가능성, 향후 POM과 함께 배포할 경우의 `api` 전이 위험을 고려해 Low로 분류했다.
 
 | ID | 위험도 | 제목 | 위치 | 로컬 PoC |
 |---|---|---|---|---|
-| KP-01 | High (7.5) | 검증 경로에서 외부 PDF로 무제한 메모리/스택 사용(DoS) | `PdfWatermarkInspector.java:46,56,80-94` | 재현됨 |
+| KP-01 | High (7.5) | 검증 경로에서 외부 PDF로 무제한 메모리/스택 사용(DoS) | `PdfWatermarkInspector.java:46,56,80-94` | 기존 재현 기록 있음, (a)의 256 MiB 실행 스택은 미검증 |
 | KP-02 | Medium (5.9) | 워터마크가 문서 내용과 묶이지 않아 이식·변조를 못 잡음 | `WatermarkPayload.java:27-31` | 재현됨 |
 | KP-03 | Low (3.3) | 워터마크를 쉽게 찾아 제거하거나 검증을 깨뜨릴 수 있음 | `PdfWatermarkInspector.java:51-71` | 재현됨 |
 | KP-04 | Low (2.2) | 키 길이·키 분리를 검증하지 않음 | `KurbyPdf.java:24-25` | 재현됨 |
@@ -59,10 +59,9 @@
   - (a) `/_k1` Flate 폭탄: 빈 PDF의 Form XObject `/_k1`에 `/Filter /FlateDecode` 스트림(0x00 1GiB → deflate 9)을 붙임. 결과 **1,044,783바이트**.
   - (b) Image XObject 폭탄: 1×1 DeviceGray 이미지 `/Filter [/FlateDecode /JPXDecode]`에 0x00 1GiB → deflate 9. 결과 약 1,044,370바이트. `_k1` 없음.
   - (c) 깊은 중첩: 페이지 객체에 `[`를 10만 번 중첩한 배열. 결과 약 200KB.
+  - (a)의 `-Xmx256m` 실행 스택은 **미검증**입니다. 당시 출력 원문을 확인할 수 없어 정확한 실패 위치는 기록하지 않습니다. `PdfWatermarkInspector.java:87-90`의 `toByteArray()`는 디코딩된 1 GiB를 루프에서 힙의 `ByteArrayOutputStream`에 전부 담은 뒤에 호출되므로 256 MiB 힙 조건과 일치하지 않습니다. PDFBox 2.0.30의 `COSInputStream.create()`도 필터 출력을 scratch 버퍼에 디코딩한 뒤 입력 스트림을 반환합니다(`COSInputStream.java:81-95`). 소스만으로 실제 실패 위치는 특정할 수 없습니다.
   ```text
-  (a) java -Xmx256m ... verify bomb.pdf      → OutOfMemoryError (java.io.ByteArrayOutputStream.toByteArray)
-                                                 at PdfWatermarkInspector.streamToBytes:90 → extractAll:64
-      java -Xmx4g  ... verify bomb.pdf        → OutOfMemoryError (최대 RSS 2,493,775,872 B)
+  (a) java -Xmx4g  ... verify bomb.pdf        → OutOfMemoryError (최대 RSS 2,493,775,872 B)
   (b) java -Xmx256m ... verify imgbomb.pdf    → OutOfMemoryError
                                                  at ...PDImageXObject.<init> → PDResources.getXObject
                                                  at PdfWatermarkInspector.extractAll:56
@@ -206,7 +205,7 @@
 
 ### KP-04 키 길이·키 분리를 검증하지 않음
 
-- **위험도:** Low, CVSS 3.1 `AV:N/AC:H/PR:H/UI:N/S:U/C:N/I:L/A:N` = **2.2** (CWE-326, CWE-1204 계열의 키 관리 약점)
+- **위험도:** Low, CVSS 3.1 `AV:N/AC:H/PR:H/UI:N/S:U/C:N/I:L/A:N` = **2.2** (키 길이 검증 CWE-326, 용도별 키 분리 미검증)
   - 근거: 호출자가 키를 잘못 쓸 때만 문제가 됩니다. 또 위조하려면 AES-GCM 키도 필요하므로 영향은 제한적입니다.
 - **위치:**
   - `KurbyPdf.java:24-25`: Base64 디코딩 결과를 검증 없이 사용합니다.
@@ -252,7 +251,8 @@
   - 코드에 `@JsonTypeInfo`, default typing, record, `Path`·`InetSocketAddress`·`Duration` 바인딩, async·`DataInput` 파서 사용이 없습니다.
   - ReDoS 권고(GHSA-p6pp-m3f8-5c89)의 `NumberInput.looksLikeValidNumber`는 **도달 불가로 확인**했습니다(2차 검토): `jackson-databind-2.17.1.jar` 안에서 이 메서드를 참조하는 클래스가 0개이고, `TextNode.asInt/asLong`은 `NumberInput.parseAsInt/parseAsLong`만 호출하며 그 안에서 `Integer.parseInt`/`Long.parseLong`/`parseDouble`만 부릅니다(`javap -c` 확인). 1차의 "확인 필요"를 해소합니다.
   - 따라서 현재 코드에서 외부 공격자가 이 권고들에 도달할 수는 없다고 판단했습니다.
-  - 다만 `api(...)` 선언이라 이 버전이 소비자 프로젝트의 컴파일 클래스패스로 전이됩니다. 또 fat JAR은 패키지를 relocate하므로, 소비자의 SCA 도구가 `io.github.juwonlee.shadow.jackson` 안의 취약 버전을 찾아내지 못하고 소비자가 따로 올릴 수도 없습니다.
+  - fat JAR(`-all.jar`)로 배포하면 Jackson 패키지가 `io.github.juwonlee.shadow.jackson`으로 relocate되므로 소비자의 SCA 도구가 내장 버전을 놓칠 수 있습니다. 소비자 프로젝트에서 Jackson 의존성을 올려도 내장 버전은 교체되지 않습니다. README(`:25-40`)는 JAR 하나를 직접 참조하도록 안내하므로 fat JAR 사용 가능성이 높지만 실제 배포 파일은 확인이 필요합니다.
+  - 현재 `build.gradle.kts`에는 `maven-publish` 설정이 없습니다. 향후 Maven 저장소에 POM과 함께 배포하면 `api(...)`에 선언된 버전이 소비자 프로젝트의 컴파일 클래스패스로 전이됩니다.
 - **조치 방안:**
   ```kotlin
   // build.gradle.kts:26-29
@@ -306,7 +306,7 @@
 
 ## 5. 2차 검토
 
-- **검토자:** 1차 작성 워커와 별개의 Orca Claude 워커(claude-opus, 독립 세션). 과제 조건상 2차 검토는 OpenAI Codex 모델에 맡기려 했으나, 보안 취약점 보고서가 OpenAI의 사이버보안 안전장치(cybersecurity safeguard)에 걸려 Codex 워커가 실행을 거부했습니다. 그래서 과제 조건("Claude Code를 메인으로 사용")에도 맞게 **별도 Claude 워커**가 수행했습니다.
+- **검토자:** 1차 작성 워커와 별개의 Orca Claude 워커(claude-opus, 독립 세션). 과제는 Claude Code를 메인으로 사용하고 보고서를 2차 검토하도록 요구했습니다. 리뷰·분석을 Codex에 맡기는 사용자 작업 규칙에 따라 Codex 워커에 2차 검토를 요청했습니다. 보안 취약점 보고서에 대한 요청이 Codex의 사이버보안 안전장치에 걸린 뒤, 사용자 선택에 따라 **별도 Claude 워커**가 2차 검토를 수행했습니다.
 - **일시:** 2026-11-20
 - **방법:** 1차 clone을 재사용하지 않고 대상 저장소를 새 `mktemp -d`에 독립 clone(`74d3aed…`), 소스 전체를 `cat -n`으로 정독해 파일:행을 재확인, Maven Central POM으로 전이 의존성 버전 확인, OSV(api.osv.dev, 2026-11-20) 재조회, PDFBox 2.0.30 sources jar로 내부 동작 확인, 로컬 PoC(Corretto JDK 17, `javac --release 8`) 실행. 원격 공격과 외부 게시는 하지 않음.
 - **결과 요약:** 오탐 없음. 새로운 독립 취약점 없음. 통계 표 합계(7) = 본문 `### KP-` 항목 수(7) 일치 재확인. KP-01~06에 대해 보강 사항이 도출되어 모두 반영함.
@@ -321,5 +321,5 @@
 | KP-06 | 확인(보완) | `AccessPermission` 기본값 전부 허용을 소스로 확인. `userPassword`가 비면 `ownerPassword`도 조용히 무시됨. "결과에 표시 안 됨"은 과함(`getOwnerPassword()==null` 간접 신호 있음) | **반영**: `ownerPassword` 무시 설명 추가, 표현을 "명시적 `encrypted` 플래그 없음"으로 보정 |
 | KP-07 | 확인 | `KurbyPdfTest.java:80-81`, `:24-29` 일치. 추가 지적 없음 | 변경 없음 |
 
-- **미반영:** 없음. 2차 검토에서 제기된 모든 항목을 반영했습니다. KP-03의 `CONFLICTING_WATERMARKS` 분기와 KP-02의 시그니처 변경은 실제 패치를 적용해 실행하지 않았으므로 본문에 "미검증"으로 표시했습니다.
+- **미반영:** 없음. 2차 검토에서 제기된 모든 항목을 반영했습니다. PR 리뷰에서 확인한 실행 근거의 한계와 실행하지 않은 조치안은 각 항목에 "미검증"으로 표시했습니다.
 - **원본 검토 노트:** `week3-review.md`(2차 검토 워커 산출물)에 7건 항목별 판정·근거(파일:행)와 로컬 PoC 출력이 보관되어 있습니다(저장소에는 커밋하지 않음).
