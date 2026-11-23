@@ -15,7 +15,6 @@
       --blue: #2a8cff;
       --cyan: #00e3d3;
       --purple: #a342ff;
-      --pink: #f08bff;
       --orange: #ffad18;
     }
 
@@ -37,6 +36,7 @@
         linear-gradient(180deg, #00142c 0%, #010a19 45%, #001433 100%);
       font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       line-height: 1.5;
+      word-break: keep-all;
     }
 
     .profile-page {
@@ -147,6 +147,9 @@
       gap: 12px 16px;
       position: relative;
       z-index: 2;
+      margin: 0;
+      padding: 0;
+      list-style: none;
     }
 
     .badge {
@@ -296,6 +299,7 @@
 
     .goal-card {
       position: relative;
+      z-index: 0;
       min-height: 430px;
       padding: 20px 17px 18px;
       overflow: hidden;
@@ -323,21 +327,30 @@
     .goal-card--orange { --card-color: #ffad18; }
 
     .goal-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       min-height: 58px;
       margin: 0;
       color: color-mix(in srgb, var(--card-color), white 26%);
       font-size: clamp(1.22rem, 2.25vw, 1.53rem);
       font-weight: 900;
       line-height: 1.22;
-      text-align: center;
+      text-align: left;
       letter-spacing: -0.035em;
       text-shadow: 0 0 13px color-mix(in srgb, var(--card-color), transparent 35%);
     }
 
     .goal-card h3 .number-icon {
-      margin-right: 6px;
+      flex: none;
       font-size: 1.35em;
-      vertical-align: -0.1em;
+      line-height: 1;
+    }
+
+    .goal-card h3 .number-icon svg {
+      display: block;
+      width: 1.3em;
+      height: 1.1em;
     }
 
     .goal-visual {
@@ -409,6 +422,9 @@
       flex-wrap: wrap;
       justify-content: space-between;
       gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
     }
 
     .tag {
@@ -476,8 +492,8 @@
       position: absolute;
       right: -10px;
       bottom: -12px;
-      width: 360px;
-      height: 208px;
+      width: 260px;
+      height: 150px;
       opacity: 0.92;
       filter: drop-shadow(0 0 13px rgba(35, 104, 255, 0.66));
     }
@@ -515,6 +531,10 @@
 
       .tag-list {
         justify-content: flex-start;
+      }
+
+      .mountain {
+        opacity: 0.42;
       }
     }
 
@@ -585,16 +605,42 @@
   <main class="profile-page">
     <div class="circuit-lines" aria-hidden="true"></div>
 
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="icon-robot" viewBox="0 0 120 100">
+          <path d="M60 8v12" stroke="#c9a6ff" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="60" cy="8" r="6" fill="#d9c2ff"/>
+          <rect x="12" y="42" width="12" height="26" rx="6" fill="#8b5cf6"/>
+          <rect x="96" y="42" width="12" height="26" rx="6" fill="#8b5cf6"/>
+          <rect x="24" y="20" width="72" height="62" rx="18" fill="#2a1466" stroke="#b78cff" stroke-width="6"/>
+          <rect x="36" y="32" width="48" height="28" rx="12" fill="#12063a"/>
+          <circle cx="50" cy="46" r="6" fill="#e9dcff"/>
+          <circle cx="70" cy="46" r="6" fill="#e9dcff"/>
+          <path d="M50 70h20" stroke="#b78cff" stroke-width="5" stroke-linecap="round"/>
+        </symbol>
+        <symbol id="icon-coins" viewBox="0 0 120 100">
+          <g stroke="#a85d00" stroke-width="1.5">
+            <path d="M52 74v8a26 9 0 0 0 52 0v-8z" fill="#f59a0c"/><ellipse cx="78" cy="74" rx="26" ry="9" fill="#ffcf4a"/>
+            <path d="M52 62v8a26 9 0 0 0 52 0v-8z" fill="#f59a0c"/><ellipse cx="78" cy="62" rx="26" ry="9" fill="#ffcf4a"/>
+            <path d="M52 50v8a26 9 0 0 0 52 0v-8z" fill="#f59a0c"/><ellipse cx="78" cy="50" rx="26" ry="9" fill="#ffcf4a"/>
+            <path d="M52 38v8a26 9 0 0 0 52 0v-8z" fill="#f59a0c"/><ellipse cx="78" cy="38" rx="26" ry="9" fill="#ffcf4a"/>
+            <path d="M16 80v8a26 9 0 0 0 52 0v-8z" fill="#f59a0c"/><ellipse cx="42" cy="80" rx="26" ry="9" fill="#ffcf4a"/>
+            <path d="M16 68v8a26 9 0 0 0 52 0v-8z" fill="#f59a0c"/><ellipse cx="42" cy="68" rx="26" ry="9" fill="#ffcf4a"/>
+          </g>
+        </symbol>
+      </defs>
+    </svg>
+
     <header class="hero">
       <div class="hero-code" aria-hidden="true">&lt;/&gt;</div>
       <h1><span class="avatar" aria-hidden="true">👨‍💻</span>우시영 <span class="divider">|</span> AI Study Profile</h1>
       <p class="subtitle">Full-Stack Developer · AI Agent · Automation</p>
 
-      <div class="badges" aria-label="프로필 핵심 정보">
-        <span class="badge badge--purple"><b>MBTI</b> ESTJ</span>
-        <span class="badge badge--blue"><b>Role</b> Full-Stack Developer</span>
-        <span class="badge badge--cyan"><b>Focus</b> AI Agent</span>
-      </div>
+      <ul class="badges" aria-label="프로필 핵심 정보">
+        <li class="badge badge--purple"><b>MBTI</b> ESTJ</li>
+        <li class="badge badge--blue"><b>Role</b> Full-Stack Developer</li>
+        <li class="badge badge--cyan"><b>Focus</b> AI Agent</li>
+      </ul>
 
       <svg class="ai-head" viewBox="0 0 270 235" role="img" aria-label="회로로 표현한 인공지능 옆모습">
         <defs>
@@ -644,7 +690,7 @@
       <h2 class="section-title goals-title" id="goals-title"><span class="icon" aria-hidden="true">🎯</span>Study Goals</h2>
       <div class="goal-grid">
         <article class="goal-card goal-card--blue">
-          <h3><span class="number-icon" aria-hidden="true">⚡</span>01. 업무 효율 극대화</h3>
+          <h3><span class="number-icon" aria-hidden="true">⚡</span><span>01. 업무 효율 극대화</span></h3>
           <div class="goal-visual" aria-hidden="true">
             <svg viewBox="0 0 130 105">
               <defs><linearGradient id="monitor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8feaff"/><stop offset="1" stop-color="#168dff"/></linearGradient></defs>
@@ -653,13 +699,13 @@
               <path d="M54 80v10M76 80v10M31 92h68" stroke="#49bdff" stroke-width="8" stroke-linecap="round"/>
             </svg>
           </div>
-          <p>반복적인 개발 업무를 AI로 자동화하고,<br>기획 → 개발 → 검증 → 문서화 전반의<br>생산성을 높이는 것을 목표로 합니다.</p>
+          <p>반복적인 개발 업무를 AI로 자동화하고, 기획 → 개발 → 검증 → 문서화 전반의 생산성을 높이는 것을 목표로 합니다.</p>
         </article>
 
         <article class="goal-card goal-card--purple">
-          <h3><span class="number-icon" aria-hidden="true">🤖</span>02. 1인 개발을 위한<br>AI Agent 활용</h3>
-          <div class="goal-visual" aria-hidden="true">🤖</div>
-          <p>AI를 단순한 질의응답 도구가 아니라,<br>실제 업무를 수행하는 개발 파트너이자<br>에이전트로 활용하고자 합니다.</p>
+          <h3><span class="number-icon" aria-hidden="true"><svg viewBox="0 0 120 100"><use href="#icon-robot"/></svg></span><span>02. 1인 개발을 위한<br>AI Agent 활용</span></h3>
+          <div class="goal-visual" aria-hidden="true"><svg viewBox="0 0 120 100"><use href="#icon-robot"/></svg></div>
+          <p>AI를 단순한 질의응답 도구가 아니라, 실제 업무를 수행하는 개발 파트너이자 에이전트로 활용하고자 합니다.</p>
           <ul>
             <li>요구사항 분석 및 기획 보조</li>
             <li>코드 작성 · 리팩터링 · 리뷰</li>
@@ -670,9 +716,9 @@
         </article>
 
         <article class="goal-card goal-card--orange">
-          <h3><span class="number-icon" aria-hidden="true">🪙</span>03. 최소한의 토큰으로<br>최대한의 효율 만들기</h3>
-          <div class="goal-visual" aria-hidden="true">🪙</div>
-          <p>불필요한 대화와 반복을 줄이고,<br>명확한 컨텍스트와 효율적인 프롬프트를<br>통해 적은 토큰으로 높은 품질의 결과를<br>얻는 방법을 연구합니다.</p>
+          <h3><span class="number-icon" aria-hidden="true"><svg viewBox="0 0 120 100"><use href="#icon-coins"/></svg></span><span>03. 최소한의 토큰으로<br>최대한의 효율 만들기</span></h3>
+          <div class="goal-visual" aria-hidden="true"><svg viewBox="0 0 120 100"><use href="#icon-coins"/></svg></div>
+          <p>불필요한 대화와 반복을 줄이고, 명확한 컨텍스트와 효율적인 프롬프트를 통해 적은 토큰으로 높은 품질의 결과를 얻는 방법을 연구합니다.</p>
           <ul>
             <li>핵심 정보만 전달하는 프롬프트 설계</li>
             <li>컨텍스트 및 대화 길이 최적화</li>
@@ -685,14 +731,14 @@
 
     <section class="section interests" aria-labelledby="interests-title">
       <h2 class="section-title" id="interests-title"><span class="icon" aria-hidden="true">🧩</span>관심 있는 활용 분야</h2>
-      <div class="tag-list">
-        <span class="tag">AI Agent</span>
-        <span class="tag">Automation</span>
-        <span class="tag">Full-Stack Development</span>
-        <span class="tag">Productivity</span>
-        <span class="tag">Solo Development</span>
-        <span class="tag">Token Optimization</span>
-      </div>
+      <ul class="tag-list">
+        <li class="tag">AI Agent</li>
+        <li class="tag">Automation</li>
+        <li class="tag">Full-Stack Development</li>
+        <li class="tag">Productivity</li>
+        <li class="tag">Solo Development</li>
+        <li class="tag">Token Optimization</li>
+      </ul>
     </section>
 
     <section class="section ultimate" aria-labelledby="ultimate-title">
