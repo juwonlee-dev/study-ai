@@ -94,15 +94,15 @@ KurbyPdf는 PDFBox로 PDF에 숨김 워터마크(AES-GCM 암호화 + HMAC-SHA256
 
 ### V-02. High: 워터마크 스트림을 크기 제한 없이 해제하여 메모리 고갈(OutOfMemoryError)
 
-- 위치: `PdfWatermarkInspector.java:80-94` (특히 `87-89`), `PdfVerificationUtil.java:53-55`
-- 원인: `streamToBytes`가 `COSStream.createInputStream()`(필터 적용 후 해제 스트림)을 `ByteArrayOutputStream`에 상한 없이 읽는다. `_k1` 스트림에 FlateDecode 필터가 지정된 PDF를 만들면 작은 파일이 매우 큰 바이트 배열로 확장된다. `verifyDetailed`는 `Exception`만 잡으므로 `OutOfMemoryError`는 호출자까지 전파된다.
+- 위치: `PdfWatermarkInspector.java:80-94` (특히 `83`, `87-89`), `PdfVerificationUtil.java:53-55`
+- 원인: `streamToBytes`가 `createInputStream()`(83행)을 호출하면 PDFBox 2.0.30은 필터 디코드 결과 전체를 문서의 scratch 버퍼에 먼저 기록한 뒤 스트림을 돌려준다 (`COSStream.java:175`, `COSInputStream.java:86-87`). 이 scratch는 `load`에 넘긴 `MemoryUsageSetting`으로 만들어지며(`PDDocument.java:1228-1232`), KurbyPdf는 상한 없는 `setupMainMemoryOnly()`를 쓰는 `load(bin)`·`load(bin, password)`를 호출한다 (`PdfWatermarkInspector.java:46`, `PDDocument.java:1133, 1169`). 따라서 `_k1` 스트림에 FlateDecode 필터가 지정된 PDF를 만들면 작은 파일이 83행에서 이미 큰 메모리를 차지하고, 87-89행이 읽은 데이터를 `ByteArrayOutputStream`에 한 번 더 복사한다. 메모리 소비가 시작되는 곳(83행)과 `OutOfMemoryError`가 실제로 나는 곳은 구분해야 한다. 해제 크기와 힙의 비율에 따라 88행의 복사 중에 나는 경우를 스택트레이스로 확인했고, 해제 크기가 힙보다 훨씬 큰 경우의 발생 지점은 스택트레이스가 비어 확인하지 못했다. `verifyDetailed`는 `Exception`만 잡으므로 `OutOfMemoryError`는 호출자까지 전파된다.
 - 발생 조건: 검증 대상 PDF를 공격자가 제공할 수 있는 경우 (유출 의심 문서를 받아 검증하는 서비스 등). 키 없이 가능하다. 복호화(`decryptAndVerify`)보다 앞단에서 발생한다.
 - 영향: 검증 프로세스의 메모리 고갈과 서비스 중단(가용성).
 - 검증 결과 (실행 재현): 약 453KB의 PDF(압축 스트림이 해제 시 400MB)를 `-Xmx128m`으로 `verifyDetailed`에 넣자 `OutOfMemoryError`가 발생해 프로세스가 비정상 종료되었다. 기본 힙 크기에서는 더 큰 해제 크기가 필요하며, 압축률상 PDF 크기는 수 MB 수준에 그친다 (미실행, 추정).
 - 조치 방안:
-  1. `streamToBytes`에 상한(워터마크 블롭은 수백 바이트이므로 예: 64KB)을 두고 초과 시 즉시 중단한다. 또는 `COSStream.getLength()`와 `FILTER` 존재 여부를 먼저 확인하고, 필터가 있는 `_k1` 스트림은 거부한다 (삽입기는 필터 없이 저장함, `PdfForensicEmbedder.java:43-51`).
-  2. `verifyDetailed`에서 `OutOfMemoryError`를 잡지 말고(복구 불가), 대신 입력 크기 상한(PDF 바이트 수, 페이지 수)을 호출 전에 적용한다.
-  3. (참고) `PDDocument.load`의 `MemoryUsageSetting`은 PDFBox 파싱 버퍼의 저장 위치만 바꾸며, 해제된 데이터를 `ByteArrayOutputStream`(힙)에 읽는 `streamToBytes`의 문제는 해결하지 못한다. 따라서 이것은 V-02의 해결책이 아니다 (2차 검토에서 초안의 조치 방안을 이렇게 정정, 소스 판독 기준이며 미실행).
+  1. `createInputStream()`(83행)을 호출하기 전에 `COSStream.getLength()`와 `/Filter` 존재 여부를 확인하고, 필터가 있는 `_k1` 스트림은 거부한다 (삽입기는 필터 없이 저장함, `PdfForensicEmbedder.java:43-51`). 읽기 루프(87-89행)에 상한(예: 64KB)만 두는 방식은 기본 설정에서 디코드가 83행에서 이미 끝난 뒤라 고갈을 막지 못하며, 필터 없는 스트림의 복사 크기를 제한하는 보조 수단에 그친다 (PDFBox 단독 실행: 해제 100MB 스트림에서 읽기 전에 힙이 약 98MB 늘었다).
+  2. `verifyDetailed`에서 `OutOfMemoryError`를 잡지 말고(복구 불가), 대신 입력 크기 상한(PDF 바이트 수, 페이지 수)을 호출 전에 적용한다. 다만 이 공격의 PDF는 약 453KB여서(위 검증 결과) 수 MB 단위의 PDF 크기 상한은 통과하므로, 이 조치만으로는 V-02를 막지 못하고 해제 크기를 제한하는 조치 1, 3과 함께 써야 한다.
+  3. `PdfWatermarkInspector.java:46`의 `load(bin)`·`load(bin, password)`는 상한 없는 `setupMainMemoryOnly()`를 쓴다 (`PDDocument.java:1133, 1169`). 여기에 상한 있는 설정(`MemoryUsageSetting.setupMainMemoryOnly(상한)`)을 넘기면, 필터 디코드 결과 전체를 문서의 scratch에 먼저 쓰는 PDFBox 2.0.30의 동작(`COSStream.java:175`, `COSInputStream.java:86-87`) 때문에 상한을 넘는 순간 `IOException("Maximum allowed scratch file memory exceeded.")`이 나고(`ScratchFile.java:176`) `PdfVerificationUtil.java:53`에서 `Result.fail`이 된다. 이 상한은 모든 `OutOfMemoryError`를 막는 장치가 아니다. 상한은 `_k1` 하나가 아니라 입력 PDF 사본(`PDDocument.java:1231`)과 파싱된 스트림 전체에 걸리므로 허용할 PDF 크기보다 넉넉하게 잡아야 하고, 87-89행이 디코드 결과를 힙에 한 번 더 복사하므로 가용 힙보다는 충분히 작게 잡아야 한다. 상한 없이 저장 위치만 옮기는 설정(`setupTempFileOnly()` 등)은 이 복사 때문에 해결책이 아니다 (이 마지막 부분은 소스 판독이며 실행하지 않았다). 조치 1의 `/Filter` 검사와 함께 쓴다. 해제 100MB 스트림에 상한 50MB를 준 PDFBox 직접 호출은 `createInputStream()`에서 `IOException`으로 거부했고 상한 150MB는 통과했다 (Claude Code 에이전트 실행, JDK 17). 이는 PDFBox 단독 검증이며, KurbyPdf의 `load`에 상한을 넘기도록 실제로 패치한 뒤의 동작은 확인하지 않았다 (미실행).
 
 ### V-03. Medium: 워터마크를 키 없이 제거할 수 있고 삽입 위치가 식별 가능 (디코이 삽입 변형 포함)
 
@@ -128,7 +128,7 @@ KurbyPdf는 PDFBox로 PDF에 숨김 워터마크(AES-GCM 암호화 + HMAC-SHA256
 - 위치: `KurbyPdf.java:33-41`, `PdfProtector.java:8-17`
 - 원인:
   1. 호출자가 지정한 `ownerPassword`가 `userPassword`와 같은지 검사하지 않는다 (`KurbyPdf.java:36-40`).
-  2. 새 `AccessPermission()`은 모든 권한이 허용된 상태이며, 코드는 기본값과 같은 `setCanPrint(true)`와 `setCanExtractContent(false)`만 호출해 실질적으로 내용 추출만 막는다 (`PdfProtector.java:9-11`). 수정, 조립, 주석, 양식 입력, 접근성 추출이 모두 허용된다.
+  2. 새 `AccessPermission()`은 모든 권한이 허용된 상태이며 (PDFBox 2.0.30 `AccessPermission.java:52, 70-72`, 기본값 `~3`), 코드는 기본값과 같은 `setCanPrint(true)`와 기본값을 바꾸는 `setCanExtractContent(false)`만 호출해 실질적으로 내용 추출만 막는다 (`PdfProtector.java:9-11`). 수정, 조립, 주석, 양식 입력, 접근성 추출이 모두 허용된다.
   3. `userPassword`가 없으면 암호화와 권한 설정 자체가 적용되지 않고 소유자 암호도 생성되지 않는다 (`KurbyPdf.java:35`). README는 "Owner 암호는 자동 랜덤 생성 가능"이라고만 적어 이 조건을 알리지 않는다.
 - 영향: 소유자 암호와 사용자 암호를 같게 지정하면 열람자가 곧 소유자가 되어 모든 권한을 가진다. 그렇지 않더라도 수정, 조립이 허용되어 보호 효과가 낮다. PDF 권한 비트는 뷰어가 지키는 자율 규약이므로 그 자체로도 강한 통제가 아니다.
 - 검증 결과 (실행 재현): `userPassword == ownerPassword == "same"`으로 만든 PDF를 user 암호로 열었을 때 `isOwnerPermission=true`였다. 일반 사용자 암호 PDF의 권한은 `print=true modify=true extract=false assemble=true annotMod=true fillForm=true`였다.
@@ -244,12 +244,15 @@ V-01 ~ V-06의 PoC는 모두 초안과 동일한 결과로 재현되었다. 인�
 
 ### 6.6 PR 리뷰 반영 이력
 
-PR #54에 대한 외부 리뷰(juhwanHeo, APPROVED)의 제안 2건을 소스와 대조해 판단한 결과이다. 앞의 6.1 ~ 6.5는 그대로 보존했다.
+PR #54에 대한 외부 리뷰의 제안을 소스와 대조해 판단한 결과이다. 1, 2번은 juhwanHeo(APPROVED), 3 ~ 5번은 juwonlee-dev(APPROVED)의 인라인 코멘트에 대한 것이다. 표의 줄번호는 수정 전 기준이다. 앞의 6.1 ~ 6.5는 그대로 보존했으며, 6.2의 V-02 조치 3 행은 이력이므로 고치지 않았다.
 
 | 번호 | 리뷰 제안 | 판단 근거 | 반영 결과 |
 |------|-----------|-----------|-----------|
 | 1 | P-01 조치 방안의 Jackson 전이 설명에 배포 방식 조건 추가 (`REPORT.md:181`) | `build.gradle.kts:42-48, 63-64`의 `shadowJar`가 런타임 의존성을 포함하고 Jackson을 재배치함. `README.md:27, 38`은 JAR 파일 복사를 안내하고 게시 설정은 저장소에 없음. 코드 판독이며 빌드와 소비자 앱 실행은 하지 않음 | 수용. P-01 조치 방안을 일반 JAR, `all.jar`로 나누어 서술하고, 같은 구조가 PDFBox(`build.gradle.kts:59-60`)에도 해당함을 추가. 이후 최종 검증에서 "전이"가 메타데이터 제공 방식에 한정됨을 명시하고, 2.18.11이 미검증 11건까지 해결한다는 의미가 아님을 추가 |
 | 2 | 1장 첫 표 제목을 "위험도별 확인 항목"으로 변경 (`REPORT.md:10`) | 3장에서 V-07, V-08은 V 항목이지만 보안 영향이 없는 Info로 분류하는데, 기존 제목 "(확인된 취약점)"은 8건 모두 보안 영향이 확인된 것으로 읽힐 수 있음 | 수용. 제목을 "위험도별 확인 항목 (V 항목)"으로 변경. 등급과 건수(8건)는 불변 |
+| 3 | V-02 발생 위치와 원인이 PDFBox 소스와 다름 (`REPORT.md:97-98`) | `COSStream.java:175`, `COSInputStream.java:86-87`: `createInputStream()`이 필터 디코드 결과 전체를 문서 scratch에 먼저 쓴 뒤 반환. `PDDocument.java:1133, 1169, 1228-1232`: 상한 없는 `setupMainMemoryOnly()`로 scratch 생성. Claude Code 에이전트가 PDFBox 단독으로 실행한 결과, 해제 100MB 스트림의 `createInputStream()` 반환 직후(읽기 전) 힙이 약 98MB 늘었음. OOM 발생 지점은 힙/해제 크기가 128MB/100MB, 512MB/400MB, 1100MB/400MB일 때 `PdfWatermarkInspector.java:88`로 확인했고, 해제 크기가 힙보다 훨씬 큰 경우는 스택트레이스가 비어 미확인 | 수용. 위치에 83행을 추가하고 원인을 "83행의 디코드 선행 소비 + 87-89행의 추가 복사"로 정정. 메모리 소비 시작 지점과 OOM 발생 지점을 구분해 서술 |
+| 4 | V-02 조치 1의 읽기 루프 상한과 조치 3의 `MemoryUsageSetting` 판단 (`REPORT.md:103, 105`) | 2차 검토(6.2)는 `MemoryUsageSetting`이 "저장 위치만 바꾼다"고 정정했으나 소스 판독만 했고 실행하지 않았다. 상한 있는 `setupMainMemoryOnly(상한)`은 `ScratchFile.java:176`에서 `IOException`을 내며, 실행에서 해제 100MB 스트림에 상한 50MB는 `createInputStream()`에서 거부, 150MB는 통과했다. 따라서 2차 검토의 정정은 상한 있는 설정에 대해서는 틀린 방향이었고, 상한 없이 저장 위치만 옮기는 설정에는 맞다(이 부분은 소스 판독이며 미실행). 읽기 루프 상한은 디코드가 끝난 뒤라 기본 설정에서 효과가 없음 | 수용. 조치 1을 디코드 전 `/Filter`와 길이 검사로 바꾸고 읽기 루프 상한은 보조 수단으로 한정. 조치 3을 상한 있는 `MemoryUsageSetting` 전달안으로 재작성하되 모든 OOM을 막지는 못하며 상한 설정 기준(허용 PDF 크기와 가용 힙)을 명시. 조치 2에 PDF 크기 상한만으로는 약 453KB 공격 PDF를 막지 못한다는 한계 추가. KurbyPdf를 실제로 패치한 뒤의 동작은 미실행 |
+| 5 | V-04 권한 설명이 두 호출이 모두 기본값과 같은 것처럼 읽힘 (`REPORT.md:131`) | `AccessPermission.java:52, 70-72`: 기본값 `~3`으로 모든 권한 허용. `PdfProtector.java:10`의 `setCanPrint(true)`는 기본값과 같고 `PdfProtector.java:11`의 `setCanExtractContent(false)`만 기본값을 바꿈 | 수용. 문장을 "기본값을 바꾸는 `setCanExtractContent(false)`"로 정정하고 `AccessPermission` 기본값 근거 추가. 등급(Medium) 불변 |
 
 ## 7. 분석의 한계와 미검증 사항
 
@@ -265,7 +268,10 @@ PR #54에 대한 외부 리뷰(juhwanHeo, APPROVED)의 제안 2건을 소스와 
 | V-01 다른 원본 문서로 이식, 사본 간 `/ID`와 페이지 수 동일 | 실행 재현 | 작성자 직접 재현 (최종 검증), 2차 검토 에이전트는 미재현 |
 | V-01 페이지 혼합 변형 | 코드 판독 | 미실행 |
 | V-02 메모리 고갈 (`-Xmx128m`) | 실행 재현 | 작성자 직접 재현, 2차 검토 에이전트도 같은 결과 재현 |
-| V-02 기본 힙에서의 재현 가능성, 조치 3 정정 | 추정 / 코드 판독 | 미실행 |
+| V-02 기본 힙에서의 재현 가능성 | 추정 | 미실행 |
+| V-02 디코드가 `createInputStream()`(83행)에서 선행됨, 상한 있는 `MemoryUsageSetting`의 `IOException` 거부 (PDFBox 단독 호출) | 소스 판독, 실행 재현 (JDK 17.0.17) | Claude Code 에이전트가 PR 리뷰 반영 시 실행. 작성자 직접 실행 아님 |
+| V-02 OOM 발생 지점 (힙/해제 128MB/100MB, 512MB/400MB, 1100MB/400MB에서 `PdfWatermarkInspector.java:88`) | 실행 재현 (스택트레이스) | Claude Code 에이전트 실행. 해제 크기가 힙보다 훨씬 큰 경우(힙 128/256/300MB에 해제 400MB)는 스택트레이스가 비어 발생 지점 미확인 |
+| V-02 조치 1, 3을 KurbyPdf에 실제 적용한 뒤의 동작, `setupTempFileOnly()` 등 상한 없는 설정의 동작 | 미실행 (후자는 소스 판독) | 대상 저장소를 수정하지 않았고 패치를 적용하지 않음 |
 | V-03 워터마크 제거 | 실행 재현 | 작성자 직접 재현, 2차 검토 에이전트도 재현 |
 | V-03 디코이 삽입 변형 | 실행 재현 | 2차 검토 에이전트만 재현. 작성자는 직접 재실행하지 않음 |
 | V-04 owner==user, 권한 비트 | 실행 재현 | 작성자 직접 재현, 2차 검토 에이전트도 재현 |
