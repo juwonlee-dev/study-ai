@@ -31,7 +31,11 @@
 
 ### 1.2 피해 대상별 분포
 
-취약점이 "누구에게 피해를 주는가"로 나눈 분포다. 정의는 2장에 있다.
+취약점이 "누구에게 피해를 주는가"로 나눈 분포다. 각 분류의 뜻은 다음과 같다.
+
+- **문서를 보호하려는 배포자**: 이 라이브러리로 PDF에 워터마크·암호를 넣어 배포하는 쪽. 유출자 추적, 위변조 확인, 열람 제한 같은 보안 기능이 기대대로 동작하지 않는 피해를 입는다.
+- **라이브러리를 실행하는 서버**: 삽입·검증 기능을 서비스로 돌리는 프로세스. 신뢰할 수 없는 입력으로 메모리 고갈 등 가용성 피해를 입는다.
+- **라이브러리를 의존성으로 쓰는 프로젝트**: KurbyPdf를 빌드에 포함하는 애플리케이션. 함께 딸려 오는 취약한 의존성과 점검 누락의 영향을 받는다.
 
 | 피해 대상 | High | Medium | Low | Info | 합계 |
 |---|---:|---:|---:|---:|---:|
@@ -125,7 +129,8 @@ CVSS를 그대로 쓰지 않고, 이 라이브러리가 README.md:8-15에서 약
 3. 검증 측(`PdfWatermarkInspector.java:121-128`)은 복호화한 `wrap`에서 `doc`를 읽어 body 재구성에 같은 순서로 넣어야 서명이 맞는다. 페이로드 형식이 바뀌므로 `v`를 2로 올리고, 기존 v1 페이로드를 거부할지 "문서 바인딩 없음"으로 표시할지 정한다.
 4. `PdfVerificationUtil.verifyDetailed`에 "기대 원본 해시"를 받는 오버로드를 추가해, 서명 검증을 통과한 `doc`와 다르면 `Result.fail("DOCUMENT_MISMATCH")`를 반환한다.
 5. **전제**: 이식 방지는 호출자가 검증 대상 문서의 기대 원본 해시를 **신뢰할 수 있는 경로**(예: 발급 시점에 서버 DB에 문서 ID와 함께 저장한 값)로 확보해 넘길 때만 성립한다. 워터마킹된 결과물은 원본과 바이트가 달라 결과물에서 해시를 다시 계산해 비교할 수 없고, 기대 해시 없이 `doc`가 "들어 있는지"만 확인하면 이식된 페이로드도 그대로 통과한다.
-6. 위 조치는 **다른 문서로의 이식**만 막는다. 본문 변조까지 검출하려면 PDF 전자서명(PDFBox `PDSignature`)을 별도로 적용해야 한다. `README.md:15`의 문구도 "페이로드 무결성 확인"으로 바로잡는다.
+6. **남는 한계 (같은 원본의 수령인끼리)**: 같은 원본을 여러 수령인에게 발급하면 `doc` 값이 모두 같으므로, 수령인 A가 B에게 발급된 배포본의 `/_k1` 스트림을 자기 사본에 옮기는 교체는 이 조치로 막지 못한다(`DOCUMENT_MISMATCH`가 나지 않는다). 이 경우는 문서 해시가 아니라 발급 기록으로만 통제할 수 있다. 발급 시 `nonce → (수령인, 원본 해시, 최종 배포 파일의 SHA-256, 발급 시각)`을 서버에 저장하고, 검증 결과의 `nonce`를 이 기록과 대조해 귀속을 확정한다. 회수한 파일의 해시가 해당 `nonce`의 최종 배포 파일 해시와 다르면 워터마크가 교체·이식됐을 가능성이 있다고 보고 자동 귀속하지 않는다.
+7. 위 조치는 **다른 문서로의 이식**만 막는다. 본문 변조까지 검출하려면 PDF 전자서명(PDFBox `PDSignature`)을 별도로 적용해야 한다. `README.md:15`의 문구도 "페이로드 무결성 확인"으로 바로잡는다.
 
 ---
 
@@ -179,14 +184,18 @@ CVSS를 그대로 쓰지 않고, 이 라이브러리가 README.md:8-15에서 약
 검증을 서비스로 노출한 애플리케이션의 가용성 침해. 같은 JVM의 다른 요청도 영향을 받는다. 삽입 경로(`KurbyPdf.watermark`)도 입력 크기 검사 없이 같은 설정으로 로드하지만(`:14, 21`), 삽입 경로에서 이 폭탄이 재현되는지는 확인하지 못했다.
 
 **조치 방안 (현재 코드 기준)**
-1. `PDDocument.load` 호출(`PdfWatermarkInspector.java:46`, `KurbyPdf.java:21`)에 상한 있는 메모리 설정을 넘긴다(주 방어). `load(InputStream, String, MemoryUsageSetting)` 오버로드가 2.0.30에 있다(`PDDocument.java:1204`).
+1. `PDDocument.load` 호출(`PdfWatermarkInspector.java:46`, `KurbyPdf.java:21`)에 상한 있는 메모리 설정을 넘긴다(주 방어). 두 경로는 쓰는 오버로드가 다르다. 검증 경로는 비밀번호를 받으므로 `load(InputStream, String, MemoryUsageSetting)`(`PDDocument.java:1204`)을, 비밀번호 변수가 없는 삽입 경로(`KurbyPdf.java:21`은 `PDDocument.load(bin)`)는 `load(InputStream, MemoryUsageSetting)`(`PDDocument.java:1148`)을 쓴다. 둘 다 2.0.30에 있다.
    ```java
    // import org.apache.pdfbox.io.MemoryUsageSetting;
    private static final long MAX_PDF_MEMORY = 256L * 1024 * 1024; // 호출자 조정 가능
+
+   // PdfWatermarkInspector.java:46 (검증 경로)
    doc = PDDocument.load(bin, password == null ? "" : password,
            MemoryUsageSetting.setupMainMemoryOnly(MAX_PDF_MEMORY));
+   // KurbyPdf.java:21 (삽입 경로, password 없음)
+   doc = PDDocument.load(bin, MemoryUsageSetting.setupMainMemoryOnly(MAX_PDF_MEMORY));
    ```
-   상한을 넘으면 `IOException`이 나 `PdfVerificationUtil.java:53`에서 잡힌다. `setupMixed(long)` 1인자 형태는 임시 파일이 무제한이라(`MemoryUsageSetting.java:145-148`) 2인자 형태를 쓴다.
+   이 상한은 JVM 힙 안의 scratch 버퍼에 걸리고, `load(InputStream, …)`는 입력 PDF 자체도 같은 버퍼에 먼저 복사한다(`PDDocument.java:1228-1231`). 따라서 `MAX_PDF_MEMORY`는 가용 힙보다 충분히 작게 잡아야 힙보다 상한이 먼저 걸린다. 256MB는 예시 값이며, 동시 요청 수를 곱한 값이 힙을 넘지 않도록 조정한다. 상한을 넘으면 `IOException`이 나 `PdfVerificationUtil.java:53`에서 잡힌다. `setupMixed(long)` 1인자 형태는 임시 파일이 무제한이라(`MemoryUsageSetting.java:145-148`) 2인자 형태를 쓴다.
 2. 보조로 `PdfWatermarkInspector.java:84-90` 읽기 루프에 상한을 둔다(이것만으로는 `:83` 디코드를 막지 못한다). 서로 다른 `/_k1` 스트림 개수에도 상한을 둔다.
 3. `PdfVerificationUtil.java:33`, `KurbyPdf.java:14`에 입력 PDF 최대 크기 검사를 추가한다.
 4. 검증을 별도 프로세스/제한된 힙에서 돌리도록 README에 안내한다.
@@ -215,6 +224,8 @@ CVSS를 그대로 쓰지 않고, 이 라이브러리가 README.md:8-15에서 약
 **조치 방안 (현재 코드 기준)**
 1. `PdfWatermarkInspector.java:62-66`에서 스트림별 복호화 실패를 던지지 말고 기록한 뒤 계속 순회한다. 잡을 예외는 특정 타입을 나열하기보다 `Exception`으로 받는 편이 안전하다 — 런타임마다 예외 종류가 다르고, 12바이트 이하의 `IllegalArgumentException`은 `RuntimeException`이라 `GeneralSecurityException`만 잡으면 빠져나간다(위 실행 확인).
 2. `PdfVerificationUtil.java:40`을 `extractAll` 기반으로 바꾼다: 유효 0개면 실패, 유효한 것들의 클레임·nonce가 모두 같으면 성공, 서로 다른 유효 워터마크가 2개 이상이거나 복호화 실패가 섞이면 `Result.fail("MULTIPLE_WATERMARKS")`로 전체 목록과 함께 실패 처리한다.
+   - 이 처리는 의도적인 fail-closed 정책이다. 배포본에는 워터마크가 하나만 들어가므로 복호화되지 않는 `/_k1`이 섞여 있다는 것 자체가 변조 신호이고, 이를 통과시키면 위 *끼워 넣기*를 막을 수 없다.
+   - 가용성 측면의 한계: 공격자가 임의 블롭을 하나 추가하면 뒤에 유효한 워터마크가 있어도 자동 검증 결과는 실패가 된다(위 *검증 방해*는 막지 못하고 "실패"로 드러나게 할 뿐이다). 그래서 실패 결과에 유효한 워터마크의 클레임과 복호화 실패 건수를 함께 담아, 운영자가 수동으로 판단할 수 있게 한다. 자동 판정만으로 귀속을 확정하는 흐름에서는 이 경우를 별도 검토 대상으로 분리해야 한다.
 3. `KurbyPdf.java:31` 앞에서 입력에 이미 `/_k1`이 있는지 검사해 거부하거나 제거한다.
 4. `PdfWatermarkInspector.java:138`은 서명이 유효하지 않으면 클레임을 비워 반환한다.
 
