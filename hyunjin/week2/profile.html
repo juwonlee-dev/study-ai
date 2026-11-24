@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>김현진 | Profile</title>
+    <style>
+      :root {
+        --ink: #4a3a66;
+        --purple: #6a4c93;
+        --gold: #c38a1e;
+        --yellow-line: #f6d77a;
+        --lavender-line: #cdb8f2;
+        --cream: #fffaf0;
+        --wood: #c99a5b;
+        --wood-dark: #a9783f;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        min-width: 320px;
+        margin: 0;
+        overflow-x: hidden;
+        color: var(--ink);
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+        background: #f3ece4;
+      }
+
+      .page {
+        min-height: 100vh;
+        background: linear-gradient(#f3ece4, #efe4da);
+      }
+
+      /* 상단: 구름 말풍선 + 작업 공간 장면 */
+      .stage {
+        position: relative;
+        overflow: clip;
+        padding: clamp(2.2rem, 6vw, 4rem) clamp(1rem, 5vw, 4rem) 0;
+        background:
+          radial-gradient(circle at 18% 14%, rgb(255 255 255 / 85%) 0 .12rem, transparent .2rem),
+          radial-gradient(circle at 84% 9%, rgb(255 255 255 / 85%) 0 .14rem, transparent .22rem),
+          radial-gradient(circle at 72% 26%, rgb(255 255 255 / 70%) 0 .1rem, transparent .18rem),
+          linear-gradient(#a995dc 0%, #cdb9ec 38%, #ecdcf2 70%, #f6e6dc 100%);
+      }
+      .intro {
+        position: relative;
+        z-index: 2;
+        width: min(100%, 52rem);
+        margin: 0 auto;
+        padding: clamp(1.4rem, 3.5vw, 2.6rem) clamp(1.6rem, 5vw, 4rem);
+        border-radius: 999px / 60%;
+        background: #fff6e4;
+        box-shadow: 0 .6rem 1.6rem rgb(110 80 160 / 16%);
+      }
+      .intro::before, .intro::after {
+        position: absolute;
+        z-index: -1;
+        content: "";
+        border-radius: 50%;
+        background: inherit;
+      }
+      .intro::before { top: -18%; left: 12%; width: 32%; height: 60%; }
+      .intro::after { top: -24%; right: 16%; width: 40%; height: 70%; }
+      .intro h1 {
+        margin: 0 0 .5rem;
+        color: var(--purple);
+        font-size: clamp(2rem, 6vw, 3.4rem);
+        font-weight: 600;
+        letter-spacing: -.04em;
+      }
+      .intro p {
+        margin: .3rem 0 0;
+        font-size: clamp(1rem, 2.4vw, 1.35rem);
+        line-height: 1.5;
+        word-break: keep-all;
+      }
+      .intro .motto { margin-top: .6rem; color: var(--gold); font-size: clamp(1.1rem, 2.8vw, 1.6rem); }
+
+      /* 장면은 폭에 비례해 줄어들도록 컨테이너 단위(cqw)로 그린다 */
+      .room {
+        position: relative;
+        width: min(100%, 78rem);
+        margin: clamp(-1rem, -1.5vw, -.5rem) auto 0;
+        container-type: inline-size;
+        aspect-ratio: 100 / 40;
+      }
+      .room > * { position: absolute; }
+      .floor { left: -50%; right: -50%; bottom: 0; height: 32%; background: linear-gradient(#ead9cc, #e2cbbb); }
+
+      .shelf { left: 0; bottom: 0; width: 13cqw; height: 37cqw; border: .7cqw solid var(--wood); border-bottom: 0; border-radius: .6cqw .6cqw 0 0; background: repeating-linear-gradient(#f7ecdf 0 8.6cqw, var(--wood) 8.6cqw 9.4cqw); }
+      .shelf::before { position: absolute; content: ""; left: .8cqw; bottom: 10cqw; width: 8cqw; height: 6.2cqw; background: linear-gradient(90deg, #4f467e 0 1.4cqw, transparent 1.4cqw 1.6cqw, #e7c45e 1.6cqw 3cqw, transparent 3cqw 3.2cqw, #8c7cc7 3.2cqw 4.6cqw, transparent 4.6cqw 4.8cqw, #f1d98c 4.8cqw 6.2cqw, transparent 6.2cqw 6.4cqw, #5d5394 6.4cqw 7.8cqw, transparent 7.8cqw); }
+      .shelf::after { position: absolute; content: ""; left: 1.4cqw; top: 3cqw; width: 6.4cqw; height: 5cqw; border: .45cqw solid #fff; background: linear-gradient(160deg, #cdbef0, #9d8ad6); box-shadow: 0 .2cqw .5cqw rgb(80 60 120 / 20%); }
+      .vine { left: 1cqw; top: -2cqw; width: 18cqw; height: 22cqw; background: radial-gradient(ellipse 1.6cqw 2.4cqw at 12% 10%, #5f7d3a 98%, transparent), radial-gradient(ellipse 1.8cqw 2.6cqw at 34% 18%, #7a9a48 98%, transparent), radial-gradient(ellipse 1.5cqw 2.3cqw at 52% 30%, #5b7836 98%, transparent), radial-gradient(ellipse 1.6cqw 2.4cqw at 66% 46%, #82a24f 98%, transparent), radial-gradient(ellipse 1.4cqw 2.2cqw at 74% 64%, #5f7d3a 98%, transparent), radial-gradient(ellipse 1.5cqw 2.2cqw at 80% 82%, #7a9a48 98%, transparent); }
+
+      .window { right: 0; top: 0; width: 14cqw; height: 22cqw; border: .6cqw solid #f6eee6; background: radial-gradient(circle at 70% 40%, #fff3c4 0 2.4cqw, #ffe1a6 2.6cqw 3.2cqw, transparent 3.4cqw), linear-gradient(#b7a3ea, #f5c9c0 65%, #f9dcb5); overflow: hidden; }
+      .window::before { position: absolute; content: ""; left: 0; right: 0; bottom: 0; height: 55%; background: repeating-linear-gradient(90deg, #8f7fc6 0 2cqw, transparent 2cqw 2.6cqw); clip-path: polygon(0 100%, 0 40%, 18% 40%, 18% 12%, 38% 12%, 38% 52%, 55% 52%, 55% 0, 74% 0, 74% 30%, 100% 30%, 100% 100%); opacity: .75; }
+
+      .sky-cloud { right: 18cqw; top: 2cqw; width: 9cqw; height: 3cqw; border-radius: 3cqw; background: #d9cbf6; }
+      .sky-cloud::before { position: absolute; content: ""; left: 1.8cqw; bottom: 0; width: 4.6cqw; height: 4.6cqw; border-radius: 50%; background: inherit; }
+      .sky-cloud::after { position: absolute; content: ""; left: 4.4cqw; top: 3cqw; width: 6cqw; height: 6cqw; border-top: .3cqw dashed #fff7e6; border-right: .3cqw dashed #fff7e6; border-radius: 0 .6cqw 0 0; }
+
+      .servers { right: 1cqw; bottom: 3cqw; width: 9cqw; height: 17cqw; border-radius: .6cqw; background: repeating-linear-gradient(#5d5194 0 3.6cqw, #e9defc 3.6cqw 3.9cqw, #6c5fa6 3.9cqw 4.2cqw); box-shadow: 0 .4cqw .8cqw rgb(60 40 100 / 25%); }
+      .servers::before { position: absolute; content: ""; inset: 1.3cqw 1cqw auto auto; width: 3cqw; height: 13cqw; background: repeating-linear-gradient(transparent 0 .2cqw, #ffd76a .2cqw .8cqw, transparent .8cqw 4.2cqw); }
+
+      .desk { left: 17cqw; bottom: 10cqw; width: 68cqw; height: 1.6cqw; border-radius: .4cqw; background: linear-gradient(#d9ab6c, var(--wood-dark)); }
+      .desk::before, .desk::after { position: absolute; content: ""; top: 1.6cqw; width: 1.2cqw; height: 10cqw; background: #5b4d7d; }
+      .desk::before { left: 2cqw; }
+      .desk::after { right: 2cqw; }
+      .drawer { left: 72cqw; bottom: 1cqw; width: 10cqw; height: 9cqw; border-radius: .3cqw; background: repeating-linear-gradient(#ddd3ea 0 4.1cqw, #b7a9cf 4.1cqw 4.4cqw); }
+
+      .monitor { left: 41cqw; bottom: 15.6cqw; width: 26cqw; height: 15cqw; border: .7cqw solid #2f2a45; border-radius: .5cqw; background: radial-gradient(circle at 68% 62%, #fff1c4 0 1.6cqw, transparent 1.8cqw), linear-gradient(#b8a7e8, #f2d4dc 70%, #e9c8b8); overflow: hidden; }
+      .monitor::before { position: absolute; content: ""; left: 0; right: 0; bottom: 0; height: 50%; background: #7d6db8; clip-path: polygon(0 70%, 18% 30%, 32% 58%, 52% 12%, 70% 52%, 86% 28%, 100% 50%, 100% 100%, 0 100%); }
+      .monitor-stand { left: 52.6cqw; bottom: 11.6cqw; width: 2.8cqw; height: 4.2cqw; background: #3a3456; }
+      .monitor-stand::after { position: absolute; content: ""; left: -1.6cqw; bottom: 0; width: 6cqw; height: .7cqw; border-radius: .4cqw; background: #3a3456; }
+
+      .laptop { left: 26cqw; bottom: 11.6cqw; width: 11cqw; height: 7cqw; border: .45cqw solid #77738a; border-radius: .4cqw; background: linear-gradient(135deg, #8e8aa3, #c8c5d6); transform: skewX(-10deg); transform-origin: bottom; }
+      .laptop::after { position: absolute; content: ""; left: -.6cqw; bottom: -1.1cqw; width: 13cqw; height: .7cqw; border-radius: .3cqw; background: #b9b6c7; transform: skewX(10deg); }
+
+      /* 조명: 받침은 책상 위, 기둥과 갓은 그 위로 쌓는다 */
+      .lamp { left: 22cqw; bottom: 12cqw; width: .7cqw; height: 15cqw; background: #5c5291; transform: rotate(12deg); transform-origin: bottom center; }
+      .lamp::before { position: absolute; content: ""; left: -2.4cqw; bottom: -.5cqw; width: 5.5cqw; height: 1.2cqw; border-radius: 50%; background: #4f467e; }
+      .lamp::after { position: absolute; content: ""; left: -.5cqw; top: -2.6cqw; width: 9cqw; height: 4.6cqw; border-radius: 4.5cqw 4.5cqw .4cqw .4cqw; background: #5c5291; box-shadow: 1cqw 3.2cqw 3cqw -.4cqw #ffe8a8; transform: rotate(-30deg); transform-origin: left bottom; }
+
+      .chair { left: 45cqw; bottom: 0; width: 18cqw; height: 13cqw; border-radius: 4cqw 4cqw 1cqw 1cqw; background: linear-gradient(#7466ad, #5f5296); box-shadow: 0 .6cqw 1cqw rgb(50 35 90 / 25%); }
+      .chair::before, .chair::after { position: absolute; content: ""; bottom: 1cqw; width: 3cqw; height: 1.6cqw; border-radius: .8cqw; background: #2f2a45; }
+      .chair::before { left: -2cqw; }
+      .chair::after { right: -2cqw; }
+
+      .cup { left: 69cqw; bottom: 11.6cqw; width: 3.6cqw; height: 3.4cqw; border-radius: .3cqw .3cqw 1.2cqw 1.2cqw; background: #f3c84e; }
+      .cup::before { position: absolute; content: ""; right: -1.2cqw; top: .6cqw; width: 1.3cqw; height: 1.6cqw; border: .4cqw solid #f3c84e; border-left: 0; border-radius: 0 1cqw 1cqw 0; }
+      .cup::after { position: absolute; content: ""; left: .9cqw; top: -2.4cqw; width: 1.6cqw; height: 2cqw; border-left: .3cqw solid rgb(255 255 255 / 80%); border-radius: 50%; }
+
+      .buddy { width: 9cqw; height: 6.6cqw; border-radius: 50% 50% 42% 42%; background: radial-gradient(ellipse .9cqw .5cqw at 32% 58%, #f7b9c4 98%, transparent), radial-gradient(ellipse .9cqw .5cqw at 68% 58%, #f7b9c4 98%, transparent), radial-gradient(ellipse .7cqw .2cqw at 38% 46%, #4a3a66 98%, transparent), radial-gradient(ellipse .7cqw .2cqw at 62% 46%, #4a3a66 98%, transparent), #fffdf8; box-shadow: 0 .4cqw .8cqw rgb(90 70 120 / 18%); }
+      .buddy.on-desk { left: 74cqw; bottom: 11.6cqw; }
+      .buddy.on-books { left: 6cqw; bottom: 4.6cqw; }
+      .buddy.on-books::after { position: absolute; content: ""; left: 3cqw; bottom: .4cqw; width: 4cqw; height: 4cqw; background: #f6cf45; clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+      .books { left: 3cqw; bottom: 1cqw; width: 15cqw; height: 3.6cqw; background: linear-gradient(#5d5394 0 1.1cqw, #f6efe6 1.1cqw 1.3cqw, #8c7cc7 1.3cqw 2.4cqw, #f6efe6 2.4cqw 2.6cqw, #4f467e 2.6cqw); border-radius: .3cqw; }
+      .glow { left: 3cqw; bottom: 6cqw; width: 5cqw; height: 5cqw; border-radius: 50%; background: radial-gradient(circle, #fff6c9 0 40%, #ffe08a 70%, transparent 72%); box-shadow: 0 0 2.4cqw #ffe8a8; }
+
+      /* 카드: 넓은 화면 2열, 좁은 화면 1열 */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+        gap: clamp(1rem, 2vw, 1.5rem);
+        width: min(100% - 2rem, 78rem);
+        margin: clamp(1rem, 2vw, 1.5rem) auto 0;
+      }
+      .card {
+        margin: 0;
+        padding: clamp(1.3rem, 3vw, 2.2rem);
+        border: .35rem solid var(--lavender-line);
+        border-radius: clamp(1.4rem, 3vw, 2.2rem);
+        background: var(--cream);
+        box-shadow: 0 .5rem 1.4rem rgb(96 62 143 / 10%);
+      }
+      .card.yellow { border-color: var(--yellow-line); }
+      .card h2 { margin: 0 0 1rem; color: var(--purple); font-size: clamp(1.15rem, 2.4vw, 1.5rem); font-weight: 600; }
+      .card.yellow:last-child h2 { color: var(--gold); }
+      .card p, .card li { margin: 0; font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.7; word-break: keep-all; }
+      .card ul { margin: 0; padding-left: 1.2rem; }
+      .card .emoticons { margin-top: 1rem; }
+
+      .caption { margin: 1.5rem 0 0; padding: 3rem 1rem 2.5rem; text-align: center; background: radial-gradient(ellipse 48% 100% at 50% 100%, #d9c8ef 0 40%, #f6efe6 41% 62%, #dccbf0 63% 78%, transparent 79%); }
+      .caption small { display: inline-block; padding: .45rem 1.2rem; border-radius: 999px; color: #6b5d80; font-size: .9rem; background: rgb(255 255 255 / 85%); }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="stage">
+        <header class="intro">
+          <h1>김현진</h1>
+          <p>25살 여자&nbsp; | &nbsp;인프라 엔지니어&nbsp; | &nbsp;ENFP</p>
+          <p>좋아하는 색: 보라색 · 노란색</p>
+          <p class="motto">열심히 일하고 열심히 놀기 🙌</p>
+        </header>
+        <div class="room" role="img" aria-label="책장, 조명, 노트북, 모니터, 의자, 커피 컵, 서버가 있는 보라색 작업 공간 일러스트">
+          <div class="floor"></div>
+          <div class="shelf"></div><div class="vine"></div>
+          <div class="window"></div><div class="sky-cloud"></div><div class="servers"></div>
+          <div class="desk"></div><div class="drawer"></div>
+          <div class="monitor"></div><div class="monitor-stand"></div>
+          <div class="laptop"></div><div class="lamp"></div><div class="cup"></div>
+          <div class="buddy on-desk"></div>
+          <div class="chair"></div>
+          <div class="glow"></div><div class="books"></div><div class="buddy on-books"></div>
+        </div>
+      </div>
+
+      <div class="cards">
+        <section class="card yellow">
+          <h2>스터디 참여 목적</h2>
+          <p>혼자 일하지 않고 AI와 함께 효율적으로 일하는 것이 어떤 것인지 경험하고, 그 과정에서 필요한 스킬을 기르고 싶어서 참여하게 되었어요.</p>
+        </section>
+        <section class="card">
+          <h2>취미</h2>
+          <p>요즘 방 인테리어 꾸미기에 관심이 생기고 있어요.<br />포근한 분위기의 카페에 가서 할 일을 하는 것도 좋아해요.</p>
+        </section>
+        <section class="card">
+          <h2>좋아하는 것 — 퇴근 후 맛있는 거 먹기</h2>
+          <ul>
+            <li>중식당 꺼거의 크림새우 → 아주 감동스럽게 먹음</li>
+            <li>일식당 죠죠에서 2시간 웨이팅 후 먹은 오코노미야끼, 야끼소바 → 기다린 보람이 있을 만큼 행복했음</li>
+          </ul>
+        </section>
+        <section class="card yellow">
+          <h2>애착 캐릭터 · 이모티콘</h2>
+          <p>양파쿵야, 별의 커비를 좋아해요.<br />이유는 단순하지만 확실해요 — 너무 귀엽거든요.🥰</p>
+          <p class="emoticons">자주 쓰는 이모티콘: :)&nbsp; ㅡㅡ&nbsp; &gt;&lt;</p>
+        </section>
+      </div>
+
+      <footer class="caption"><small>이모지 + 텍스트 스타일로 제작되었습니다.</small></footer>
+    </main>
+  </body>
+</html>
