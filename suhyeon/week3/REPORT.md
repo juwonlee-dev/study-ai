@@ -24,8 +24,8 @@
 |---|---:|---|
 | Critical | 0 | - |
 | High | 2 | V-01, V-02 |
-| Medium | 3 | V-03, V-04, V-05 |
-| Low | 3 | V-06, V-07, V-08 |
+| Medium | 2 | V-03, V-04 |
+| Low | 4 | V-05, V-06, V-07, V-08 |
 | Info (개선 권고) | 5 | I-01, I-02, I-03, I-04, I-05 |
 | **합계** | **13** | 취약점 8건 + 개선 권고 5건 |
 
@@ -35,8 +35,8 @@
 |---|---:|---:|---:|---:|---:|---:|
 | A. 보안 기능 미달 | 0 | 2 | 1 | 2 | 3 | 8 |
 | B. 실행 서버 공격 | 0 | 0 | 1 | 0 | 1 | 2 |
-| C. 의존성 전이 | 0 | 0 | 1 | 1 | 1 | 3 |
-| **합계** | **0** | **2** | **3** | **3** | **5** | **13** |
+| C. 의존성 전이 | 0 | 0 | 0 | 2 | 1 | 3 |
+| **합계** | **0** | **2** | **2** | **4** | **5** | **13** |
 
 High 2건은 모두 유형 A다. "설치하면 서버가 장악된다" 수준의 항목(Critical)은 없고, 서버가 직접 공격받는 유형 B의 취약점은 서비스 중단(DoS) 1건이다.
 
@@ -54,7 +54,7 @@ High 2건은 모두 유형 A다. "설치하면 서버가 장악된다" 수준의
 | A | I-03 | Info | AES-GCM 운용 한계 (키 수명·AAD·키 식별자) | `WatermarkPayload.java:51-56` |
 | B | V-03 | Medium | 검증 대상 PDF 처리 시 메모리 사용량 무제한 (DoS) | `PdfWatermarkInspector.java:46, 83` |
 | B | I-05 | Info | 이미 암호화된 입력 PDF의 처리 방침이 없음 | `KurbyPdf.java:21, 35, 44` |
-| C | V-05 | Medium | jackson-databind 2.17.1 / jackson-core 2.17.1의 알려진 취약점 | `build.gradle.kts:28` |
+| C | V-05 | Low | jackson-databind 2.17.1 / jackson-core 2.17.1의 알려진 취약점 | `build.gradle.kts:28` |
 | C | V-08 | Low | Fat JAR 재배치와 system-scope 설치 안내로 취약 의존성이 고착됨 | `build.gradle.kts:59-64`, `README.md:27, 37-38` |
 | C | I-04 | Info | PDFBox 2.0.30은 알려진 CVE는 없으나 구버전, Gradle wrapper 파일 누락 | `build.gradle.kts:27` |
 
@@ -132,6 +132,7 @@ KurbyPdf는 그 자체가 보안 도구다. 이 유형은 "도구를 썼는데 �
    byte[] docHash = MessageDigest.getInstance("SHA-256").digest(inputPdf);
    byte[] payload = WatermarkPayload.buildPayload(claims, docHash, hmacKey, aesKey);
    ```
+   `buildPayload`는 HMAC을 계산한 `body`를 그대로 암호화하지 않고, 별도의 `wrap`에 필드를 하나씩 복사해 암호화한다(`WatermarkPayload.java:41-48`). 따라서 `wrap`에도 `wrap.put("doc", body.get("doc"))`를 추가해야 검증기가 PDF에서 서명 당시의 `doc` 값을 읽을 수 있다.
    검증 측도 함께 바꿔야 서명이 맞는다. `PdfWatermarkInspector.java:122-126`의 body 재구성에 `doc` 필드를 같은 순서로 넣는다. 페이로드 형식이 달라지므로 `v`를 2로 올리고(`WatermarkPayload.java:28`), 기존 v1 페이로드를 거부할지 "문서 바인딩 없음"으로 표시해 허용할지 정해 둔다.
 2. `PdfVerificationUtil.verifyDetailed`에 "기대하는 원본 해시"를 받는 오버로드를 추가하고, 불일치 시 `Result.fail("DOCUMENT_MISMATCH")`를 반환한다. `DecodedWatermark`(`PdfWatermarkInspector.java:141-157`)와 `Result`에 `doc` 값을 노출해 호출자가 원본 저장소와 대조할 수 있게 한다.
 3. 위 조치는 **다른 문서로의 이식**만 막는다. 같은 문서의 타인 사본을 입수한 경우와 본문 변조 검출은 막지 못한다. 본문 변조 검출이 필요하면 PDF 전자서명(PDFBox `PDSignature`)을 별도로 적용해야 한다.
@@ -183,7 +184,7 @@ KurbyPdf는 그 자체가 보안 도구다. 이 유형은 "도구를 썼는데 �
 
 **공격 시나리오**
 1. *끼워 넣기*: V-01의 이식 공격에서 자기 워터마크를 지울 필요 없이, 타인의 유효한 `/_k1` 스트림을 가진 XObject를 첫 페이지 리소스의 앞쪽에 추가하면 된다. 검증은 타인의 클레임으로 `valid=true`를 반환한다. PDFBox 소스 확인: `PDResources.getXObjectNames()`는 딕셔너리의 `keySet()`을 그대로 반환하고(`PDResources.java:537-540, 597-605`), `COSDictionary`의 내부 맵(`SmallMap`, 항목이 많아지면 `LinkedHashMap` — `COSDictionary.java:50, 219-222`)은 두 경우 모두 삽입 순서로 순회한다(`SmallMap.java:277-290`). 즉 순서는 PDF를 만든 쪽이 정한다.
-2. *검증 방해*: 임의 바이트로 된 `/_k1` 스트림을 앞쪽에 추가하면 뒤에 유효한 워터마크가 있어도 검증이 예외로 끝난다. 예외 종류는 스트림 길이에 따라 다르다. 같은 복호화 코드(`:97-105`)를 로컬 Java 17.0.12에서 실행해 확인한 결과, 12바이트 이하는 `:97-98`에서 `IllegalArgumentException`, 13~27바이트는 `c.doFinal`(`:105`)에서 `java.security.ProviderException`, 28바이트 이상은 `javax.crypto.AEADBadTagException`이었다. 세 경우 모두 `PdfVerificationUtil.java:53`에서 잡혀 `EXCEPTION:<클래스명>`이 된다. Java 8에서는 실행하지 않았다.
+2. *검증 방해*: 임의 바이트로 된 `/_k1` 스트림을 앞쪽에 추가하면 뒤에 유효한 워터마크가 있어도 검증이 예외로 끝난다. 예외 종류는 스트림 길이에 따라 다르다. 같은 복호화 코드(`:97-105`)를 로컬 Java 17.0.12에서 실행해 확인한 결과, 12바이트 이하는 `:97-98`에서 `IllegalArgumentException`, 13~27바이트는 `c.doFinal`(`:105`)에서 `java.security.ProviderException`, 28바이트 이상은 `javax.crypto.AEADBadTagException`이었다. 대상 런타임인 Java 8(`build.gradle.kts:10-11, 19`)에서는 결과가 다르다. PR #51 리뷰어가 같은 코드를 Java 1.8.0_261에서 실행한 결과, 12바이트는 `IllegalArgumentException`, 13·20·27바이트는 `AEADBadTagException`("Input too short - need tag"), 28·64바이트는 `AEADBadTagException`("Tag mismatch!")이었다(작성자는 Java 8에서 직접 재현하지 않았다). 어느 경우든 `PdfVerificationUtil.java:53`에서 잡혀 `EXCEPTION:<클래스명>`이 된다.
 3. *재워터마킹*: 이미 워터마킹된 PDF를 다시 `KurbyPdf.watermark`에 넣으면 스트림이 둘이 되고, 위 순회 순서에 따라 이전 워터마크의 클레임이 검증 결과로 나온다. 1차 출력이 암호화되지 않은 경우에만 성립한다. `KurbyPdf.java:21`이 비밀번호 없이 로드하므로 사용자 비밀번호가 걸린 출력을 다시 넣으면 로드 단계에서 실패한다.
 4. *API 오용*: `extractFirst`/`extractAll`은 public이다. 호출자가 `isSignatureValid()`를 확인하지 않으면 서명이 틀린 클레임을 신뢰하게 된다.
 
@@ -191,7 +192,7 @@ KurbyPdf는 그 자체가 보안 도구다. 이 유형은 "도구를 썼는데 �
 잘못된 귀속(V-01 악화) 또는 유효한 워터마크가 남아 있는데도 검증 실패. 단, 공격자는 이미 V-02로 워터마크를 지울 수 있으므로 추가 영향은 "더 은밀하게 결과를 조작할 수 있다"는 정도다.
 
 **조치 방안**
-1. `PdfWatermarkInspector.java:62-66`에서 스트림별 복호화 실패를 예외로 던지지 말고 기록한 뒤 계속 순회한다. 잡을 예외에 `java.security.ProviderException`을 포함해야 한다. 이 예외는 `RuntimeException`이라 `GeneralSecurityException`만 잡으면 13~27바이트 스트림(시나리오 2)에서 빠져나간다.
+1. `PdfWatermarkInspector.java:62-66`에서 스트림별 복호화 실패를 예외로 던지지 말고, 스트림 단위로 `Exception`을 잡아 기록한 뒤 계속 순회한다. 예외 종류를 하나씩 나열하면 안 된다. 시나리오 2처럼 런타임마다 예외 종류가 다르고(Java 17은 `ProviderException`, Java 8은 `AEADBadTagException`), 12바이트 이하의 `IllegalArgumentException`(`:97-98`)처럼 `RuntimeException`인 것도 있어 나열에서 빠지기 쉽다.
 2. `PdfVerificationUtil.java:40`을 `extractAll` 기반으로 바꾸고 다음 규칙을 적용한다.
    - 유효한 워터마크가 0개: `WATERMARK_NOT_FOUND` 또는 `INVALID_SIGNATURE`
    - 유효한 워터마크들의 클레임·nonce가 모두 같음: 성공
@@ -240,8 +241,8 @@ KurbyPdf는 그 자체가 보안 도구다. 이 유형은 "도구를 썼는데 �
 
 **위치**
 - `KurbyPdf.java:24-25` — Base64 디코드만 하고 길이를 확인하지 않는다. `getHmacKeyBase64()`가 null이면 `NullPointerException`이다.
-- `WatermarkPayload.java:37` — HMAC 키 길이 제한 없음. 1바이트 키도 허용되고 빈 키만 `IllegalArgumentException`으로 거부된다(2차 검토에서 Java 17로 실행 확인, 대상 런타임인 Java 8에서는 미확인).
-- `WatermarkPayload.java:55` — AES 키 길이는 JCE가 16/24/32바이트만 받아 주므로 여기서만 간접 검증된다(같은 방법으로 확인).
+- `WatermarkPayload.java:37` — HMAC 키 길이 제한 없음. 1바이트 키도 허용되고 빈 키만 `IllegalArgumentException`으로 거부된다(2차 검토에서 Java 17로 실행 확인. 대상 런타임인 Java 8에서도 같다는 것을 PR #51 리뷰어가 Java 1.8.0_261에서 실행해 확인했다).
+- `WatermarkPayload.java:55` — AES 키 길이는 JCE가 16/24/32바이트만 받아 주므로 여기서만 간접 검증된다(Java 17과 Java 1.8.0_261에서 같은 방법으로 확인. 1·33바이트는 `InvalidKeyException`).
 - `PdfVerificationUtil.java:36` — null 여부만 검사한다.
 - `PdfVerificationUtil.java:26-27` — `verifyBase64`는 try 블록 밖에서 디코드하므로, 잘못된 Base64가 들어오면 다른 검증 메서드와 달리 `Result`/`false`가 아니라 예외가 그대로 나온다.
 
@@ -256,10 +257,10 @@ KurbyPdf는 그 자체가 보안 도구다. 이 유형은 "도구를 썼는데 �
 ```java
 // KurbyPdf.java
 if (hmacKey.length < 32) throw new IllegalArgumentException("hmacKey must be >= 32 bytes");
-if (aesKey.length != 16 && aesKey.length != 32) throw new IllegalArgumentException("aesKey must be 16 or 32 bytes");
+if (aesKey.length != 16 && aesKey.length != 24 && aesKey.length != 32) throw new IllegalArgumentException("aesKey must be 16, 24 or 32 bytes");
 if (MessageDigest.isEqual(hmacKey, aesKey)) throw new IllegalArgumentException("hmacKey and aesKey must differ");
 ```
-null·잘못된 Base64는 `IllegalArgumentException`으로 통일한다. `KeyUtil`에 32바이트 키 생성 헬퍼를 추가해 README 예제에서 쓰게 하는 것도 방법이다.
+AES 키는 지금도 JCE가 받는 16·24·32바이트를 모두 허용한다. 기존 24바이트 키로 만든 문서도 계속 검증할 수 있어야 하기 때문이다. null·잘못된 Base64는 `IllegalArgumentException`으로 통일한다. `KeyUtil`에 32바이트 키 생성 헬퍼를 추가해 README 예제에서 쓰게 하는 것도 방법이다.
 
 ---
 
@@ -297,10 +298,18 @@ null·잘못된 Base64는 `IllegalArgumentException`으로 통일한다. `KeyUti
    ```java
    // import org.apache.pdfbox.io.MemoryUsageSetting;
    private static final long MAX_PDF_MEMORY = 256L * 1024 * 1024; // 호출자가 조정할 수 있게 한다
-   ...
+
+   // 검증 경로 (PdfWatermarkInspector.java:46)
    doc = PDDocument.load(bin, password == null ? "" : password,
            MemoryUsageSetting.setupMainMemoryOnly(MAX_PDF_MEMORY));
+
+   // 삽입 경로 (KurbyPdf.java:21) — watermark()에는 password 변수가 없다
+   doc = PDDocument.load(bin, MemoryUsageSetting.setupMainMemoryOnly(MAX_PDF_MEMORY));
    ```
+   상한을 정할 때는 다음을 함께 고려한다.
+   - 이 상한은 scratch 버퍼에 걸리고, `setupMainMemoryOnly`에서는 그 버퍼도 JVM 힙 안에 있다. 상한이 가용 힙과 같거나 크면 상한에 닿기 전에 힙이 먼저 바닥나므로 가용 힙보다 충분히 작게 잡는다.
+   - 상한은 문서 하나마다 걸린다. 동시에 N건을 처리하면 힙을 최대 N배까지 쓸 수 있으므로 동시 처리 수도 제한한다(조치 4와 함께).
+   - `PDDocument.load(InputStream, …)`는 입력 PDF 전체를 먼저 같은 scratch에 복사하므로(PDFBox 2.0.30 `PDDocument.java:1228-1231`, PR #51 리뷰에서 지적) 상한에는 입력 PDF 크기도 들어간다. 너무 낮으면 큰 정상 PDF가 거부되므로 다루는 문서 크기에 맞춰 정한다.
    상한을 넘으면 `IOException`이 나고(`ScratchFile.java:176`), 이는 `PdfVerificationUtil.java:53`에서 잡혀 `Result.fail`이 된다. `setupMixed`를 쓸 경우 인자 1개짜리는 임시 파일 크기가 무제한이라(`MemoryUsageSetting.java:145-148`) 문제가 디스크로 옮겨갈 뿐이므로 `setupMixed(main, storage)` 2인자 형태를 쓴다.
 2. 보조 방어로 `PdfWatermarkInspector.java:87-89`의 읽기 루프에 상한을 둔다. 이것만으로는 `:83`의 디코드를 막지 못한다.
    ```java
@@ -313,7 +322,7 @@ null·잘못된 Base64는 `IllegalArgumentException`으로 통일한다. `KeyUti
    ```
    디코드 전에 스트림의 `/Length`(인코딩 길이)가 정상 페이로드 범위인지 먼저 검사하고, `PdfWatermarkInspector.java:48-67`에서 처리하는 서로 다른 `/_k1` 스트림 개수에도 상한을 둔다.
 3. `PdfVerificationUtil.java:33`과 `KurbyPdf.java:14`에 입력 PDF 최대 크기 검사를 추가한다(상한은 호출자가 설정할 수 있게 한다).
-4. 호출 애플리케이션 쪽에는 검증을 별도 프로세스/제한된 힙에서 돌리도록 README에 안내한다.
+4. 호출 애플리케이션 쪽에는 검증을 별도 프로세스/제한된 힙에서 돌리고 동시 검증 수를 제한하도록 README에 안내한다.
 
 ---
 
@@ -323,12 +332,12 @@ KurbyPdf는 PDFBox(PDF 처리)와 jackson(JSON 처리)을 가져다 쓰고, Kurb
 
 | ID | 위험도 | 한 줄 요약 |
 |---|---|---|
-| V-05 | Medium | jackson 2.17.1에 알려진 취약점 16건. 버전을 2.18.11 이상으로 올리면 해소된다. |
+| V-05 | Low | jackson 2.17.1에 알려진 취약점 16건. 버전을 2.18.11 이상으로 올리면 해소된다. |
 | V-08 | Low | 의존성을 JAR 안에 넣어 이름을 바꿔 배포하므로 사용하는 쪽에서 교체할 수 없다. |
 
 PDFBox 2.0.30에는 해당 버전에 걸리는 알려진 취약점이 없었다(I-04).
 
-### V-05 [Medium] jackson-databind 2.17.1 / jackson-core 2.17.1의 알려진 취약점
+### V-05 [Low] jackson-databind 2.17.1 / jackson-core 2.17.1의 알려진 취약점
 
 **위치**
 - `build.gradle.kts:28` — `api("com.fasterxml.jackson.core:jackson-databind:2.17.1")`. jackson-core 2.17.1이 전이 의존성으로 따라온다.
@@ -367,10 +376,10 @@ CVSS는 Advisory DB에 실린 값이다. 표기가 없는 것은 v3, v3 점수�
 
 **공격 시나리오**
 - KurbyPdf 내부: 위 16건 중 KurbyPdf 자체 코드 경로로 도달하는 것은 없다. AES 키가 유출돼 공격자가 임의 JSON을 넣을 수 있게 되더라도 마찬가지다.
-- 소비자 애플리케이션: `api` 구성이라 jackson-databind 2.17.1이 소비자의 컴파일·런타임 클래스패스로 전이된다. 소비자가 더 높은 버전을 선언하지 않았고 다형성 역직렬화, 문자열→실수 역직렬화 등을 쓰고 있다면 위 CVE에 노출된다.
+- 소비자 애플리케이션: 의존성 메타데이터가 함께 전달되는 방식(POM과 함께 저장소에 배포, `includeBuild` 같은 소스 의존)으로 가져가면 `api` 구성 때문에 jackson-databind 2.17.1이 소비자의 컴파일·런타임 클래스패스로 전이된다(현재 `build.gradle.kts`에는 `maven-publish` 설정이 없다). 이때 소비자가 더 높은 버전을 선언하지 않았고 다형성 역직렬화, 문자열→실수 역직렬화 등을 쓰고 있다면 위 CVE에 노출된다. README 방식(JAR 파일 직접 추가, `README.md:27, 37-38`)에서는 전이가 일어나지 않고, 그 JAR가 fat JAR라면 Jackson이 재배치된 패키지(`build.gradle.kts:64`)로 들어가 소비자 코드가 이 사본을 쓰지 않는다. 이 경우 남는 위험은 교체·탐지가 어렵다는 점(V-08)이다.
 
 **영향**
-KurbyPdf 자체 경로에서는 악용 경로가 없다. 위험은 High 등급 CVE가 다수 있는 버전을 `api`로 소비자에게 전이시키고 fat JAR에 고정해 배포한다는 데 있다(V-08). 2.2 기준의 "알려진 취약점이 있는 의존성이 소비자에게 전이되는 경우"에 해당해 Medium으로 판정했다. 자체 도달 경로가 없다는 점만 보면 Low로 볼 여지도 있다(8.3 참고).
+KurbyPdf 자체 경로에서는 악용 경로가 없다. 위험은 High 등급 CVE가 다수 있는 버전을 `api`로 소비자에게 전이시키고 fat JAR에 고정해 배포한다는 데 있다(V-08). 처음에는 2.2 기준의 "알려진 취약점이 있는 의존성이 소비자에게 전이되는 경우"로 보고 Medium으로 판정했다. 그러나 README가 안내하는 설치 방식(JAR 파일 직접 추가)에서는 전이가 일어나지 않고, 전이는 현재 설정(`maven-publish` 없음)에 없는 배포 방식에서만 생긴다. 자체 도달 경로도 없으므로 Low로 낮췄다(8.3, 8.7 참고).
 
 **조치 방안**
 1. `build.gradle.kts:28`을 위 표의 모든 권고가 수정된 **2.18.11 이상**으로 올린다. 2026-11-20 기준 Maven Central의 2.18 계열 최신은 2.18.12, 2.x 최신은 2.23.0이다. Jackson 2.x는 Java 8을 지원하므로 `build.gradle.kts:19`의 `release 8` 설정과 충돌하지 않는다(추정: 2.18 릴리스 노트로 확인하지는 않았다).
@@ -422,7 +431,7 @@ V-05처럼 번들된 의존성에 취약점이 공개돼도, 소비자 프로젝
 - 위치: `WatermarkPayload.java:51-56`, `PdfWatermarkInspector.java:103-104`.
 - 내용: IV는 `SecureRandom` 12바이트로 호출마다 새로 만들므로 구현 자체는 올바르다(확인). 남는 한계는 다음과 같다.
   - 무작위 IV 방식은 한 키로 암호화할 수 있는 횟수에 한도가 있다(NIST SP 800-38D 기준 2^32회). 대량 배포 환경에서 키를 교체하지 않으면 한도에 가까워진다.
-  - AAD를 쓰지 않아 버전·문서 식별자가 암호문에 묶이지 않는다(V-01과 연관).
+  - AAD를 쓰지 않아 암호문 밖의 포맷 버전 표식 `/_k1v`(`PdfForensicEmbedder.java:44`)가 암호문에 묶이지 않는다. 페이로드 안의 버전 `v`는 HMAC 대상이고 암호화할 JSON에도 들어가 GCM 태그로 이미 보호된다(`WatermarkPayload.java:28-38, 41-56`). 문서 식별자는 현재 페이로드에 아예 없다(V-01).
   - 암호문 밖에 키 식별자가 없어 키 교체 후에는 구 키를 순서대로 시도해야 한다. `/_k1v`(`PdfForensicEmbedder.java:44`)는 포맷 버전일 뿐이다.
 - 권고: 페이로드 앞에 키 ID 1~2바이트를 두고 AAD로 포함한다. 키 교체 주기를 README에 안내한다.
 
@@ -490,14 +499,14 @@ V-05처럼 번들된 의존성에 취약점이 공개돼도, 소비자 프로젝
 
 ### 8.3 검토 의견 중 반영하지 않았거나 판단이 필요한 것
 
-- **V-05의 위험도**: 검토자는 자체 경로 도달이 0건으로 확정됐으므로 Low 강등도 타당하다고 보았다. 2.2 기준에 "소비자 전이" 조항이 있어 Medium을 유지했다. Low로 본다면 1.1 표는 Medium 2건, Low 4건이 된다.
+- **V-05의 위험도**: 검토자는 자체 경로 도달이 0건으로 확정됐으므로 Low 강등도 타당하다고 보았다. 초안 단계에서는 2.2 기준에 "소비자 전이" 조항이 있어 Medium을 유지했다. 이후 PR #51 리뷰에서 README 설치 방식으로는 전이가 일어나지 않는다는 지적을 받아 Low로 낮췄다(8.7).
 - **주석·문서와 코드 불일치**: `KurbyPdf.java:31` 주석("페이지당 2개")과 실제 기본값 3(`PdfForensicEmbedder.java:23`)의 차이, README(`:66, 69, 92`)가 존재하지 않는 `PdfVerification` 클래스를 안내하는 점을 검토자가 지적했다. 보안 결함이 아니어서 항목으로 싣지 않았다.
 
 ### 8.4 끝까지 확인하지 못한 것
 
 - 모든 공격 시나리오의 실행 재현(빌드·PoC 없음).
 - 사용자 비밀번호로 연 문서의 재저장 가능 여부(V-02): 소스 대조만 했다.
-- JCE 키 길이 동작의 Java 8 런타임 확인(V-07): Java 17에서만 실행했다.
+- ~~JCE 키 길이 동작의 Java 8 런타임 확인(V-07)~~: PR #51 리뷰어가 Java 1.8.0_261에서 확인했다(8.7).
 - Jackson 2.18.x의 Java 8 지원 여부(V-05 조치 방안).
 - PDFBox 3.x의 API 변경 범위(I-04).
 - 재배치된 fat JAR에 대한 스캐너별 탐지 동작(V-08).
@@ -520,3 +529,19 @@ V-05처럼 번들된 의존성에 취약점이 공개돼도, 소비자 프로젝
 |---|---|---|---|
 | V-04 시나리오 2 | "13바이트 이상이면 `AEADBadTagException`" | 13~27바이트는 `ProviderException`, 28바이트 이상은 `AEADBadTagException`으로 정정. 조치 방안 1에 `ProviderException`을 잡아야 한다는 점 추가 | 같은 복호화 코드를 로컬 Java 17.0.12에서 길이별(12, 13, 20, 27, 28, 64바이트)로 실행. 8.2 표의 V-04 행에 적힌 "13바이트 미만일 때의 예외 종류 추가"는 2차 검토 지적을 실행 확인 없이 옮긴 것이었다 |
 | V-03 영향 | 삽입 경로도 "같은 문제가 생긴다" | 삽입 경로에 입력 크기 검사와 메모리 상한이 없다는 사실만 남기고, 압축 폭탄이 이 경로에서 재현되는지는 확인하지 못했다고 명시 | `KurbyPdf.java:14, 21`. 삽입 경로에서의 재현은 소스로도 실행으로도 확인한 적이 없었다 |
+
+### 8.7 PR #51 리뷰 반영 (2026-11-24)
+
+PR #51 인라인 리뷰를 반영했다. 리뷰어가 Java 8에서 실행한 결과는 작성자가 다시 실행하지 않고 리뷰어 확인으로 표시했다. 그 밖의 지적은 KurbyPdf `74d3aed` 원본과 대조해 확인한 뒤 반영했다. 이 수정은 별도 에이전트의 재검증을 거치지 않았다.
+
+| 항목 | 고친 내용 | 근거 |
+|---|---|---|
+| V-01 조치 1 | 암호화할 `wrap`에도 `doc`을 복사하는 단계 추가 | `WatermarkPayload.java:41-48`이 `body`와 별도로 `wrap`을 구성함 |
+| V-03 조치 1 | 삽입 경로용 스니펫 분리(`watermark()`에는 `password` 변수 없음). 상한과 가용 힙·동시 처리 수·입력 PDF 크기의 관계 추가. 조치 4에 동시 검증 수 제한 추가 | `KurbyPdf.java:13-21`, 리뷰어가 지적한 `PDDocument.java:1228-1231` |
+| V-04 시나리오 2 | Java 8 결과(13~27바이트도 `AEADBadTagException`) 추가 | 리뷰어 실행(Java 1.8.0_261) |
+| V-04 조치 1 | 예외 종류 나열 대신 스트림 단위로 `Exception`을 잡도록 변경 | 런타임마다 예외 종류가 다르고 `IllegalArgumentException`(`:97-98`)도 있음 |
+| V-05 위험도 | Medium → Low. 1.1·1.2·1.3 표와 5장 요약표 갱신(Medium 3→2, Low 3→4) | README 방식에서는 전이가 없고 자체 도달 경로도 없음 |
+| V-05 시나리오 | 소비자 전이를 "의존성 메타데이터가 전달되는 배포 방식일 때"로 조건부 서술. README 방식에서는 전이되지 않음을 명시 | `README.md:27, 37-38`, `build.gradle.kts:64`, `maven-publish` 설정 없음 |
+| V-07 위치 | HMAC·AES 키 길이 동작의 Java 8 결과를 확인됨으로 변경(8.4에서도 해소 표시) | 리뷰어 실행(Java 1.8.0_261) |
+| V-07 조치 | AES 키 검사에서 24바이트도 허용(기존 문서 검증 호환) | 본문(`:244`)의 16/24/32바이트 설명과 일치시킴 |
+| I-03 | AAD로 묶을 "버전"이 암호문 밖의 `/_k1v`임을 명시. 내부 `v`는 이미 보호됨 | `WatermarkPayload.java:28-38, 41-56` |

@@ -39,7 +39,7 @@ gh repo view --json nameWithOwner,url,defaultBranchRef
 PR 생성 전에는 `study-ai`의 issue 중 생성일 기준 가장 최근 issue를 읽는다. 상태와 관계없이 최신 issue를 사용한다.
 
 ```powershell
-gh issue list --state all --limit 1 --sort created --order desc --json number,title,url
+gh issue list --state all --limit 1 --json number,title,url
 gh issue view <ISSUE번호> --comments
 ```
 
@@ -101,8 +101,7 @@ gh api repos/<OWNER>/<REPO>/contributors --paginate --jq '.[].login'
 PR 본문은 issue의 형식과 체크리스트를 우선한다. 별도 형식이 없으면 다음 내용을 포함한다.
 
 ```markdown
-## 관련 Issue
-- #ISSUE번호
+Issue: #ISSUE번호
 
 ## 작업 내용
 - 실제 diff 기준 요약

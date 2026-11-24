@@ -28,7 +28,7 @@ metadata:
 
    대상 저장소는 `study-ai`다. 현재 저장소가 `study-ai`가 아니면 사용자가 제공한 PR URL 또는 `OWNER/REPO`를 사용한다. 저장소가 불명확하면 변경 작업 없이 사용자에게 확인한다.
 
-3. PR의 `closingIssuesReferences`에서 연결된 issue를 찾는다. 저장소의 최신 issue나 번호가 가장 큰 issue가 아니라, 현재 PR과 연결된 issue를 검토 기준으로 삼는다. 여러 issue가 연결되어 있으면 모두 분석한다. 연결된 issue가 없으면 임의로 추정하지 말고, 연결된 issue가 없다는 사실을 알린 뒤 다른 검토 기준으로 계속할지 사용자에게 묻는다.
+3. PR 본문 최상단의 `Issue: #N` 표기와 `closingIssuesReferences`에서 기준 issue를 찾는다. study-ai의 과제 issue는 모두가 함께 쓰므로 `Closes #N`으로 연결하지 않고 `Issue: #N`만 적는 경우가 많아, `closingIssuesReferences`는 비어 있을 수 있다. 저장소의 최신 issue나 번호가 가장 큰 issue가 아니라, 현재 PR이 가리키는 issue를 검토 기준으로 삼는다. 여러 issue가 있으면 모두 분석한다. 둘 다 없으면 임의로 추정하지 말고, 연결된 issue가 없다는 사실을 알린 뒤 다른 검토 기준으로 계속할지 사용자에게 묻는다.
 4. 연결된 각 issue의 제목, 본문, 라벨, 댓글, acceptance criteria를 읽는다.
 
    ```powershell
